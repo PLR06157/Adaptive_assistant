@@ -14,12 +14,14 @@ import json
 import logging
 import mimetypes
 import os
+import random
 import re
+import time
 import uuid
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
-from copy import deepcopy
 from premailer import transform
 
 import requests
@@ -163,11 +165,14 @@ class GraphMailer:
         *,
         inline_attachments: Optional[List[Dict[str, str]]] = None,
         attachment: Optional[Dict[str, str]] = None,
+        min_wait: float = 0.0,
+        max_wait: float = 0.0,
         dry_run: bool = False,
     ) -> None:
         token = None if dry_run else self._get_token()
         total = 0
         inline_attachments = inline_attachments or []
+        last_send_timestamp: Optional[float] = None
         for recipient in recipients:
             total += 1
             rendered_html = html_template.format(**recipient.context)
@@ -209,6 +214,16 @@ class GraphMailer:
                     f"{response.status_code} {response.text}"
                 )
             logging.info("Sent mail to %s", recipient.email)
+            if last_send_timestamp is not None:
+                elapsed = time.monotonic() - last_send_timestamp
+                logging.info("Elapsed since previous send: %.2f seconds", elapsed)
+            last_send_timestamp = time.monotonic()
+            if not dry_run and max_wait > 0:
+                lower = max(0.0, min_wait)
+                upper = max(lower, max_wait)
+                wait_seconds = random.uniform(lower, upper)
+                logging.info("Waiting %.2f seconds before next send", wait_seconds)
+                time.sleep(wait_seconds)
         logging.info("Processed %d recipient(s).", total)
 
 
@@ -291,6 +306,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Logging level (default: %(default)s).",
     )
     parser.add_argument(
+        "--min-wait",
+        type=float,
+        default=float(os.getenv("MIN_WAIT_SECONDS", "5")),
+        help="Minimum seconds to wait between messages (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--max-wait",
+        type=float,
+        default=float(os.getenv("MAX_WAIT_SECONDS", "15")),
+        help="Maximum seconds to wait between messages (default: %(default)s).",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Render emails without calling the Graph API.",
@@ -303,7 +330,11 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    logging.basicConfig(level=args.log_level.upper(), format="%(levelname)s %(message)s")
+    logging.basicConfig(
+        level=args.log_level.upper(),
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     try:
         tenant_id = _read_env("TENANT_ID")
@@ -339,6 +370,8 @@ def main() -> None:
             html_template,
             inline_attachments=inline_attachments,
             attachment=attachment,
+            min_wait=args.min_wait,
+            max_wait=args.max_wait,
             dry_run=args.dry_run,
         )
     except ConfigurationError as exc:
