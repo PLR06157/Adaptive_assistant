@@ -14,9 +14,12 @@ import json
 import logging
 import mimetypes
 import os
+import re
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
+from copy import deepcopy
 from premailer import transform
 
 import requests
@@ -74,6 +77,60 @@ def _build_attachment(path: Path) -> Dict[str, str]:
     }
 
 
+def _prepare_inline_images(html: str, asset_root: Path) -> Tuple[str, List[Dict[str, str]]]:
+    """
+    Identify local <img> references and convert them to inline attachments that
+    Microsoft Graph can embed via CID references.
+    """
+    matches = set(re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', html, flags=re.IGNORECASE))
+    if not matches:
+        return html, []
+
+    replacements: Dict[str, str] = {}
+    attachments: List[Dict[str, str]] = []
+
+    for src in matches:
+        if src.startswith(("cid:", "http://", "https://", "data:")):
+            continue
+        image_path = Path(src)
+        if not image_path.is_absolute():
+            image_path = asset_root / src
+        if not image_path.exists():
+            logging.warning("Referenced inline image not found: %s", image_path)
+            continue
+        content_id = f"{Path(src).stem}-{uuid.uuid4().hex}@inline"
+        file_bytes = image_path.read_bytes()
+        attachments.append(
+            {
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                "name": image_path.name,
+                "contentType": _guess_mime_type(image_path),
+                "contentBytes": base64.b64encode(file_bytes).decode("ascii"),
+                "contentId": content_id,
+                "isInline": True,
+            }
+        )
+        replacements[src] = content_id
+
+    if not replacements:
+        return html, attachments
+
+    def _replace(match: re.Match) -> str:
+        prefix, quote, value, _ = match.groups()
+        content_id = replacements.get(value)
+        if not content_id:
+            return match.group(0)
+        return f"{prefix}{quote}cid:{content_id}{quote}"
+
+    updated_html = re.sub(
+        r'(<img[^>]*src=)(["\'])([^"\']+)(\2)',
+        _replace,
+        html,
+        flags=re.IGNORECASE,
+    )
+    return updated_html, attachments
+
+
 @dataclass
 class Recipient:
     email: str
@@ -104,11 +161,13 @@ class GraphMailer:
         recipients: Iterable[Recipient],
         html_template: str,
         *,
+        inline_attachments: Optional[List[Dict[str, str]]] = None,
         attachment: Optional[Dict[str, str]] = None,
         dry_run: bool = False,
     ) -> None:
         token = None if dry_run else self._get_token()
         total = 0
+        inline_attachments = inline_attachments or []
         for recipient in recipients:
             total += 1
             rendered_html = html_template.format(**recipient.context)
@@ -127,8 +186,13 @@ class GraphMailer:
                 },
                 "saveToSentItems": True,
             }
+            message_attachments: List[Dict[str, str]] = []
+            if inline_attachments:
+                message_attachments.extend(deepcopy(inline_attachments))
             if attachment:
-                payload["message"]["attachments"] = [attachment]
+                message_attachments.append(deepcopy(attachment))
+            if message_attachments:
+                payload["message"]["attachments"] = message_attachments
             headers = {
                 "Authorization": f"Bearer {token}",
                 "Content-Type": "application/json",
@@ -247,7 +311,11 @@ def main() -> None:
         client_secret = _read_env("CLIENT_SECRET")
         sender_address = _read_env("SENDER_EMAIL")
 
-        html_template = _load_html_template(Path(args.template_path))
+        template_path = Path(args.template_path)
+        html_template = _load_html_template(template_path)
+        html_template, inline_attachments = _prepare_inline_images(
+            html_template, template_path.parent
+        )
 
         recipients = _parse_recipients(
             Path(args.csv_path),
@@ -269,6 +337,7 @@ def main() -> None:
         mailer.send(
             recipients,
             html_template,
+            inline_attachments=inline_attachments,
             attachment=attachment,
             dry_run=args.dry_run,
         )
