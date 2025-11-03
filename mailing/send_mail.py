@@ -46,6 +46,13 @@ def _read_env(name: str, *, required: bool = True, default: Optional[str] = None
     return value or ""
 
 
+def _env_flag(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _load_html_template(path: Path) -> str:
     try:
         with open(path, 'r') as f:
@@ -168,6 +175,7 @@ class GraphMailer:
         min_wait: float = 0.0,
         max_wait: float = 0.0,
         dry_run: bool = False,
+        save_to_sent_items: bool = True,
     ) -> None:
         token = None if dry_run else self._get_token()
         total = 0
@@ -189,7 +197,7 @@ class GraphMailer:
                     "body": {"contentType": "HTML", "content": rendered_html},
                     "toRecipients": [{"emailAddress": {"address": recipient.email}}],
                 },
-                "saveToSentItems": True,
+                "saveToSentItems": save_to_sent_items,
             }
             message_attachments: List[Dict[str, str]] = []
             if inline_attachments:
@@ -268,6 +276,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Send personalized HTML emails with optional attachment via Microsoft 365."
     )
+    default_save_to_sent = _env_flag("SAVE_TO_SENT_ITEMS", True)
     parser.add_argument(
         "--csv",
         dest="csv_path",
@@ -316,6 +325,20 @@ def build_parser() -> argparse.ArgumentParser:
         type=float,
         default=float(os.getenv("MAX_WAIT_SECONDS", "15")),
         help="Maximum seconds to wait between messages (default: %(default)s).",
+    )
+    save_group = parser.add_mutually_exclusive_group()
+    save_group.add_argument(
+        "--save-to-sent-items",
+        dest="save_to_sent_items",
+        action="store_true",
+        default=default_save_to_sent,
+        help="Save outgoing messages to the Sent Items folder (default: enabled).",
+    )
+    save_group.add_argument(
+        "--no-save-to-sent-items",
+        dest="save_to_sent_items",
+        action="store_false",
+        help="Do not store outgoing messages in the Sent Items folder.",
     )
     parser.add_argument(
         "--dry-run",
@@ -373,6 +396,7 @@ def main() -> None:
             min_wait=args.min_wait,
             max_wait=args.max_wait,
             dry_run=args.dry_run,
+            save_to_sent_items=args.save_to_sent_items,
         )
     except ConfigurationError as exc:
         logging.error("%s", exc)
