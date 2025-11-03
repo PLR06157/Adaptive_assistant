@@ -172,8 +172,8 @@ class GraphMailer:
         *,
         inline_attachments: Optional[List[Dict[str, str]]] = None,
         attachment: Optional[Dict[str, str]] = None,
-        min_wait: float = 0.0,
-        max_wait: float = 0.0,
+        min_wait: float = 5.0,
+        max_wait: float = 15.0,
         dry_run: bool = False,
         save_to_sent_items: bool = True,
     ) -> None:
