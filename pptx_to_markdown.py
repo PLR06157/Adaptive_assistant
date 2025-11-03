@@ -3,11 +3,7 @@
 Utility script to convert PPTX presentations to Markdown using the MarkItDown library.
 
 Example usage:
-    python3 pptx_to_markdown.py 1_Adaptive_Group_Profile.pptx --output 1_Adaptive_Group_Profile.md
-    python3 pptx_to_markdown.py 2_Adaptive_Group_Strategic_Business_Guidance.pptx --output 2_Adaptive_Group_Strategic_Business_Guidance.md
-    python3 pptx_to_markdown.py 3_Adaptive_Group_Transformation_Management_Office.pptx --output 3_Adaptive_Group_Transformation_Management_Office.md
-    python3 pptx_to_markdown.py 4_Adaptive_Group_Service_Delivery_Enhancement.pptx --output 4_Adaptive_Group_Service_Delivery_Enhancement.md
-    python3 pptx_to_markdown.py 5_Adaptive_Group_Enterprise_Automation_Hub.pptx --output 5_Adaptive_Group_Enterprise_Automation_Hub.md
+    python3 pptx_to_markdown.py BNFTST_Adaptive_offer_for_Benefit_Systems_Draft.pptx --output BNFTST_Adaptive_offer_for_Benefit_Systems_Draft.md
 
 If the --output argument is omitted, the Markdown is printed to stdout.
 """
