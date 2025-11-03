@@ -1,7 +1,7 @@
 """
 Utility for sending personalized HTML emails with attachments via Microsoft 365.
 
-The script reads recipient data from a CSV file, renders an HTML template using
+The script reads recipient data from an XLSX spreadsheet, renders an HTML template using
 row values, and delivers the messages through the Microsoft Graph API.
 """
 
@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import base64
-import csv
 import json
 import logging
 import mimetypes
@@ -22,9 +21,9 @@ from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
-from premailer import transform
-
 import requests
+from openpyxl import load_workbook
+from premailer import transform
 from dotenv import load_dotenv
 from msal import ConfidentialClientApplication
 
@@ -143,6 +142,7 @@ def _prepare_inline_images(html: str, asset_root: Path) -> Tuple[str, List[Dict[
 @dataclass
 class Recipient:
     email: str
+    first_name: str
     subject: str
     context: Dict[str, str]
 
@@ -186,9 +186,10 @@ class GraphMailer:
             rendered_html = html_template.format(**recipient.context)
             if dry_run:
                 logging.info(
-                    "[DRY-RUN] Would send to %s with subject '%s'",
-                    recipient.email,
+                    "[DRY-RUN] Would send: \n Subject: '%s' - Email: %s - Name: [%s]",
                     recipient.subject,
+                    recipient.email,
+                    recipient.first_name,
                 )
                 continue
             payload = {
@@ -236,39 +237,79 @@ class GraphMailer:
 
 
 def _parse_recipients(
-    csv_path: Path,
+    xlsx_path: Path,
     *,
-    email_column: str,
-    subject_column: Optional[str],
+    sheet_name: Optional[str],
     default_subject: Optional[str],
 ) -> List[Recipient]:
-    if not csv_path.exists():
-        raise ConfigurationError(f"CSV file not found: {csv_path}")
-    recipients: List[Recipient] = []
-    with csv_path.open(newline="", encoding="utf-8") as handle:
-        reader = csv.DictReader(handle)
-        for idx, row in enumerate(reader, start=2):
-            email = row.get(email_column, "").strip()
-            if not email:
-                logging.warning("Row %d missing email in column '%s'; skipping.", idx, email_column)
-                continue
-            subject = ""
-            if subject_column:
-                subject = row.get(subject_column, "").strip()
-            subject = subject or (default_subject or "").strip()
-            if not subject:
-                raise ConfigurationError(
-                    f"Row {idx} missing subject and no default subject provided."
-                )
-            recipients.append(
-                Recipient(
-                    email=email,
-                    subject=subject,
-                    context={key: value for key, value in row.items()},
-                )
+    if not xlsx_path.exists():
+        raise ConfigurationError(f"Spreadsheet file not found: {xlsx_path}")
+
+    try:
+        workbook = load_workbook(filename=xlsx_path, read_only=True, data_only=True)
+    except Exception as exc:  # pylint: disable=broad-except
+        raise ConfigurationError(f"Unable to open spreadsheet: {xlsx_path}") from exc
+
+    if sheet_name:
+        if sheet_name not in workbook.sheetnames:
+            raise ConfigurationError(
+                f"Worksheet '{sheet_name}' not found in {xlsx_path.name}. "
+                f"Available sheets: {', '.join(workbook.sheetnames)}"
             )
+        sheet = workbook[sheet_name]
+    else:
+        sheet = workbook.active
+
+    rows = list(sheet.iter_rows(values_only=True))
+    if not rows:
+        raise ConfigurationError("Spreadsheet contains no rows.")
+
+    expected_order = ("email", "first_name", "sender_name", "subject")
+    header_row = rows[0]
+
+    def _normalize(cell: Optional[str]) -> str:
+        if cell is None:
+            return ""
+        return str(cell).strip()
+
+    header_matches = all(
+        _normalize(header_row[idx]).lower() == expected_order[idx]
+        for idx in range(min(len(expected_order), len(header_row)))
+    )
+    data_rows = rows[1:] if header_matches else rows
+
+    recipients: List[Recipient] = []
+    starting_index = 2 if header_matches else 1
+    for idx, row in enumerate(data_rows, start=starting_index):
+        # Pad the row up to 4 entries to guard against shorter rows.
+        padded = list(row) + [None] * max(0, 4 - len(row))
+        email = _normalize(padded[0])
+        if not email:
+            logging.warning("Row %d missing email; skipping.", idx)
+            continue
+        first_name = _normalize(padded[1])
+        sender_name = _normalize(padded[2])
+        subject = _normalize(padded[3]) or _normalize(default_subject)
+        if not subject:
+            raise ConfigurationError(
+                f"Row {idx} missing subject and no default subject provided."
+            )
+        context = {
+            "email": email,
+            "first_name": first_name,
+            "sender_name": sender_name,
+            "subject": subject,
+        }
+        recipients.append(
+            Recipient(
+                email=email,
+                first_name=first_name,
+                subject=subject,
+                context=context,
+            )
+        )
     if not recipients:
-        raise ConfigurationError("No valid recipients found in CSV.")
+        raise ConfigurationError("No valid recipients found in spreadsheet.")
     return recipients
 
 
@@ -278,10 +319,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     default_save_to_sent = _env_flag("SAVE_TO_SENT_ITEMS", True)
     parser.add_argument(
-        "--csv",
-        dest="csv_path",
-        default=os.getenv("CSV_PATH", "mailing/recipients.csv"),
-        help="Path to the recipient CSV file (default: %(default)s).",
+        "--xlsx",
+        dest="xlsx_path",
+        default=os.getenv("XLSX_PATH", "mailing/recipients.xlsx"),
+        help="Path to the recipient XLSX file (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--sheet-name",
+        dest="sheet_name",
+        default=os.getenv("RECIPIENT_SHEET_NAME"),
+        help="Name of the worksheet to read (default: workbook's active sheet).",
     )
     parser.add_argument(
         "--template",
@@ -293,16 +340,6 @@ def build_parser() -> argparse.ArgumentParser:
         "--attachment",
         default=os.getenv("ATTACHMENT_PATH"),
         help="Path to the file attachment (optional).",
-    )
-    parser.add_argument(
-        "--email-column",
-        default=os.getenv("EMAIL_COLUMN", "email"),
-        help="Name of the CSV column containing recipient email addresses (default: %(default)s).",
-    )
-    parser.add_argument(
-        "--subject-column",
-        default=os.getenv("SUBJECT_COLUMN"),
-        help="Name of the CSV column containing the subject line.",
     )
     parser.add_argument(
         "--default-subject",
@@ -372,9 +409,8 @@ def main() -> None:
         )
 
         recipients = _parse_recipients(
-            Path(args.csv_path),
-            email_column=args.email_column,
-            subject_column=args.subject_column,
+            Path(args.xlsx_path),
+            sheet_name=args.sheet_name,
             default_subject=args.default_subject,
         )
 

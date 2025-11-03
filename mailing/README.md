@@ -27,24 +27,25 @@ Skopiuj plik `mailing/.env.example` do `mailing/.env` i wypełnij:
 - `TENANT_ID`, `CLIENT_ID`, `CLIENT_SECRET` – dane z Azure AD.
 - `SENDER_EMAIL` – adres konta, z którego wysyłasz wiadomości.
 - `ATTACHMENT_PATH` – ścieżka do pliku PDF/DOCX itp., który ma być dołączony.
-- Jeśli chcesz trzymać CSV lub szablon w innym miejscu, podaj nowe ścieżki.
+- `XLSX_PATH`, `RECIPIENT_SHEET_NAME` – opcjonalnie wskaż inną lokalizację pliku i arkusz z danymi.
+- `SAVE_TO_SENT_ITEMS=false` – ustaw, jeśli nie chcesz zapisywać wysłanych wiadomości w skrzynce nadawczej.
 
-## 3. Plik CSV z adresami
+## 3. Plik XLSX z adresami
 
-Domyślnie skrypt czyta `mailing/recipients.csv`. Struktura:
+Domyślnie skrypt czyta `mailing/recipients.xlsx` (aktywny arkusz albo nazwany przez `RECIPIENT_SHEET_NAME`). Kolumny A–D muszą występować w kolejności:
 
-```csv
-email,first_name,sender_name,subject
-jan.kowalski@example.com,Jan,Adaptive Group,"Oferta szkoleniowa Adaptive Group"
+```
+A: email
+B: first_name
+C: sender_name
+D: subject
 ```
 
-- `email` – adres odbiorcy (możesz zmienić nazwę kolumny przez `EMAIL_COLUMN`).
-- `subject` – tytuł wiadomości; jeśli puste możesz ustawić `DEFAULT_SUBJECT`.
-- Pozostałe kolumny są wykorzystywane do wypełnienia pól w szablonie HTML.
+Nagłówek w pierwszym wierszu jest opcjonalny, ale zalecany (skrypt sam go wykryje). W kolumnie `subject` możesz pozostawić puste pola i zdefiniować `DEFAULT_SUBJECT` w `.env` lub linii poleceń. Pozostałe kolumny (`first_name`, `sender_name`) trafiają do kontekstu szablonu HTML. Jeśli potrzebujesz dodatkowych placeholderów, dodaj je jako nowy arkuszowy blok i zmodyfikuj szablon.
 
 ## 4. Szablon HTML
 
-Plik `mailing/email_template.html` wykorzystuje formatowanie `str.format`, więc każdy nawias `{pole}` musi mieć odpowiadającą kolumnę w CSV (np. `{first_name}`). Możesz dodać własne placeholdery.
+Plik `mailing/email_template.html` wykorzystuje formatowanie `str.format`, więc każdy nawias `{pole}` musi mieć odpowiadającą wartość w arkuszu (np. `{first_name}`). Możesz dodać własne placeholdery i uzupełnić je dodatkowymi kolumnami.
 
 ## 5. Wysyłka
 
@@ -62,17 +63,18 @@ python mailing/send_mail.py
 
 Parametry, które możesz nadpisać z linii poleceń:
 
-- `--csv`, `--template`, `--attachment`
-- `--email-column`, `--subject-column`, `--default-subject`
-- `--log-level` (`INFO`, `DEBUG` itd.)
+- `--xlsx`, `--sheet-name`, `--template`, `--attachment`
+- `--default-subject`, `--min-wait`, `--max-wait`
+- `--log-level` (`INFO`, `DEBUG` itd.), `--dry-run`
+- `--no-save-to-sent-items` aby nie archiwizować wysyłek w folderze „Wysłane”
 
 ## 6. Debugowanie
 
 - Komunikat „Unable to acquire access token” oznacza problem z uprawnieniami aplikacji lub błędne dane `.env`.
-- Jeśli wiersz w CSV nie ma adresu e-mail, zostaje pominięty (log na poziomie `WARNING`).
+- Jeśli wiersz w arkuszu nie ma adresu e-mail, zostaje pominięty (log na poziomie `WARNING`).
 - Użyj `--log-level DEBUG`, aby zobaczyć więcej szczegółów.
 
 ## 7. Dalsze kroki
 
-- Dodaj kolumny do CSV, aby personalizować treść (np. `company_name`, `meeting_link`).
+- Dodaj kolumny do arkusza, aby personalizować treść (np. `company_name`, `meeting_link`).
 - Połącz z narzędziem harmonogramu (cron, GitHub Actions) jeśli chcesz wysyłać cyklicznie.
