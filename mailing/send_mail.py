@@ -177,7 +177,6 @@ class GraphMailer:
         dry_run: bool = False,
         save_to_sent_items: bool = True,
     ) -> None:
-        token = None if dry_run else self._get_token()
         total = 0
         inline_attachments = inline_attachments or []
         last_send_timestamp: Optional[float] = None
@@ -192,6 +191,11 @@ class GraphMailer:
                     recipient.first_name,
                 )
                 continue
+            
+            # Get fresh token for each email to prevent expiration during long mailings
+            # MSAL will use cached token if still valid, or refresh automatically
+            token = self._get_token()
+            
             payload = {
                 "message": {
                     "subject": recipient.subject,

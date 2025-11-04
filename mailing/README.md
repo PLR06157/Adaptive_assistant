@@ -5,8 +5,8 @@ Poniższe narzędzie pozwala wysyłać spersonalizowane wiadomości HTML z zał�
 ## 1. Rejestracja aplikacji w Azure AD
 
 1. Zaloguj się do [Azure Portal](https://portal.azure.com) kontem administratora M365.
-2. Przejdź do **Azure Active Directory → App registrations → New registration**.
-3. Nadaj nazwę, pozostaw typ konta „Accounts in this organizational directory only”.
+2. Przejdź do **Microsoft Entra ID → App registrations → New registration**.
+3. Nadaj nazwę, pozostaw typ konta „Accounts in this organizational directory only".
 4. Po utworzeniu aplikacji:
    - Zanotuj **Application (client) ID** oraz **Directory (tenant) ID**.
    - W sekcji **Certificates & secrets** dodaj **Client secret** – zapisz jego wartość, nie będzie dostępna ponownie.
@@ -49,7 +49,7 @@ Plik `mailing/email_template.html` wykorzystuje formatowanie `str.format`, więc
 
 ## 5. Wysyłka
 
-Przed pierwszym uruchomieniem warto zrobić „suchą próbę”:
+Przed pierwszym uruchomieniem warto zrobić „suchą próbę":
 
 ```bash
 python mailing/send_mail.py --dry-run
@@ -66,15 +66,25 @@ Parametry, które możesz nadpisać z linii poleceń:
 - `--xlsx`, `--sheet-name`, `--template`, `--attachment`
 - `--default-subject`, `--min-wait`, `--max-wait`
 - `--log-level` (`INFO`, `DEBUG` itd.), `--dry-run`
-- `--no-save-to-sent-items` aby nie archiwizować wysyłek w folderze „Wysłane”
+- `--no-save-to-sent-items` aby nie archiwizować wysyłek w folderze „Wysłane"
 
-## 6. Debugowanie
+## 6. Ważne: Token Expiration
 
-- Komunikat „Unable to acquire access token” oznacza problem z uprawnieniami aplikacji lub błędne dane `.env`.
+**Problem:** Access token Microsoft Graph API wygasa po ~60 minutach. W przypadku długich mailingów (duża lista odbiorców + opóźnienia między wysyłkami) może to spowodować błąd `"Lifetime validation failed, the token is expired"`.
+
+**Rozwiązanie:** Skrypt automatycznie odświeża token przed każdym wysłaniem wiadomości. Biblioteka MSAL cache'uje tokeny, więc jeśli token jest jeszcze ważny, używa go ponownie (praktycznie zerowy narzut). Gdy token wygaśnie, MSAL automatycznie go odświeża używając `CLIENT_SECRET`.
+
+**Uwaga:** To jest normalne zachowanie OAuth2/Microsoft Graph API. Twój Client Secret może być ważny przez lata (np. do 2027), ale access token zawsze wygasa po ~60 minutach. Skrypt obsługuje to automatycznie.
+
+## 7. Debugowanie
+
+- Komunikat „Unable to acquire access token" oznacza problem z uprawnieniami aplikacji lub błędne dane `.env`.
 - Jeśli wiersz w arkuszu nie ma adresu e-mail, zostaje pominięty (log na poziomie `WARNING`).
 - Użyj `--log-level DEBUG`, aby zobaczyć więcej szczegółów.
+- Błąd 401 z komunikatem o wygasłym tokenie nie powinien już występować, ale jeśli się pojawi, sprawdź czy używasz najnowszej wersji skryptu z automatycznym odświeżaniem tokenu.
 
-## 7. Dalsze kroki
+## 8. Dalsze kroki
 
 - Dodaj kolumny do arkusza, aby personalizować treść (np. `company_name`, `meeting_link`).
 - Połącz z narzędziem harmonogramu (cron, GitHub Actions) jeśli chcesz wysyłać cyklicznie.
+- Dla bardzo dużych list (1000+ odbiorców) rozważ podzielenie na mniejsze partie.
