@@ -3,6 +3,64 @@ Utility for sending personalized HTML emails with attachments via Microsoft 365.
 
 The script reads recipient data from an XLSX spreadsheet, renders an HTML template using
 row values, and delivers the messages through the Microsoft Graph API.
+
+Template Variables:
+    HTML templates use $variable syntax for placeholders (e.g., $first_name, $email).
+    Available variables: $email, $first_name, $sender_name, $subject
+    This syntax is safe with CSS curly braces {} in your HTML.
+
+Configuration:
+    The script automatically loads settings from a .env file in the mailing/ directory.
+    All command-line arguments have default values that can be set via environment variables:
+
+    Required (in .env):
+        TENANT_ID           - Azure AD tenant ID
+        CLIENT_ID           - Azure AD application (client) ID
+        CLIENT_SECRET       - Azure AD client secret
+        SENDER_EMAIL        - Email address to send from
+
+    Optional (in .env):
+        XLSX_PATH           - Path to recipient spreadsheet (default: mailing/recipients.xlsx)
+        HTML_TEMPLATE_PATH  - Path to email template (default: mailing/email_template.html)
+        ATTACHMENT_PATH     - Path to file attachment (optional, no default)
+        DEFAULT_SUBJECT     - Default email subject if not in spreadsheet (optional)
+        MIN_WAIT_SECONDS    - Minimum wait between emails (default: 5)
+        MAX_WAIT_SECONDS    - Maximum wait between emails (default: 15)
+        LOG_LEVEL           - Logging level (default: INFO)
+        SAVE_TO_SENT_ITEMS  - Save to Sent Items folder (default: true)
+
+    Command-line arguments override .env values.
+
+Usage:
+
+Basic execution (uses .env defaults):
+    python3 mailing/send_mail.py
+
+With parameters (overrides .env):
+    python3 mailing/send_mail.py \
+        --xlsx mailing/recipients.xlsx \
+        --template mailing/email_template.html \
+        --attachment mailing/document.pdf \
+        --default-subject "My subject" \
+        --min-wait 3 \
+        --max-wait 10
+
+Test without sending (dry-run):
+    python3 mailing/send_mail.py --dry-run
+
+Without saving to Sent Items:
+    python3 mailing/send_mail.py --no-save-to-sent-items
+
+Working example:
+
+python3 mailing/send_mail.py \
+    --xlsx mailing/recipients.xlsx \
+    --template mailing/gbs_lions_event_email.html \
+    --default-subject "[LAST CALL] GBS Lions' Talks in Warsaw: AI - Is It Already a Mainstream Tool? 26.11.25" \
+    --min-wait 0.5 \
+    --max-wait 1 \
+    --dry-run
+
 """
 
 from __future__ import annotations
@@ -15,6 +73,7 @@ import mimetypes
 import os
 import random
 import re
+import string
 import time
 import uuid
 from copy import deepcopy
@@ -182,7 +241,8 @@ class GraphMailer:
         last_send_timestamp: Optional[float] = None
         for recipient in recipients:
             total += 1
-            rendered_html = html_template.format(**recipient.context)
+            template = string.Template(html_template)
+            rendered_html = template.safe_substitute(recipient.context)
             if dry_run:
                 logging.info(
                     "[DRY-RUN] Would send: \n Subject: '%s' - Email: %s - Name: [%s]",
