@@ -26,8 +26,11 @@ Configuration:
         DEFAULT_SUBJECT     - Default email subject if not in spreadsheet (optional)
         MIN_WAIT_SECONDS    - Minimum wait between emails (default: 5)
         MAX_WAIT_SECONDS    - Maximum wait between emails (default: 15)
+        MAX_RETRIES         - Maximum retry attempts on transient errors (default: 5)
         LOG_LEVEL           - Logging level (default: INFO)
         SAVE_TO_SENT_ITEMS  - Save to Sent Items folder (default: true)
+        CC_EMAIL            - Email address to CC on every outgoing message (optional)
+        CONTINUE_ON_ERROR   - Continue with other recipients if one fails (default: false)
 
     Command-line arguments override .env values.
 
@@ -224,6 +227,140 @@ class GraphMailer:
             raise RuntimeError(f"Unable to acquire access token: {json.dumps(token, indent=2)}")
         return token["access_token"]
 
+    def _is_transient_error(self, status_code: int, response_text: str) -> bool:
+        """Check if an error is transient and should be retried."""
+        # 4xx errors (except 429) are client errors and should NOT be retried
+        # These are permanent failures: bad email, invalid recipient, etc.
+        if 400 <= status_code < 500 and status_code != 429:
+            return False
+
+        # Common transient HTTP status codes
+        if status_code in (429, 502, 503, 504):
+            return True
+
+        # Check for specific transient error codes in response
+        transient_error_codes = {
+            "ErrorMailboxMoveInProgress",
+            "ErrorServerBusy",
+            "ErrorTimeoutExpired",
+            "ErrorInternalServerError",
+            "ErrorTooManyObjectsOpened",
+        }
+
+        try:
+            error_data = json.loads(response_text)
+            error_code = error_data.get("error", {}).get("code", "")
+            return error_code in transient_error_codes
+        except (json.JSONDecodeError, AttributeError):
+            return False
+
+    def _is_invalid_recipient_error(self, response_text: str) -> bool:
+        """Check if the error is due to an invalid recipient email address."""
+        try:
+            error_data = json.loads(response_text)
+            error_code = error_data.get("error", {}).get("code", "")
+            return error_code in ("ErrorInvalidRecipients", "ErrorNonExistentMailbox")
+        except (json.JSONDecodeError, AttributeError):
+            return False
+
+    def _get_retry_wait_time(self, status_code: int, attempt: int, retry_after: Optional[str] = None) -> int:
+        """Calculate wait time for retry based on error type and attempt number."""
+        # Use Retry-After header if provided
+        if retry_after and retry_after.isdigit():
+            return int(retry_after)
+
+        # Different backoff strategies for different error types
+        if status_code == 429:  # Throttling
+            # Exponential backoff for throttling
+            return min(60, (2 ** attempt) * 5)
+        elif status_code == 503:  # Service unavailable (e.g., mailbox move)
+            # Longer wait for mailbox operations (30s, 60s, 90s, 120s, 180s)
+            return min(180, 30 + (attempt * 30))
+        else:  # 502, 504, or other transient errors
+            # Moderate exponential backoff
+            return min(120, (2 ** attempt) * 10)
+
+    def _send_with_retry(
+        self,
+        recipient: Recipient,
+        rendered_html: str,
+        payload: Dict,
+        headers: Dict,
+        max_retries: int = 5,
+    ) -> None:
+        """Send email with automatic retry on transient errors."""
+        last_error_msg = ""
+
+        for attempt in range(max_retries):
+            response = requests.post(
+                f"{GRAPH_ENDPOINT}/users/{self._sender}/sendMail",
+                headers=headers,
+                json=payload,
+                timeout=30,
+            )
+
+            # Success
+            if response.status_code < 300:
+                logging.info("Sent mail to %s", recipient.email)
+                return
+
+            # Check if this is a transient error worth retrying
+            if self._is_transient_error(response.status_code, response.text):
+                retry_after = response.headers.get("Retry-After")
+                wait_time = self._get_retry_wait_time(response.status_code, attempt, retry_after)
+
+                # Extract error details for logging
+                error_detail = "Unknown error"
+                try:
+                    error_data = json.loads(response.text)
+                    error_detail = error_data.get("error", {}).get("message", response.text)
+                except (json.JSONDecodeError, AttributeError):
+                    error_detail = response.text[:200]  # Limit error message length
+
+                logging.warning(
+                    "Transient error (%d) for %s: %s. Waiting %d seconds before retry %d/%d",
+                    response.status_code,
+                    recipient.email,
+                    error_detail,
+                    wait_time,
+                    attempt + 1,
+                    max_retries,
+                )
+
+                last_error_msg = f"{response.status_code} {response.text}"
+                time.sleep(wait_time)
+
+                # Refresh token before retry
+                headers["Authorization"] = f"Bearer {self._get_token()}"
+                continue
+
+            # Non-transient error - fail immediately with a clear message
+            error_detail = response.text
+            try:
+                error_data = json.loads(response.text)
+                error_code = error_data.get("error", {}).get("code", "")
+                error_message = error_data.get("error", {}).get("message", "")
+                error_detail = f"{error_code}: {error_message}" if error_code else error_message
+            except (json.JSONDecodeError, AttributeError):
+                pass
+
+            # Provide specific message for invalid recipient errors
+            if self._is_invalid_recipient_error(response.text):
+                raise RuntimeError(
+                    f"Invalid recipient email '{recipient.email}': {error_detail}"
+                )
+
+            # Generic permanent error
+            raise RuntimeError(
+                f"Permanent error sending to {recipient.email} ({response.status_code}): {error_detail}"
+            )
+
+        # Max retries exceeded for transient error
+        raise RuntimeError(
+            f"Failed to send mail to {recipient.email} after {max_retries} retries. "
+            f"Last error: {last_error_msg}"
+        )
+
     def send(
         self,
         recipients: Iterable[Recipient],
@@ -233,11 +370,19 @@ class GraphMailer:
         attachment: Optional[Dict[str, str]] = None,
         min_wait: float = 5.0,
         max_wait: float = 15.0,
+        max_retries: int = 5,
         dry_run: bool = False,
         save_to_sent_items: bool = True,
+        cc_email: Optional[str] = None,
+        continue_on_error: bool = False,
     ) -> None:
         total = 0
+        success_count = 0
+        failed_recipients: List[Tuple[str, str]] = []  # (email, error_message)
         inline_attachments = inline_attachments or []
+        cc_recipient_entry = (
+            [{"emailAddress": {"address": cc_email}}] if cc_email else None
+        )
         last_send_timestamp: Optional[float] = None
         for recipient in recipients:
             total += 1
@@ -250,12 +395,13 @@ class GraphMailer:
                     recipient.email,
                     recipient.first_name,
                 )
+                success_count += 1
                 continue
-            
+
             # Get fresh token for each email to prevent expiration during long mailings
             # MSAL will use cached token if still valid, or refresh automatically
             token = self._get_token()
-            
+
             payload = {
                 "message": {
                     "subject": recipient.subject,
@@ -264,6 +410,8 @@ class GraphMailer:
                 },
                 "saveToSentItems": save_to_sent_items,
             }
+            if cc_recipient_entry:
+                payload["message"]["ccRecipients"] = deepcopy(cc_recipient_entry)
             message_attachments: List[Dict[str, str]] = []
             if inline_attachments:
                 message_attachments.extend(deepcopy(inline_attachments))
@@ -275,18 +423,23 @@ class GraphMailer:
                 "Authorization": f"Bearer {token}",
                 "Content-Type": "application/json",
             }
-            response = requests.post(
-                f"{GRAPH_ENDPOINT}/users/{self._sender}/sendMail",
-                headers=headers,
-                json=payload,
-                timeout=30,
-            )
-            if response.status_code >= 300:
-                raise RuntimeError(
-                    f"Failed to send mail to {recipient.email}: "
-                    f"{response.status_code} {response.text}"
-                )
-            logging.info("Sent mail to %s", recipient.email)
+
+            # Send with automatic retry on transient errors
+            try:
+                self._send_with_retry(recipient, rendered_html, payload, headers, max_retries)
+                success_count += 1
+            except RuntimeError as exc:
+                error_msg = str(exc)
+                failed_recipients.append((recipient.email, error_msg))
+                logging.error("Failed to send to %s: %s", recipient.email, error_msg)
+
+                if not continue_on_error:
+                    # Stop processing and re-raise the error
+                    raise
+
+                # Continue with next recipient
+                logging.info("Continuing with remaining recipients...")
+
             if last_send_timestamp is not None:
                 elapsed = time.monotonic() - last_send_timestamp
                 logging.info("Elapsed since previous send: %.2f seconds", elapsed)
@@ -297,7 +450,20 @@ class GraphMailer:
                 wait_seconds = random.uniform(lower, upper)
                 logging.info("Waiting %.2f seconds before next send", wait_seconds)
                 time.sleep(wait_seconds)
-        logging.info("Processed %d recipient(s).", total)
+
+        # Summary report
+        logging.info("=" * 60)
+        logging.info("Mailing Summary:")
+        logging.info("  Total recipients: %d", total)
+        logging.info("  Successfully sent: %d", success_count)
+        logging.info("  Failed: %d", len(failed_recipients))
+
+        if failed_recipients:
+            logging.warning("=" * 60)
+            logging.warning("Failed recipients:")
+            for email, error in failed_recipients:
+                logging.warning("  - %s: %s", email, error[:100])  # Truncate long errors
+            logging.warning("=" * 60)
 
 
 def _parse_recipients(
@@ -406,6 +572,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to the file attachment (optional).",
     )
     parser.add_argument(
+        "--cc-email",
+        dest="cc_email",
+        default=os.getenv("CC_EMAIL"),
+        help="Email address to CC for every outgoing message (optional).",
+    )
+    parser.add_argument(
         "--default-subject",
         default=os.getenv("DEFAULT_SUBJECT"),
         help="Subject to use when the subject column is absent or empty.",
@@ -426,6 +598,19 @@ def build_parser() -> argparse.ArgumentParser:
         type=float,
         default=float(os.getenv("MAX_WAIT_SECONDS", "15")),
         help="Maximum seconds to wait between messages (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--max-retries",
+        type=int,
+        default=int(os.getenv("MAX_RETRIES", "5")),
+        help="Maximum retry attempts on transient errors (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--continue-on-error",
+        dest="continue_on_error",
+        action="store_true",
+        default=_env_flag("CONTINUE_ON_ERROR", False),
+        help="Continue sending to other recipients even if one fails (default: %(default)s).",
     )
     save_group = parser.add_mutually_exclusive_group()
     save_group.add_argument(
@@ -495,8 +680,11 @@ def main() -> None:
             attachment=attachment,
             min_wait=args.min_wait,
             max_wait=args.max_wait,
+            max_retries=args.max_retries,
             dry_run=args.dry_run,
             save_to_sent_items=args.save_to_sent_items,
+            cc_email=(args.cc_email.strip() if args.cc_email else None),
+            continue_on_error=args.continue_on_error,
         )
     except ConfigurationError as exc:
         logging.error("%s", exc)
