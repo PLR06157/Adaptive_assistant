@@ -18,12 +18,12 @@ Configuration:
         CLIENT_ID           - Azure AD application (client) ID
         CLIENT_SECRET       - Azure AD client secret
         SENDER_EMAIL        - Email address to send from
+        MAIL_SUBJECT        - Subject line to use for all emails
 
     Optional (in .env):
         XLSX_PATH           - Path to recipient spreadsheet (default: mailing/recipients.xlsx)
         HTML_TEMPLATE_PATH  - Path to email template (default: mailing/email_template.html)
         ATTACHMENT_PATH     - Path to file attachment (optional, no default)
-        DEFAULT_SUBJECT     - Default email subject if not in spreadsheet (optional)
         MIN_WAIT_SECONDS    - Minimum wait between emails (default: 5)
         MAX_WAIT_SECONDS    - Maximum wait between emails (default: 15)
         MAX_RETRIES         - Maximum retry attempts on transient errors (default: 5)
@@ -44,7 +44,7 @@ With parameters (overrides .env):
         --xlsx mailing/recipients.xlsx \
         --template mailing/email_template.html \
         --attachment mailing/document.pdf \
-        --default-subject "My subject" \
+        --mail-subject "My subject" \
         --min-wait 3 \
         --max-wait 10
 
@@ -59,7 +59,7 @@ Working example:
 python3 mailing/send_mail.py \
     --xlsx mailing/recipients.xlsx \
     --template mailing/gbs_lions_event_email.html \
-    --default-subject "[LAST CALL] GBS Lions' Talks in Warsaw: AI - Is It Already a Mainstream Tool? 26.11.25" \
+    --mail-subject "[LAST CALL] GBS Lions' Talks in Warsaw: AI - Is It Already a Mainstream Tool? 26.11.25" \
     --min-wait 0.5 \
     --max-wait 1 \
     --dry-run
@@ -470,7 +470,7 @@ def _parse_recipients(
     xlsx_path: Path,
     *,
     sheet_name: Optional[str],
-    default_subject: Optional[str],
+    mail_subject: str,
 ) -> List[Recipient]:
     if not xlsx_path.exists():
         raise ConfigurationError(f"Spreadsheet file not found: {xlsx_path}")
@@ -494,7 +494,7 @@ def _parse_recipients(
     if not rows:
         raise ConfigurationError("Spreadsheet contains no rows.")
 
-    expected_order = ("email", "first_name", "sender_name", "subject")
+    expected_order = ("email", "first_name", "sender_name")
     header_row = rows[0]
 
     def _normalize(cell: Optional[str]) -> str:
@@ -511,19 +511,15 @@ def _parse_recipients(
     recipients: List[Recipient] = []
     starting_index = 2 if header_matches else 1
     for idx, row in enumerate(data_rows, start=starting_index):
-        # Pad the row up to 4 entries to guard against shorter rows.
-        padded = list(row) + [None] * max(0, 4 - len(row))
+        # Pad the row up to 3 entries to guard against shorter rows.
+        padded = list(row) + [None] * max(0, 3 - len(row))
         email = _normalize(padded[0])
         if not email:
             logging.warning("Row %d missing email; skipping.", idx)
             continue
         first_name = _normalize(padded[1])
         sender_name = _normalize(padded[2])
-        subject = _normalize(padded[3]) or _normalize(default_subject)
-        if not subject:
-            raise ConfigurationError(
-                f"Row {idx} missing subject and no default subject provided."
-            )
+        subject = _normalize(mail_subject)
         context = {
             "email": email,
             "first_name": first_name,
@@ -578,9 +574,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Email address to CC for every outgoing message (optional).",
     )
     parser.add_argument(
-        "--default-subject",
-        default=os.getenv("DEFAULT_SUBJECT"),
-        help="Subject to use when the subject column is absent or empty.",
+        "--mail-subject",
+        default=os.getenv("MAIL_SUBJECT"),
+        help="Subject to use for all messages (default: MAIL_SUBJECT).",
     )
     parser.add_argument(
         "--log-level",
@@ -657,10 +653,13 @@ def main() -> None:
             html_template, template_path.parent
         )
 
+        if not args.mail_subject:
+            raise ConfigurationError("Missing required MAIL_SUBJECT for email subject.")
+
         recipients = _parse_recipients(
             Path(args.xlsx_path),
             sheet_name=args.sheet_name,
-            default_subject=args.default_subject,
+            mail_subject=args.mail_subject,
         )
 
         attachment = None

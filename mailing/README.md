@@ -26,22 +26,22 @@ Skopiuj plik `mailing/.env.example` do `mailing/.env` i wypełnij:
 
 - `TENANT_ID`, `CLIENT_ID`, `CLIENT_SECRET` – dane z Azure AD.
 - `SENDER_EMAIL` – adres konta, z którego wysyłasz wiadomości.
+- `MAIL_SUBJECT` – temat wiadomości używany dla wszystkich odbiorców.
 - `ATTACHMENT_PATH` – ścieżka do pliku PDF/DOCX itp., który ma być dołączony.
 - `XLSX_PATH`, `RECIPIENT_SHEET_NAME` – opcjonalnie wskaż inną lokalizację pliku i arkusz z danymi.
 - `SAVE_TO_SENT_ITEMS=false` – ustaw, jeśli nie chcesz zapisywać wysłanych wiadomości w skrzynce nadawczej.
 
 ## 3. Plik XLSX z adresami
 
-Domyślnie skrypt czyta `mailing/recipients.xlsx` (aktywny arkusz albo nazwany przez `RECIPIENT_SHEET_NAME`). Kolumny A–D muszą występować w kolejności:
+Domyślnie skrypt czyta `mailing/recipients.xlsx` (aktywny arkusz albo nazwany przez `RECIPIENT_SHEET_NAME`). Kolumny A–C muszą występować w kolejności:
 
 ```
 A: email
 B: first_name
 C: sender_name
-D: subject
 ```
 
-Nagłówek w pierwszym wierszu jest opcjonalny, ale zalecany (skrypt sam go wykryje). W kolumnie `subject` możesz pozostawić puste pola i zdefiniować `DEFAULT_SUBJECT` w `.env` lub linii poleceń. Pozostałe kolumny (`first_name`, `sender_name`) trafiają do kontekstu szablonu HTML. Jeśli potrzebujesz dodatkowych placeholderów, dodaj je jako nowy arkuszowy blok i zmodyfikuj szablon.
+Nagłówek w pierwszym wierszu jest opcjonalny, ale zalecany (skrypt sam go wykryje). Temat wiadomości jest brany z `MAIL_SUBJECT` w `.env` lub parametru `--mail-subject`. Kolumny `first_name` i `sender_name` trafiają do kontekstu szablonu HTML. Jeśli potrzebujesz dodatkowych placeholderów, dodaj je jako nowy arkuszowy blok i zmodyfikuj szablon.
 
 ## 4. Szablon HTML
 
@@ -64,7 +64,7 @@ python mailing/send_mail.py
 Parametry, które możesz nadpisać z linii poleceń:
 
 - `--xlsx`, `--sheet-name`, `--template`, `--attachment`
-- `--default-subject`, `--min-wait`, `--max-wait`
+- `--mail-subject`, `--min-wait`, `--max-wait`
 - `--log-level` (`INFO`, `DEBUG` itd.), `--dry-run`
 - `--no-save-to-sent-items` aby nie archiwizować wysyłek w folderze „Wysłane"
 

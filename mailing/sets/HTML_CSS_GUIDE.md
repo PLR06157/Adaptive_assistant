@@ -282,7 +282,7 @@ Standard email width is 600px:
 | &#128196; | `&#128196;` | Document |
 | &#128274; | `&#128274;` | Lock |
 
----
+--- 
 
 ## Testing Recommendations
 
