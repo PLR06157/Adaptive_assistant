@@ -6,7 +6,7 @@ row values, and delivers the messages through the Microsoft Graph API.
 
 Template Variables:
     HTML templates use $variable syntax for placeholders (e.g., $first_name, $email).
-    Available variables: $email, $first_name, $sender_name, $subject
+    Available variables: $email, $first_name, $sender_name, $subject, $sender_email
     This syntax is safe with CSS curly braces {} in your HTML.
 
 Configuration:
@@ -471,6 +471,7 @@ def _parse_recipients(
     *,
     sheet_name: Optional[str],
     mail_subject: str,
+    sender_email: str = "",
 ) -> List[Recipient]:
     if not xlsx_path.exists():
         raise ConfigurationError(f"Spreadsheet file not found: {xlsx_path}")
@@ -525,6 +526,7 @@ def _parse_recipients(
             "first_name": first_name,
             "sender_name": sender_name,
             "subject": subject,
+            "sender_email": sender_email,
         }
         recipients.append(
             Recipient(
@@ -660,6 +662,7 @@ def main() -> None:
             Path(args.xlsx_path),
             sheet_name=args.sheet_name,
             mail_subject=args.mail_subject,
+            sender_email=sender_address,
         )
 
         attachment = None
