@@ -6,7 +6,9 @@ row values, and delivers the messages through the Microsoft Graph API.
 
 Template Variables:
     HTML templates use $variable syntax for placeholders (e.g., $first_name, $email).
-    Available variables: $email, $first_name, $sender_name, $subject, $sender_email
+    Available variables: $email, $first_name, $login_id, $access_code, $subject, $sender_email
+    $login_id and $access_code are read from the "Login ID" and "Access Code" XLS columns
+    and rendered as empty strings when those cells are blank.
     This syntax is safe with CSS curly braces {} in your HTML.
 
 Configuration:
@@ -29,7 +31,7 @@ Configuration:
         MAX_RETRIES         - Maximum retry attempts on transient errors (default: 5)
         LOG_LEVEL           - Logging level (default: INFO)
         SAVE_TO_SENT_ITEMS  - Save to Sent Items folder (default: true)
-        CC_EMAIL            - Email address to CC on every outgoing message (optional)
+        CC_EMAIL            - Comma-separated email addresses to CC on every outgoing message (optional)
         CONTINUE_ON_ERROR   - Continue with other recipients if one fails (default: false)
 
     Command-line arguments override .env values.
@@ -381,7 +383,8 @@ class GraphMailer:
         failed_recipients: List[Tuple[str, str]] = []  # (email, error_message)
         inline_attachments = inline_attachments or []
         cc_recipient_entry = (
-            [{"emailAddress": {"address": cc_email}}] if cc_email else None
+            [{"emailAddress": {"address": addr.strip()}} for addr in cc_email.split(",") if addr.strip()]
+            if cc_email else None
         )
         last_send_timestamp: Optional[float] = None
         for recipient in recipients:
@@ -495,36 +498,58 @@ def _parse_recipients(
     if not rows:
         raise ConfigurationError("Spreadsheet contains no rows.")
 
-    expected_order = ("email", "first_name", "sender_name")
-    header_row = rows[0]
-
-    def _normalize(cell: Optional[str]) -> str:
+    def _normalize(cell) -> str:
         if cell is None:
             return ""
         return str(cell).strip()
 
-    header_matches = all(
-        _normalize(header_row[idx]).lower() == expected_order[idx]
-        for idx in range(min(len(expected_order), len(header_row)))
-    )
-    data_rows = rows[1:] if header_matches else rows
+    # Build a header-name → column-index map from the first row.
+    header_row = rows[0]
+    col_map: Dict[str, int] = {
+        _normalize(cell).lower(): idx
+        for idx, cell in enumerate(header_row)
+        if cell is not None
+    }
+
+    # Resolve column indices by header name.
+    email_col = col_map.get("mail")
+    name_col = col_map.get("name")
+    login_id_col = col_map.get("login id")
+    access_code_col = col_map.get("access code")
+
+    if email_col is None:
+        raise ConfigurationError(
+            "Required column 'Mail' not found in spreadsheet header. "
+            f"Found columns: {', '.join(_normalize(c) for c in header_row if c is not None)}"
+        )
 
     recipients: List[Recipient] = []
-    starting_index = 2 if header_matches else 1
-    for idx, row in enumerate(data_rows, start=starting_index):
-        # Pad the row up to 3 entries to guard against shorter rows.
-        padded = list(row) + [None] * max(0, 3 - len(row))
-        email = _normalize(padded[0])
+    for idx, row in enumerate(rows[1:], start=2):
+        def _get(col_idx: Optional[int]) -> str:
+            if col_idx is None or col_idx >= len(row):
+                return ""
+            return _normalize(row[col_idx])
+
+        email = _get(email_col)
         if not email:
             logging.warning("Row %d missing email; skipping.", idx)
             continue
-        first_name = _normalize(padded[1])
-        sender_name = _normalize(padded[2])
+
+        first_name = _get(name_col)
+        login_id = _get(login_id_col)
+        access_code = _get(access_code_col)
+
+        if not login_id:
+            pass
+        if not access_code:
+            pass
+
         subject = _normalize(mail_subject)
         context = {
             "email": email,
             "first_name": first_name,
-            "sender_name": sender_name,
+            "login_id": login_id,
+            "access_code": access_code,
             "subject": subject,
             "sender_email": sender_email,
         }
@@ -536,6 +561,7 @@ def _parse_recipients(
                 context=context,
             )
         )
+
     if not recipients:
         raise ConfigurationError("No valid recipients found in spreadsheet.")
     return recipients
@@ -573,7 +599,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--cc-email",
         dest="cc_email",
         default=os.getenv("CC_EMAIL"),
-        help="Email address to CC for every outgoing message (optional).",
+        help="Comma-separated email addresses to CC for every outgoing message (optional).",
     )
     parser.add_argument(
         "--mail-subject",
