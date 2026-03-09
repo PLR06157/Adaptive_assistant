@@ -20,7 +20,8 @@ Configuration:
         CLIENT_ID           - Azure AD application (client) ID
         CLIENT_SECRET       - Azure AD client secret
         SENDER_EMAIL        - Email address to send from
-        MAIL_SUBJECT        - Subject line to use for all emails
+        MAIL_SUBJECT        - Fallback subject line (used when the spreadsheet has no
+                              'Subject' column or a row's Subject cell is empty)
 
     Optional (in .env):
         XLSX_PATH           - Path to recipient spreadsheet (default: mailing/recipients.xlsx)
@@ -516,6 +517,7 @@ def _parse_recipients(
     name_col = col_map.get("name")
     login_id_col = col_map.get("login id")
     access_code_col = col_map.get("access code")
+    subject_col = col_map.get("subject")
 
     if email_col is None:
         raise ConfigurationError(
@@ -544,7 +546,12 @@ def _parse_recipients(
         if not access_code:
             pass
 
-        subject = _normalize(mail_subject)
+        subject = _get(subject_col) or _normalize(mail_subject)
+        if not subject:
+            raise ConfigurationError(
+                f"Row {idx} has no subject. Add a 'Subject' column in the spreadsheet "
+                "or provide --mail-subject / MAIL_SUBJECT as a fallback."
+            )
         context = {
             "email": email,
             "first_name": first_name,
@@ -604,7 +611,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--mail-subject",
         default=os.getenv("MAIL_SUBJECT"),
-        help="Subject to use for all messages (default: MAIL_SUBJECT).",
+        help="Fallback subject for rows that have no 'Subject' cell in the spreadsheet (default: MAIL_SUBJECT).",
     )
     parser.add_argument(
         "--log-level",
@@ -681,8 +688,6 @@ def main() -> None:
             html_template, template_path.parent
         )
 
-        if not args.mail_subject:
-            raise ConfigurationError("Missing required MAIL_SUBJECT for email subject.")
 
         recipients = _parse_recipients(
             Path(args.xlsx_path),
