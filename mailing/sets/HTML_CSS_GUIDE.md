@@ -150,7 +150,54 @@ Wrapping buttons in a `<table>` ensures the background color renders in Outlook.
 </tr>
 ```
 
-### 7. Use HTML Entities for Special Characters
+### 7. Photo Galleries (Multi-Column Image Grids)
+
+Outlook on Windows (Word rendering engine) ignores `width="100%"` and `height:auto` on `<img>` tags
+inside percentage-based `<td>` cells. It renders images at their natural pixel size, then clips them.
+The clip typically cuts off **heads** in people photos.
+
+**Always run `prepare_email.py` before sending any template that contains local gallery images.**
+The script reads actual pixel dimensions with Pillow and stamps explicit `width`/`height` attributes
+on every `<img>`, and adds `valign="top"` so any residual clipping hits the bottom, not the top.
+
+```bash
+python3 mailing/prepare_email.py --template mailing/sets/<folder>/template.html
+```
+
+**Rules when writing gallery HTML:**
+
+| Rule | Details |
+|------|---------|
+| Use `width="N%"` or `width="Npx"` on `<td>` | The script needs this to calculate display width |
+| Use `padding:Npx` on `<td>` for gaps | The script subtracts horizontal padding automatically |
+| Do NOT set explicit `width`/`height` on gallery `<img>` | Leave it to the script; it recalculates each run |
+| Icons/logos with fixed sizes: set `width="N" height="N"` explicitly | The script skips images that already have both attributes |
+| Use `valign="top"` on gallery `<td>` | The script adds this; include it by hand if writing without the script |
+
+**Gallery template snippet (write it like this; the script fills in dimensions):**
+
+```html
+<!-- 4-column photo grid -->
+<tr>
+    <td style="padding:0; line-height:0;">
+        <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="25%" style="padding:1px; line-height:0;">
+                    <img src="1.png" alt="" width="100%" style="display:block; border:0; width:100%; height:auto;">
+                </td>
+                <td width="25%" style="padding:1px; line-height:0;">
+                    <img src="2.png" alt="" width="100%" style="display:block; border:0; width:100%; height:auto;">
+                </td>
+                <!-- … -->
+            </tr>
+        </table>
+    </td>
+</tr>
+```
+
+After running `prepare_email.py`, each `<img>` will have exact pixel dimensions and each `<td>` will have `valign="top"`.
+
+### 8. Use HTML Entities for Special Characters
 
 Avoid raw Unicode where possible. Use HTML entities for reliability:
 

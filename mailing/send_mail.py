@@ -39,6 +39,13 @@ Configuration:
 
 Usage:
 
+Pre-processing (required when template contains local gallery images):
+    python3 mailing/prepare_email.py --template mailing/sets/<folder>/template.html
+
+    Run this once before sending whenever you add or replace photos in a gallery.
+    It stamps explicit pixel dimensions on <img> tags so Outlook Windows renders
+    them correctly. Safe to re-run; skips images that already have fixed dimensions.
+
 Basic execution (uses .env defaults):
     python3 mailing/send_mail.py
 
@@ -73,6 +80,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import email.utils
 import json
 import logging
 import mimetypes
@@ -275,13 +283,13 @@ class GraphMailer:
         # Different backoff strategies for different error types
         if status_code == 429:  # Throttling
             # Exponential backoff for throttling
-            return min(60, (2 ** attempt) * 5)
+            return min(30, (2 ** attempt) * 5)
         elif status_code == 503:  # Service unavailable (e.g., mailbox move)
             # Longer wait for mailbox operations (30s, 60s, 90s, 120s, 180s)
-            return min(180, 30 + (attempt * 30))
+            return min(30, 30 + (attempt * 30))
         else:  # 502, 504, or other transient errors
             # Moderate exponential backoff
-            return min(120, (2 ** attempt) * 10)
+            return min(30, (2 ** attempt) * 10)
 
     def _send_with_retry(
         self,
@@ -295,12 +303,17 @@ class GraphMailer:
         last_error_msg = ""
 
         for attempt in range(max_retries):
-            response = requests.post(
-                f"{GRAPH_ENDPOINT}/users/{self._sender}/sendMail",
-                headers=headers,
-                json=payload,
-                timeout=30,
-            )
+            try:
+                response = requests.post(
+                    f"{GRAPH_ENDPOINT}/users/{self._sender}/sendMail",
+                    headers=headers,
+                    json=payload,
+                    timeout=30,
+                )
+            except requests.exceptions.ConnectionError as e:
+                logging.warning("Network error for %s: %s. Retrying in 10 seconds...", recipient.email, e)
+                time.sleep(10)
+                continue
 
             # Success
             if response.status_code < 300:
@@ -406,11 +419,17 @@ class GraphMailer:
             # MSAL will use cached token if still valid, or refresh automatically
             token = self._get_token()
 
+            sender_domain = self._sender.split("@")[-1] if "@" in self._sender else "mail"
             payload = {
                 "message": {
                     "subject": recipient.subject,
                     "body": {"contentType": "HTML", "content": rendered_html},
                     "toRecipients": [{"emailAddress": {"address": recipient.email}}],
+                    "internetMessageHeaders": [
+                        {"name": "Message-ID", "value": f"<{uuid.uuid4().hex}@{sender_domain}>"},
+                        {"name": "Date", "value": email.utils.formatdate(localtime=True)},
+                        {"name": "MIME-Version", "value": "1.0"},
+                    ],
                 },
                 "saveToSentItems": save_to_sent_items,
             }

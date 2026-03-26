@@ -1,0 +1,10 @@
+# Image Generation Prompts for AI Survey Email
+
+## Prompt 1: Modern AI & Leadership Focus
+A professional, modern corporate banner image featuring abstract AI and technology elements. Show a sophisticated blend of neural network patterns, glowing circuit board connections in gold (#B8975A) and deep blue colors, overlaid with subtle business charts and data visualizations. The composition should convey innovation and leadership with a clean, minimalist aesthetic. Include abstract human silhouettes representing diverse business leaders in the background. Professional, high-end corporate style, 16:9 aspect ratio, suitable for email header.
+
+## Prompt 2: Survey & Collaboration Theme
+Create a sleek, professional banner image for a business survey about AI. Feature an elegant composition with: a modern tablet or digital device displaying abstract survey elements (checkmarks, rating scales, progress indicators) in gold (#B8975A) and charcoal (#2C2C2C) colors. Background shows a soft-focus boardroom or modern office space with warm, professional lighting. Include subtle AI imagery like floating geometric shapes, data points, or neural network patterns. Clean, trustworthy, and inviting aesthetic. 16:9 format for email header.
+
+## Prompt 3: GBS Industry & AI Transformation
+A sophisticated corporate banner showcasing the intersection of Global Business Services and Artificial Intelligence. Visualize a modern office environment with glass walls and contemporary architecture. In the foreground, display abstract holographic AI interfaces, glowing data streams, and interconnected nodes in gold (#B8975A) accent color against a professional blue-gray palette. Include subtle elements suggesting global connectivity (world map outlines, network connections). The overall mood should be forward-thinking, professional, and premium. Horizontal 16:9 format, suitable for email marketing.
