@@ -80,7 +80,6 @@ from __future__ import annotations
 
 import argparse
 import base64
-import email.utils
 import json
 import logging
 import mimetypes
@@ -419,17 +418,11 @@ class GraphMailer:
             # MSAL will use cached token if still valid, or refresh automatically
             token = self._get_token()
 
-            sender_domain = self._sender.split("@")[-1] if "@" in self._sender else "mail"
             payload = {
                 "message": {
                     "subject": recipient.subject,
                     "body": {"contentType": "HTML", "content": rendered_html},
                     "toRecipients": [{"emailAddress": {"address": recipient.email}}],
-                    "internetMessageHeaders": [
-                        {"name": "Message-ID", "value": f"<{uuid.uuid4().hex}@{sender_domain}>"},
-                        {"name": "Date", "value": email.utils.formatdate(localtime=True)},
-                        {"name": "MIME-Version", "value": "1.0"},
-                    ],
                 },
                 "saveToSentItems": save_to_sent_items,
             }
@@ -484,8 +477,8 @@ class GraphMailer:
         if failed_recipients:
             logging.warning("=" * 60)
             logging.warning("Failed recipients:")
-            for email, error in failed_recipients:
-                logging.warning("  - %s: %s", email, error[:100])  # Truncate long errors
+            for failed_email, error in failed_recipients:
+                logging.warning("  - %s: %s", failed_email, error[:100])  # Truncate long errors
             logging.warning("=" * 60)
 
 
@@ -551,8 +544,8 @@ def _parse_recipients(
                 return ""
             return _normalize(row[col_idx])
 
-        email = _get(email_col)
-        if not email:
+        recipient_email = _get(email_col)
+        if not recipient_email:
             logging.warning("Row %d missing email; skipping.", idx)
             continue
 
@@ -572,7 +565,7 @@ def _parse_recipients(
                 "or provide --mail-subject / MAIL_SUBJECT as a fallback."
             )
         context = {
-            "email": email,
+            "email": recipient_email,
             "first_name": first_name,
             "login_id": login_id,
             "access_code": access_code,
@@ -581,7 +574,7 @@ def _parse_recipients(
         }
         recipients.append(
             Recipient(
-                email=email,
+                email=recipient_email,
                 first_name=first_name,
                 subject=subject,
                 context=context,
