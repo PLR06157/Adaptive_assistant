@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emagia Pricing Proposal</title>
+  <style>
+    :root {
+      --bg: #e8edf2;
+      --slide-bg: #f9faf8;
+      --ink: #1f2320;
+      --muted: #5c655d;
+      --line: #d5dacf;
+      --line-strong: #bcc4b5;
+      --gold: #b8975a;
+      --gold-soft: #f1e6cf;
+      --blue-soft: #98bbdf;
+      --green-soft: #cfe6bc;
+      --green-mid: #7fb05f;
+      --green-dark: #376f2c;
+      --gray-soft: #d4d4d4;
+      --white: #ffffff;
+      --shadow: 0 24px 60px rgba(28, 33, 30, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at top left, rgba(152, 187, 223, 0.35), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(184, 151, 90, 0.18), transparent 22%),
+        linear-gradient(180deg, #eef2f5 0%, #e4e9ee 100%);
+      color: var(--ink);
+      font-family: "Aptos", "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      padding: 24px;
+      display: grid;
+      gap: 26px;
+      justify-content: center;
+    }
+
+    .slide {
+      width: min(1600px, calc(100vw - 48px));
+      aspect-ratio: 16 / 9;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.92)),
+        var(--slide-bg);
+      border: 1px solid rgba(188, 196, 181, 0.7);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 90% 10%, rgba(152, 187, 223, 0.15), transparent 20%),
+        radial-gradient(circle at 8% 92%, rgba(127, 176, 95, 0.1), transparent 24%);
+      pointer-events: none;
+    }
+
+    .canvas {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 28px 30px 24px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 16px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #6a774c;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #111410;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.02;
+      max-width: 820px;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      max-width: 940px;
+      font-size: 15px;
+      line-height: 1.38;
+      color: var(--muted);
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(127, 176, 95, 0.28);
+      background: #edf6e8;
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+    }
+
+    .hero-card,
+    .summary-card,
+    .table-shell,
+    .note-card {
+      border: 1px solid rgba(188, 196, 181, 0.8);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: 0 10px 24px rgba(34, 41, 35, 0.06);
+    }
+
+    .hero-card {
+      padding: 18px 18px 16px;
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .hero-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #e8f2fd 0%, #cedff1 100%);
+      color: #436d92;
+      border: 1px solid rgba(152, 187, 223, 0.7);
+    }
+
+    .hero-points {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      columns: 2;
+      column-gap: 18px;
+    }
+
+    .hero-points li {
+      margin: 0 0 7px;
+      break-inside: avoid;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #3f473f;
+    }
+
+    .summary-card {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .kpi {
+      padding: 13px 12px 11px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fffefb 0%, #f4f0e7 100%);
+      border: 1px solid rgba(213, 218, 207, 0.95);
+    }
+
+    .kpi .v {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 800;
+      color: #111410;
+    }
+
+    .kpi .t {
+      margin-top: 5px;
+      font-size: 11px;
+      line-height: 1.3;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+    }
+
+    .timeline-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .timeline-box {
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #eef7ea 0%, #dcebcf 100%);
+      border: 1px solid rgba(127, 176, 95, 0.35);
+      text-align: center;
+    }
+
+    .timeline-box .n {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 800;
+      color: #274f21;
+    }
+
+    .timeline-box .l {
+      margin-top: 4px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4e6347;
+      font-weight: 800;
+    }
+
+    .table-shell {
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line-strong);
+      padding: 12px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: #172028;
+      background: var(--blue-soft);
+    }
+
+    td {
+      font-size: 13px;
+      line-height: 1.35;
+      color: #313831;
+      background: var(--white);
+    }
+
+    .subscription-table td {
+      background: var(--green-soft);
+      font-size: 14px;
+    }
+
+    .subscription-table .price {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111410;
+      text-align: right;
+    }
+
+    .subscription-table .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .implementation-table td {
+      background: #d3d3d3;
+    }
+
+    .implementation-table .scope {
+      font-size: 12px;
+      line-height: 1.38;
+    }
+
+    .implementation-table .fee {
+      font-size: 16px;
+      font-weight: 800;
+      text-align: right;
+      white-space: nowrap;
+      color: #111410;
+    }
+
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #58704e;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .footnotes {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+    }
+
+    .note-card {
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.38;
+      color: var(--muted);
+    }
+
+    .note-card strong {
+      color: #272d27;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      font-size: 11px;
+      color: #6a726a;
+    }
+
+    .footer strong {
+      color: #2c322c;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .accent {
+      color: #274f21;
+      font-weight: 800;
+    }
+
+    .w-desc { width: 50%; }
+    .w-vol  { width: 12%; }
+    .w-rate { width: 12%; }
+    .w-fee  { width: 16%; }
+    .w-note { width: 10%; }
+
+    .w-impl-desc { width: 62%; }
+    .w-impl-weeks { width: 11%; }
+    .w-impl-region { width: 13%; }
+    .w-impl-fee { width: 14%; }
+
+    @media (max-width: 1180px) {
+      body {
+        padding: 10px;
+      }
+
+      .slide {
+        width: min(1600px, calc(100vw - 20px));
+        aspect-ratio: auto;
+      }
+
+      .canvas,
+      .hero-grid,
+      .footnotes,
+      .timeline-strip,
+      .kpi-grid {
+        display: block;
+      }
+
+      .hero-grid > *,
+      .footnotes > *,
+      .timeline-strip > *,
+      .kpi-grid > * {
+        margin-bottom: 12px;
+      }
+
+      .hero-points {
+        columns: 1;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="slide">
+    <div class="canvas">
+      <header class="header">
+        <div>
+          <p class="eyebrow">Emagia Commercial Proposal 2026</p>
+          <h1>Estimated Subscription &amp; Support Price</h1>
+          <p class="subtitle">
+            Based on the translated proposal content, with the pricing figures updated to the values shown in the screenshots.
+            The commercial model remains annual subscription and support pricing driven by transaction volume.
+          </p>
+        </div>
+        <div class="pill-row">
+          <div class="pill">3-year term</div>
+          <div class="pill">20% partner discount offered</div>
+          <div class="pill">Volume-based pricing</div>
+        </div>
+      </header>
+
+      <section class="hero-grid">
+        <article class="hero-card">
+          <div class="hero-icon" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <path d="M4 18L9 12L13 15L20 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 7H20V11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="section-title">Commercial logic</div>
+            <p class="subtitle" style="margin:0; max-width:none;">
+              Pricing has three components: subscription pricing, support pricing, and implementation.
+              Subscription fees are billed annually for the base transaction limits, overages are billed monthly, and support is billed at the start of each subscription year.
+            </p>
+            <ul class="hero-points">
+              <li>Transaction definition covers invoices, memos, cash receipts, bank lines, lockbox items, credit applications, credit reports, and related source transactions.</li>
+              <li>Subscription starts at the beginning of the implementation project.</li>
+              <li>Support covers L1, L2, and L3 support.</li>
+              <li>Implementation fees are billed in equal monthly installments per the statement of work.</li>
+              <li>Payment terms: Net 30 from billing date.</li>
+              <li>Any extended implementation time is billed accordingly.</li>
+            </ul>
+          </div>
+        </article>
+
+        <aside class="summary-card">
+          <div class="section-title">Pricing snapshot</div>
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="v">3.9M</div>
+              <div class="t">Annual transaction volume for the first 3 modules</div>
+            </div>
+            <div class="kpi">
+              <div class="v">$195K</div>
+              <div class="t">Annual subscription &amp; support fee per active module</div>
+            </div>
+            <div class="kpi">
+              <div class="v">0.05</div>
+              <div class="t">Per transaction price in the screenshot</div>
+            </div>
+            <div class="kpi">
+              <div class="v">3</div>
+              <div class="t">Quoted modules with active annual pricing</div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="table-shell">
+        <table class="subscription-table">
+          <colgroup>
+            <col class="w-desc" />
+            <col class="w-vol" />
+            <col class="w-rate" />
+            <col class="w-fee" />
+            <col class="w-note" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Transaction Volume Per Year</th>
+              <th>Per Transaction Price</th>
+              <th>Term - 3 Year Annual Subscription &amp; Support Fees For Each Year</th>
+              <th>Pricing Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. AI-powered Cash Application (Based on actual volume)</td>
+              <td class="num">3,900,000</td>
+              <td class="num">0.05</td>
+              <td class="price">$195,000.00</td>
+              <td class="accent">Quoted</td>
+            </tr>
+            <tr>
+              <td>2. AI-powered Collections, Dispute &amp; Deduction, &amp; Reporting (Based on actual volume)</td>
+              <td class="num">3,900,000</td>
+              <td class="num">0.05</td>
+              <td class="price">$195,000.00</td>
+              <td class="accent">Quoted</td>
+            </tr>
+            <tr>
+              <td>3. E-Invoicing &amp; EIPP</td>
+              <td class="num">3,900,000</td>
+              <td class="num">0.05</td>
+              <td class="price">$195,000.00</td>
+              <td class="accent">Quoted</td>
+            </tr>
+            <tr>
+              <td>4. AI-powered Credit (Minimum volume - 100,000) - Need more information</td>
+              <td class="num"></td>
+              <td class="num"></td>
+              <td class="price">$0.00</td>
+              <td>Need more information</td>
+            </tr>
+            <tr>
+              <td>6. AI Powered Order Management (Minimum 100,000 orders) - Need more information</td>
+              <td class="num"></td>
+              <td class="num"></td>
+              <td class="price">$0.00</td>
+              <td>Need more information</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="footnotes">
+        <div class="note-card">
+          <strong>Source note:</strong> narrative and scope language come from the translated markdown proposal.
+          Monetary figures and per-transaction pricing in this slide have been aligned to the screenshot values you provided.
+        </div>
+        <div class="note-card right">
+          <strong>Copyright source:</strong> © Emagia Corporation. All rights reserved.
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="canvas">
+      <header class="header">
+        <div>
+          <p class="eyebrow">Emagia Commercial Proposal 2026</p>
+          <h1>One Time Implementation and Training</h1>
+          <p class="subtitle">
+            Remote-work implementation estimates based on the translated proposal, with one-time fees updated to the fixed amounts shown in the screenshot.
+          </p>
+        </div>
+        <div class="pill-row">
+          <div class="pill">Remote work estimate</div>
+          <div class="pill">Europe, 25 countries</div>
+          <div class="pill">Oracle ERP context</div>
+        </div>
+      </header>
+
+      <section class="hero-grid">
+        <article class="hero-card">
+          <div class="hero-icon" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3L19 7V12C19 16 16.4 19.4 12 21C7.6 19.4 5 16 5 12V7L12 3Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/>
+              <path d="M9.5 12L11.3 13.8L14.8 10.3" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="section-title">Implementation baseline</div>
+            <p class="subtitle" style="margin:0; max-width:none;">
+              The source scope describes a Europe-wide rollout context with 25 countries, 160-170 bank accounts in 25 banks, 30 currencies, Oracle ERP, and multilingual correspondence requirements.
+            </p>
+            <ul class="hero-points">
+              <li>Languages: English, German, French, Polish, Swedish, Dutch, Spanish, and Italian.</li>
+              <li>Monthly volume context: 250,000 invoices and 75,000 payments.</li>
+              <li>Cash application scope includes payment mix detail, 300 disputes, 97 FTEs, 75% current match rate, and 5,246 current unapplied cash.</li>
+              <li>Collections / dispute / deduction / reporting uses the same regional and operational baseline.</li>
+              <li>E-Invoicing &amp; EIPP keeps the same regional footprint and references Gia Pay at 30 cents per payment for online payments to one bank.</li>
+            </ul>
+          </div>
+        </article>
+
+        <aside class="summary-card">
+          <div class="section-title">Delivery timing</div>
+          <div class="timeline-strip">
+            <div class="timeline-box">
+              <div class="n">17</div>
+              <div class="l">Weeks cash application</div>
+            </div>
+            <div class="timeline-box">
+              <div class="n">15</div>
+              <div class="l">Weeks collections suite</div>
+            </div>
+            <div class="timeline-box">
+              <div class="n">8</div>
+              <div class="l">Weeks e-invoicing</div>
+            </div>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="v">$140K</div>
+              <div class="t">Cash application implementation fee</div>
+            </div>
+            <div class="kpi">
+              <div class="v">$130K</div>
+              <div class="t">Collections implementation fee</div>
+            </div>
+            <div class="kpi">
+              <div class="v">$80K</div>
+              <div class="t">E-Invoicing &amp; EIPP implementation fee</div>
+            </div>
+            <div class="kpi">
+              <div class="v">3</div>
+              <div class="t">Implementation work packages shown</div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="table-shell">
+        <table class="implementation-table">
+          <colgroup>
+            <col class="w-impl-desc" />
+            <col class="w-impl-weeks" />
+            <col class="w-impl-region" />
+            <col class="w-impl-fee" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Work package</th>
+              <th>Timeline</th>
+              <th>Delivery context</th>
+              <th>One-time fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="scope">
+                <strong>AI Powered Cash Application:</strong> Implementation Region - Europe - 25 Countries, Number of Bank &amp; Bank Accounts: 160-170 bank accounts in 25 banks, Language for correspondence: English, German, French, Polish, Swedish, Dutch, Spanish &amp; Italian (8), Number of Currency: 30, volume details per month - 250,000 invoices, 75,000 payments, Wire-89%, Direct Debit-1%, Cheque-1%, CC-9%, 300 disputes, number of ERPs - Oracle (1) &amp; 97 FTEs, Current Match Rate - 75% &amp; Current Unapplied Cash - 5,246
+              </td>
+              <td><strong>17 Weeks</strong></td>
+              <td>Remote work only</td>
+              <td class="fee">$140,000.00</td>
+            </tr>
+            <tr>
+              <td class="scope">
+                <strong>AI Powered Collections, Dispute &amp; Deduction &amp; Reporting:</strong> Implementation Region - Europe - 25 Countries, Number of Bank &amp; Bank Accounts: 160-170 bank accounts in 25 banks, Language for correspondence: English, German, French, Polish, Swedish, Dutch, Spanish &amp; Italian (8), Number of Currency: 30, volume details per month - 250,000 invoices, 75,000 payments, 300 disputes, number of ERPs - Oracle (1) &amp; 97 FTEs
+              </td>
+              <td><strong>15 Weeks</strong></td>
+              <td>Remote work only</td>
+              <td class="fee">$130,000.00</td>
+            </tr>
+            <tr>
+              <td class="scope">
+                <strong>E-Invoicing &amp; EIPP:</strong> Europe - 25 Countries, Number of Bank &amp; Bank Accounts: 160-170 bank accounts in 25 banks, Language for correspondence: English, German, French, Polish, Swedish, Dutch, Spanish &amp; Italian (8), Number of Currency: 30, volume details per month - 250,000 invoices, 75,000 payments, 300 disputes, number of ERPs - Oracle (1) &amp; 97 FTEs, Current Match Rate - 75% &amp; Current Unapplied Cash - 5,246.
+                <br /><strong>Gia Pay:</strong> Online payment will be charged at 30 cents per payment. Integration to one bank.
+              </td>
+              <td><strong>8 Weeks</strong></td>
+              <td>Remote work only</td>
+              <td class="fee">$80,000.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="footnotes">
+        <div class="note-card">
+          <strong>Commercial note:</strong> pricing is valid for a 3-year contract minimum. The source proposal states prices may increase by up to 30% if the contract term is shorter than 3 years, and implementation fees remain approximate pending detailed requirements gathering.
+        </div>
+        <div class="note-card right">
+          <strong>Confidentiality note:</strong> Emagia confidential. Do not modify, copy, or distribute without prior permission from Emagia.
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

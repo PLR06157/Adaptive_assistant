@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptive Group — Presentation Template</title>
+
+  <style>
+    /* ============================================================
+       CSS CUSTOM PROPERTIES — Adaptive Group Brand Guide
+       All values sourced exclusively from adaptive_training_brand_guide.md
+       ============================================================ */
+    :root {
+      /* --- Primary Palette --- */
+      --color-primary-gold:    #B8975A;
+      --color-template-gold:   #B59859;
+      --color-footer-gold:     #C8B182;
+      --color-divider-gold:    #B09247;
+      --color-black:           #000000;
+      --color-charcoal:        #2C2C2C;
+      --color-slide-bg:        #F9F9F9;
+      --color-icon-bg:         #F5EFE2;
+      --color-hex-accent:      #F5F2EA;
+      --color-white:           #FFFFFF;
+
+      /* --- Accent & Status --- */
+      --color-success:         #4CAF50;
+      --color-error:           #F44336;
+      --color-warning:         #FF9800;
+      --color-info:            #2196F3;
+      --color-neutral:         #9E9E9E;
+
+      /* --- Gradients --- */
+      --gradient-gold-h:       linear-gradient(90deg,  #D4C5A0 0%, #B8975A 50%, #D4C5A0 100%);
+      --gradient-gold-v:       linear-gradient(180deg, #D4C5A0 0%, #B8975A 100%);
+      --gradient-dark:         linear-gradient(135deg, #1A1A1A 0%, #000000 100%);
+
+      /* --- Typography --- */
+      --font-heading:          'Arial Nova Cond', Copperplate, Georgia, serif;
+      --font-body:             'Arial Nova Cond', 'Open Sans', 'Source Sans 3', sans-serif;
+
+      /* --- Font Sizes (at 1280px canvas → vw equivalents) --- */
+      --fz-training-title:     1.6vw;
+      --fz-subtitle:           1.1vw;
+      --fz-agenda-wordmark:    1.5vw;
+      --fz-content-title:      1.4vw;
+      --fz-body:               1.1vw;
+      --fz-agenda-item:        0.9vw;
+      --fz-trainer:            0.9vw;
+      --fz-footer:             0.55vw;
+
+      /* --- Spacing & Layout --- */
+      --sidebar-w:             10.8%;
+      --sidebar-w-narrow:      8.6%;
+      --title-bar-h:           13.5%;
+      --title-bar-left:        12.3%;
+      --footer-h:              3.2%;
+      --content-top:           15%;
+      --content-left:          13%;
+
+      /* --- Decoration --- */
+      --shadow-card:           0px 2px 6px rgba(0,0,0,0.10);
+      --radius-card:           8px;
+      --radius-btn:            4px;
+
+      /* --- Hex clip-path --- */
+      --hex-clip:              polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-family: var(--font-body); background: #111; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+      background: #1a1a1a;
+      padding: 20px 0 80px;
+    }
+
+    /* ============================================================
+       SLIDE WRAPPER — maintains 16:9 ratio
+       ============================================================ */
+    #presentation-wrapper {
+      position: relative;
+      width: min(100vw, calc(100vh * 16/9));
+      max-width: 1280px;
+    }
+
+    #slides-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 */
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       INDIVIDUAL SLIDE
+       ============================================================ */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Scrollable inner content (activates at high zoom) */
+    .slide-inner {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+    }
+
+    /* ============================================================
+       SHARED COMPONENT — HEXAGON
+       ============================================================ */
+    .hex {
+      clip-path: var(--hex-clip);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+    }
+
+    /* ============================================================
+       SHARED COMPONENT — FOOTER BAR
+       ============================================================ */
+    .footer-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--footer-h);
+      background: var(--color-footer-gold);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1%;
+      z-index: 10;
+    }
+
+    .footer-copyright {
+      font-family: var(--font-body);
+      font-size: var(--fz-footer);
+      color: rgba(0,0,0,0.6);
+    }
+
+    .footer-logo {
+      width: 8.4%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      font-size: var(--fz-footer);
+      font-family: var(--font-heading);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: rgba(0,0,0,0.55);
+    }
+
+    /* ============================================================
+       SHARED COMPONENT — GOLD DIVIDER LINE
+       ============================================================ */
+    .gold-divider {
+      position: absolute;
+      height: 1px;
+      width: 7%;
+      background: var(--color-divider-gold);
+    }
+
+    /* ============================================================
+       SHARED COMPONENT — contenteditable FOCUS INDICATOR
+       ============================================================ */
+    [contenteditable]:focus {
+      outline: 2px solid var(--color-footer-gold);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+    [contenteditable] { cursor: text; }
+
+    /* ============================================================
+       NAVIGATION ARROWS
+       ============================================================ */
+    .nav-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(184,151,90,0.85);
+      border: none;
+      color: var(--color-white);
+      font-size: 1.4rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .nav-btn:hover { background: var(--color-primary-gold); }
+    #btn-prev { left: calc(50% - min(50vw, calc(50vh * 16/9)) - 0px); transform: translateY(-50%) translateX(-110%); }
+    #btn-next { right: calc(50% - min(50vw, calc(50vh * 16/9)) - 0px); transform: translateY(-50%) translateX(110%); }
+
+    /* ============================================================
+       SLIDE COUNTER
+       ============================================================ */
+    #slide-counter {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.65);
+      color: var(--color-footer-gold);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      padding: 5px 16px;
+      border-radius: 20px;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       SAVE BUTTON
+       ============================================================ */
+    #btn-save {
+      position: fixed;
+      bottom: 16px;
+      right: 20px;
+      background: var(--color-template-gold);
+      border: none;
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 8px 16px;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      z-index: 1000;
+      transition: background 0.2s;
+      box-shadow: var(--shadow-card);
+    }
+    #btn-save:hover { background: var(--color-primary-gold); }
+
+    /* ============================================================
+       SLIDE TYPE LABEL (dev helper — top-left watermark)
+       ============================================================ */
+    .slide-type-label {
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.45vw;
+      font-family: var(--font-body);
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.18);
+      text-transform: uppercase;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* ============================================================
+       ██████████████████████████████████████████
+       SLIDE-SPECIFIC STYLES
+       ██████████████████████████████████████████
+       ============================================================ */
+
+    /* ---- OPENING SLIDE ---- */
+    .slide--opening {
+      background: var(--color-slide-bg);
+    }
+
+    .slide--opening .slide-inner {
+      background: var(--color-slide-bg);
+    }
+
+    .slide--opening .slide-type-label {
+      display: none;
+    }
+
+    .opening__top-panel {
+      position: absolute;
+      inset: 0 0 30% 0;
+      background: #2a2927;
+    }
+
+    .opening__bottom-panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 30%;
+      background: #fbfbfa;
+    }
+
+    .opening__logo {
+      position: absolute;
+      left: 50%;
+      top: 80.2%;
+      width: 28.6%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .opening__logo img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .opening__hex-outline {
+      position: absolute;
+      clip-path: var(--hex-clip);
+      border: 2px solid rgba(181, 152, 89, 0.34);
+      background: transparent;
+    }
+
+    .opening__hex-outline.is-faint {
+      border-color: rgba(181, 152, 89, 0.1);
+    }
+
+    .opening__hex-outline.is-reflection {
+      border-color: rgba(181, 152, 89, 0.08);
+      transform: scaleY(-1);
+      transform-origin: center;
+      opacity: 0.85;
+    }
+
+    .opening__hex-outline.tl-lg {
+      left: 1.8%;
+      top: 1.1%;
+      width: 7.4%;
+      aspect-ratio: 1 / 1.4;
+    }
+
+    .opening__hex-outline.tl-md-1 {
+      left: 8.4%;
+      top: 7.9%;
+      width: 7.4%;
+      aspect-ratio: 1 / 1.4;
+    }
+
+    .opening__hex-outline.tl-md-2 {
+      left: 15.5%;
+      top: 15.1%;
+      width: 7.4%;
+      aspect-ratio: 1 / 1.4;
+    }
+
+    .opening__hex-outline.tl-reflect-1 {
+      left: 8.4%;
+      top: 22.7%;
+      width: 7.4%;
+      aspect-ratio: 1 / 1.4;
+    }
+
+    .opening__hex-outline.tl-reflect-2 {
+      left: 15.5%;
+      top: 29.8%;
+      width: 7.4%;
+      aspect-ratio: 1 / 1.4;
+    }
+
+    .opening__hex-outline.tr-sm-1 {
+      right: 6.9%;
+      top: 1.6%;
+      width: 3.7%;
+      aspect-ratio: 1 / 1.42;
+    }
+
+    .opening__hex-outline.tr-sm-2 {
+      right: 0.9%;
+      top: 3.3%;
+      width: 3.4%;
+      aspect-ratio: 1 / 1.42;
+    }
+
+    .opening__hex-outline.tr-sm-3 {
+      right: 5.1%;
+      top: 6.1%;
+      width: 3.6%;
+      aspect-ratio: 1 / 1.42;
+    }
+
+    .opening__hex-outline.tr-sm-4 {
+      right: 2.8%;
+      top: 4.7%;
+      width: 3.1%;
+      aspect-ratio: 1 / 1.42;
+    }
+
+    .opening__hex-outline.tr-sm-5 {
+      right: 3.7%;
+      top: 9.1%;
+      width: 2.6%;
+      aspect-ratio: 1 / 1.42;
+    }
+
+    /* ---- AGENDA (4-item standard) ---- */
+    .slide--agenda { background: var(--color-slide-bg); }
+
+    .agenda__title-block {
+      position: absolute;
+      left: 20.4%; top: 0.4%; width: 16.9%; height: 22.9%;
+      background: var(--color-black);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .agenda__title-block span {
+      font-family: var(--font-heading);
+      font-size: var(--fz-agenda-wordmark);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--color-white);
+      text-transform: uppercase;
+    }
+
+    .agenda__divider {
+      left: 21.1%; top: 17.9%; width: 7%;
+    }
+
+    .agenda__item {
+      position: absolute;
+      left: 20.4%;
+      width: 55%;
+      height: 10%;
+      display: flex;
+      align-items: center;
+      gap: 2.5%;
+    }
+
+    .agenda__item-icon {
+      position: relative;
+      flex-shrink: 0;
+      width: 4.9%;
+      aspect-ratio: 1 / 1.55;
+      clip-path: var(--hex-clip);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .agenda__item-icon.active  { background: var(--color-footer-gold); }
+    .agenda__item-icon.inactive{ background: var(--color-icon-bg); }
+
+    .agenda__item-icon span {
+      font-family: var(--font-heading);
+      font-size: 0.8vw;
+      font-weight: 700;
+      color: var(--color-charcoal);
+    }
+    .agenda__item-icon.active span { color: var(--color-black); }
+
+    .agenda__item-text {
+      font-family: var(--font-body);
+      font-size: var(--fz-agenda-item);
+      font-weight: 600;
+      color: var(--color-charcoal);
+      letter-spacing: 0.03em;
+    }
+
+    /* Decorative AGENDA hex pair — right side */
+    .agenda__deco-hex-r1,
+    .agenda__deco-hex-r2 {
+      position: absolute;
+      clip-path: var(--hex-clip);
+      background: var(--color-template-gold);
+      opacity: 0.18;
+    }
+
+    /* ---- AGENDA LEFT-PANEL (5-item / 3-item / 8-item) ---- */
+    .slide--agenda-panel { background: var(--color-slide-bg); }
+
+    .agenda-panel__left {
+      position: absolute;
+      left: 0; top: 0; width: 58.5%; height: 96.8%;
+      background: var(--color-black);
+    }
+
+    .agenda-panel__item {
+      position: absolute;
+      left: 0; width: 58.5%;
+      height: 9.2%;
+      display: flex;
+      align-items: center;
+    }
+
+    .agenda-panel__item-icon {
+      position: absolute;
+      left: 0.9%;
+      width: 8.9%;
+      aspect-ratio: 1 / 1.77;
+      clip-path: var(--hex-clip);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .agenda-panel__item-icon.active  { background: var(--color-footer-gold); }
+    .agenda-panel__item-icon.inactive{ background: var(--color-icon-bg); }
+
+    .agenda-panel__item-icon span {
+      font-family: var(--font-heading);
+      font-size: 1vw;
+      font-weight: 700;
+      color: var(--color-charcoal);
+    }
+    .agenda-panel__item-icon.active span { color: var(--color-black); }
+
+    .agenda-panel__item-text {
+      position: absolute;
+      left: 11%;
+      font-family: var(--font-body);
+      font-size: var(--fz-agenda-item);
+      font-weight: 600;
+      color: var(--color-white);
+      letter-spacing: 0.03em;
+    }
+
+    .agenda-panel__wordmark-block {
+      position: absolute;
+      left: 70.1%; top: 35%; width: 16.9%; height: 22.9%;
+      background: var(--color-black);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .agenda-panel__wordmark-block span {
+      font-family: var(--font-heading);
+      font-size: var(--fz-agenda-wordmark);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--color-white);
+      text-transform: uppercase;
+    }
+
+    .agenda-panel__divider {
+      left: 70.8%; top: 52.5%;
+    }
+
+    /* ---- SECTION DIVIDER SLIDE ---- */
+    .slide--section { background: var(--color-slide-bg); }
+
+    .section__sidebar {
+      position: absolute;
+      left: 0; top: 0; width: var(--sidebar-w); height: 96.8%;
+      background: var(--color-black);
+    }
+
+    .section__title-block {
+      position: absolute;
+      left: 13.9%; top: 40.3%; width: 72.2%; height: 19.3%;
+      background: var(--color-black);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .section__title-block span {
+      font-family: var(--font-heading);
+      font-size: var(--fz-training-title);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--color-white);
+      text-align: center;
+    }
+
+    .section__divider { left: 14.8%; top: 59.7%; }
+
+    /* ---- CONTENT SLIDE (3-hex sidebar) ---- */
+    .slide--content { background: var(--color-slide-bg); }
+
+    .content__sidebar {
+      position: absolute;
+      left: 0; top: 0; width: var(--sidebar-w); height: 96.8%;
+      background: var(--color-black);
+    }
+
+    .content__title-bar {
+      position: absolute;
+      left: var(--title-bar-left); top: 0; width: 79.4%; height: var(--title-bar-h);
+      background: var(--color-black);
+      display: flex; align-items: center;
+      padding-left: 1.5%;
+    }
+    .content__title-bar span {
+      font-family: var(--font-heading);
+      font-size: var(--fz-content-title);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--color-white);
+    }
+
+    .content__divider { left: 13%; top: 13.5%; }
+
+    .content__area {
+      position: absolute;
+      left: var(--content-left);
+      top: var(--content-top);
+      right: 5%;
+      bottom: calc(var(--footer-h) + 1%);
+      overflow-y: auto;
+      font-family: var(--font-body);
+      font-size: var(--fz-body);
+      color: var(--color-charcoal);
+      line-height: 1.6;
+    }
+
+    /* ---- CLOSING — THANK YOU (1 trainer) ---- */
+    .slide--thankyou { background: var(--color-black); }
+
+    .thankyou__photo {
+      position: absolute;
+      left: 10.1%; top: 12.7%; width: 79.7%; height: 74.6%;
+      border: 1px dashed rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .thankyou__photo span {
+      font-family: var(--font-body);
+      font-size: 0.6vw;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.1em;
+    }
+
+    .thankyou__band {
+      position: absolute;
+      left: 24.8%; top: 28.3%; width: 50.4%; height: 14.7%;
+      background: var(--color-template-gold);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .thankyou__band span {
+      font-family: var(--font-heading);
+      font-size: var(--fz-training-title);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--color-white);
+    }
+
+    .thankyou__email-icon {
+      position: absolute;
+      left: 1.5%; top: 59.7%; width: 8.1%; height: 14.4%;
+      border: 1px dashed rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .thankyou__email-icon span {
+      font-size: 1.2vw;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .thankyou__email-text {
+      position: absolute;
+      left: 12.3%; top: 63.5%; width: 36.9%; height: 6.9%;
+      display: flex; align-items: center;
+    }
+    .thankyou__email-text span {
+      font-family: var(--font-body);
+      font-size: var(--fz-body);
+      color: var(--color-white);
+      letter-spacing: 0.04em;
+    }
+
+    .thankyou__linkedin {
+      position: absolute;
+      right: 20%; bottom: 12.8%; width: 12.7%; height: 21.5%;
+      background: rgba(255,255,255,0.12);
+      border: 1px dashed rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .thankyou__linkedin span {
+      font-family: var(--font-body);
+      font-size: 0.55vw;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.08em;
+    }
+
+    /* ---- CLOSING — QUESTIONS ---- */
+    .slide--questions { background: var(--color-slide-bg); }
+
+    .questions__text {
+      position: absolute;
+      left: 24.5%; top: 41%; width: 51%; height: 18%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .questions__text span {
+      font-family: var(--font-heading);
+      font-size: 3vw;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--color-charcoal);
+    }
+
+    .questions__divider { left: 33.8%; top: 59%; }
+
+    /* Chat icon placeholder — intentionally overflows top */
+    .questions__chat-icon {
+      position: absolute;
+      right: 39%; top: -4.5%; width: 39%; height: auto;
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0.06;
+    }
+    .questions__chat-icon span {
+      font-size: 12vw;
+      color: var(--color-charcoal);
+    }
+
+    /* ---- CLOSING — SURVEY / QR CODE ---- */
+    .slide--survey { background: var(--color-slide-bg); }
+
+    .survey__left-panel {
+      position: absolute;
+      left: 0; top: 0; width: 53.4%; height: 96.8%;
+      background: var(--color-black);
+    }
+
+    .survey__scan-band {
+      position: absolute;
+      left: 9%; top: 33.5%; width: 36.9%; height: 26.2%;
+      background: var(--color-template-gold);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      gap: 4%;
+    }
+    .survey__scan-band span {
+      font-family: var(--font-heading);
+      font-size: var(--fz-training-title);
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--color-white);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .survey__qr {
+      position: absolute;
+      left: 42.3%; top: 54.8%; width: 7%; height: 32.2%;
+      border: 2px dashed rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .survey__qr span {
+      font-family: var(--font-body);
+      font-size: 0.45vw;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.06em;
+      writing-mode: vertical-rl;
+    }
+
+    .survey__right-panel {
+      position: absolute;
+      left: 54.9%; top: 8.4%; width: 43.5%; height: 82.2%;
+      background: var(--color-white);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .survey__right-panel span {
+      font-family: var(--font-body);
+      font-size: 0.6vw;
+      color: var(--color-neutral);
+      letter-spacing: 0.1em;
+    }
+
+    /* ============================================================
+       SHARED HEX POSITIONS — TL cascade (opening / closing dark)
+       ============================================================ */
+    .hex-tl-1 { left:1.5%;  top:1%;    width:7.2%; aspect-ratio: 1/1.4; background: var(--color-template-gold); }
+    .hex-tl-2 { left:8.1%;  top:7.3%;  width:7.2%; aspect-ratio: 1/1.4; background: var(--color-template-gold); }
+    .hex-tl-3 { left:15.2%; top:13.5%; width:7.2%; aspect-ratio: 1/1.4; background: var(--color-template-gold); }
+
+    /* TR micro pair (content / agenda) */
+    .hex-tr-1 { right:4.5%; top:1.3%;  width:3.6%; aspect-ratio: 1/1.5; background: var(--color-template-gold); }
+    .hex-tr-2 { right:8.3%; top:4%;    width:3.7%; aspect-ratio: 1/1.46; background: var(--color-template-gold); }
+
+    /* Opening TR pair */
+    .hex-otr-1 { right:4.5%; top:1.3%; width:3.6%; aspect-ratio:1/1.5; background: var(--color-template-gold); }
+    .hex-otr-2 { right:2.5%; top:6.8%; width:3.1%; aspect-ratio:1/1.42; background: var(--color-template-gold); }
+
+    /* BR decor — light slides (cream) */
+    .hex-br-light-1 { right:7.7%; bottom:4.6%;  width:5.6%; aspect-ratio:1/1.63; background: var(--color-hex-accent); }
+    .hex-br-light-2 { right:0.4%; bottom:4.6%;  width:9.6%; aspect-ratio:1/1.59; background: var(--color-hex-accent); }
+
+    /* BR decor — dark slides (gold) */
+    .hex-br-dark-1 { right:6.9%; bottom:12.8%; width:3.6%; aspect-ratio:1/1.5;  background: var(--color-template-gold); }
+    .hex-br-dark-2 { right:3.1%; bottom:7.3%;  width:3.1%; aspect-ratio:1/1.42; background: var(--color-template-gold); }
+
+    /* Sidebar hex icons (content slides) */
+    .sidebar-hex {
+      left: 0.9%; width: 8.9%; aspect-ratio: 1/1.77;
+      background: var(--color-template-gold);
+    }
+    .sidebar-hex-1 { top: 21.8%; }
+    .sidebar-hex-2 { top: 39.9%; }
+    .sidebar-hex-3 { top: 57.9%; }
+    .sidebar-hex-4 { top: 76.0%; }
+    .sidebar-hex-5 { top: 93.0%; }
+
+    /* Agenda TL hex pair */
+    .agenda-hex-tl-1 { left:1.5%; top:1%;   width:4.9%; aspect-ratio:1/1.55; background: var(--color-template-gold); opacity:0.6; }
+    .agenda-hex-tl-2 { left:7.1%; top:7%;   width:4.9%; aspect-ratio:1/1.55; background: var(--color-template-gold); opacity:0.6; }
+  </style>
+</head>
+
+<body>
+  <div id="presentation-wrapper">
+    <div id="slides-container">
+
+      <!-- ============================================================
+           SLIDE 1 — OPENING SLIDE
+           Type: Title / Title_Logos variant
+           Background: full-bleed black, three TL gold hex cascade,
+           two TR gold hexes, gold title + subtitle bands, footer bar.
+           EDIT: Training title, subtitle, date/location, trainer name/role,
+                 adaptive logo block, client logo block.
+           ============================================================ -->
+      <section class="slide slide--opening active" data-index="1">
+        <div class="slide-type-label">SLIDE 1 · OPENING</div>
+        <div class="slide-inner">
+
+          <div class="opening__top-panel"></div>
+          <div class="opening__bottom-panel"></div>
+
+          <!-- Top-left decorative cluster -->
+          <div class="opening__hex-outline tl-lg" aria-hidden="true"></div>
+          <div class="opening__hex-outline tl-md-1" aria-hidden="true"></div>
+          <div class="opening__hex-outline tl-md-2 is-faint" aria-hidden="true"></div>
+          <div class="opening__hex-outline tl-reflect-1 is-reflection" aria-hidden="true"></div>
+          <div class="opening__hex-outline tl-reflect-2 is-reflection" aria-hidden="true"></div>
+
+          <!-- Top-right decorative cluster -->
+          <div class="opening__hex-outline tr-sm-1" aria-hidden="true"></div>
+          <div class="opening__hex-outline tr-sm-2 is-faint" aria-hidden="true"></div>
+          <div class="opening__hex-outline tr-sm-3 is-faint" aria-hidden="true"></div>
+          <div class="opening__hex-outline tr-sm-4 is-faint" aria-hidden="true"></div>
+          <div class="opening__hex-outline tr-sm-5 is-reflection" aria-hidden="true"></div>
+
+          <div class="opening__logo">
+            <img src="logo_transparent.png" alt="Adaptive Solutions &amp; Advisory Group logo">
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 1 — OPENING SLIDE -->
+
+
+      <!-- ============================================================
+           SLIDE 2 — AGENDA SLIDE (Standard 4-item)
+           Type: Agenda / 3_Agenda variant
+           Background: #F9F9F9, black AGENDA title block top-left,
+           gold divider, 4 numbered hex icons + text rows, footer bar.
+           EDIT: Agenda item texts (4 items). Mark active item by
+                 swapping class 'inactive' → 'active' on the icon.
+           ============================================================ -->
+      <section class="slide slide--agenda" data-index="2">
+        <div class="slide-type-label">SLIDE 2 · AGENDA (4-ITEM)</div>
+        <div class="slide-inner">
+
+          <!-- TL hex pair (agenda variant) -->
+          <div class="hex agenda-hex-tl-1"></div>
+          <div class="hex agenda-hex-tl-2"></div>
+
+          <!-- AGENDA title block -->
+          <div class="agenda__title-block">
+            <span>AGENDA</span>
+          </div>
+
+          <!-- Gold divider below AGENDA block -->
+          <div class="gold-divider agenda__divider"></div>
+
+          <!-- Agenda Item 1 (active = current topic) -->
+          <div class="agenda__item" style="top:27.1%;">
+            <div class="agenda__item-icon active"><span>1</span></div>
+            <span class="agenda__item-text" contenteditable="true" spellcheck="false">Agenda Item One</span>
+          </div>
+
+          <!-- Agenda Item 2 -->
+          <div class="agenda__item" style="top:40.4%;">
+            <div class="agenda__item-icon inactive"><span>2</span></div>
+            <span class="agenda__item-text" contenteditable="true" spellcheck="false">Agenda Item Two</span>
+          </div>
+
+          <!-- Agenda Item 3 -->
+          <div class="agenda__item" style="top:53.7%;">
+            <div class="agenda__item-icon inactive"><span>3</span></div>
+            <span class="agenda__item-text" contenteditable="true" spellcheck="false">Agenda Item Three</span>
+          </div>
+
+          <!-- Agenda Item 4 -->
+          <div class="agenda__item" style="top:67.0%;">
+            <div class="agenda__item-icon inactive"><span>4</span></div>
+            <span class="agenda__item-text" contenteditable="true" spellcheck="false">Agenda Item Four</span>
+          </div>
+
+          <!-- Decorative AGENDA text hex pair (right side, very faint) -->
+          <div class="hex" style="
+            position:absolute; right:15.7%; top:8%;
+            width:4.9%; aspect-ratio:1/1.55;
+            background:var(--color-template-gold); opacity:0.12;">
+          </div>
+          <div class="hex" style="
+            position:absolute; right:10.2%; top:14%;
+            width:4.9%; aspect-ratio:1/1.55;
+            background:var(--color-template-gold); opacity:0.12;">
+          </div>
+
+          <!-- BR hex pair (cream) -->
+          <div class="hex hex-br-light-1"></div>
+          <div class="hex hex-br-light-2"></div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 2 — AGENDA SLIDE (4-ITEM) -->
+
+
+      <!-- ============================================================
+           SLIDE 3 — AGENDA SLIDE (Left-panel, 5-item)
+           Type: 5_Agenda5 variant
+           Background: #F9F9F9, black left panel 58.5% wide,
+           gold hex icons inside panel, AGENDA wordmark block right,
+           gold divider, footer bar.
+           EDIT: 5 agenda item texts. Active/inactive icon classes.
+           ============================================================ -->
+      <section class="slide slide--agenda-panel" data-index="3">
+        <div class="slide-type-label">SLIDE 3 · AGENDA (LEFT-PANEL, 5-ITEM)</div>
+        <div class="slide-inner">
+
+          <!-- Black left panel -->
+          <div class="agenda-panel__left"></div>
+
+          <!-- TR hex pair (right side, gold) -->
+          <div class="hex hex-tr-1"></div>
+          <div class="hex hex-tr-2"></div>
+
+          <!-- Agenda Item 1 (active) -->
+          <div class="agenda-panel__item" style="top:8%;">
+            <div class="agenda-panel__item-icon active"><span>1</span></div>
+            <span class="agenda-panel__item-text" contenteditable="true" spellcheck="false">Agenda Item One</span>
+          </div>
+
+          <!-- Agenda Item 2 -->
+          <div class="agenda-panel__item" style="top:26%;">
+            <div class="agenda-panel__item-icon inactive"><span>2</span></div>
+            <span class="agenda-panel__item-text" contenteditable="true" spellcheck="false">Agenda Item Two</span>
+          </div>
+
+          <!-- Agenda Item 3 -->
+          <div class="agenda-panel__item" style="top:44%;">
+            <div class="agenda-panel__item-icon inactive"><span>3</span></div>
+            <span class="agenda-panel__item-text" contenteditable="true" spellcheck="false">Agenda Item Three</span>
+          </div>
+
+          <!-- Agenda Item 4 -->
+          <div class="agenda-panel__item" style="top:62%;">
+            <div class="agenda-panel__item-icon inactive"><span>4</span></div>
+            <span class="agenda-panel__item-text" contenteditable="true" spellcheck="false">Agenda Item Four</span>
+          </div>
+
+          <!-- Agenda Item 5 -->
+          <div class="agenda-panel__item" style="top:80%;">
+            <div class="agenda-panel__item-icon inactive"><span>5</span></div>
+            <span class="agenda-panel__item-text" contenteditable="true" spellcheck="false">Agenda Item Five</span>
+          </div>
+
+          <!-- AGENDA wordmark block (right white area) -->
+          <div class="agenda-panel__wordmark-block">
+            <span>AGENDA</span>
+          </div>
+
+          <!-- Gold divider below wordmark -->
+          <div class="gold-divider agenda-panel__divider"></div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 3 — AGENDA SLIDE (LEFT-PANEL, 5-ITEM) -->
+
+
+      <!-- ============================================================
+           SLIDE 4 — SECTION DIVIDER SLIDE
+           Type: 1_Section variant
+           Background: #F9F9F9, black left sidebar (same width as content
+           slides), centered black title band, gold divider below,
+           BR cream hex pair, footer bar.
+           EDIT: Section title text.
+           ============================================================ -->
+      <section class="slide slide--section" data-index="4">
+        <div class="slide-type-label">SLIDE 4 · SECTION DIVIDER</div>
+        <div class="slide-inner">
+
+          <!-- Black left sidebar -->
+          <div class="section__sidebar"></div>
+
+          <!-- Sidebar hex icons (5 hexes, full height) -->
+          <div class="hex sidebar-hex sidebar-hex-1"></div>
+          <div class="hex sidebar-hex sidebar-hex-2"></div>
+          <div class="hex sidebar-hex sidebar-hex-3"></div>
+          <div class="hex sidebar-hex sidebar-hex-4"></div>
+
+          <!-- TR hex pair -->
+          <div class="hex hex-tr-1"></div>
+          <div class="hex hex-tr-2"></div>
+
+          <!-- Section title block -->
+          <div class="section__title-block">
+            <span contenteditable="true" spellcheck="false">SECTION TITLE</span>
+          </div>
+
+          <!-- Gold divider below section title -->
+          <div class="gold-divider section__divider"></div>
+
+          <!-- BR hex pair (cream) -->
+          <div class="hex hex-br-light-1"></div>
+          <div class="hex hex-br-light-2"></div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 4 — SECTION DIVIDER SLIDE -->
+
+
+      <!-- ============================================================
+           SLIDE 5 — CONTENT SLIDE (3-hex sidebar, 1_Custom Layout3)
+           Type: Standard content with 3 sidebar hexagons.
+           Background: #F9F9F9, black sidebar 10.8%, black title bar,
+           gold divider, content area, TR hex pair, BR cream hex pair,
+           footer bar.
+           EDIT: Slide title, body content area (add text, lists, etc.)
+           ============================================================ -->
+      <section class="slide slide--content" data-index="5">
+        <div class="slide-type-label">SLIDE 5 · CONTENT (3-HEX SIDEBAR)</div>
+        <div class="slide-inner">
+
+          <!-- Black left sidebar -->
+          <div class="content__sidebar"></div>
+
+          <!-- Sidebar hex icons (3 hexes) -->
+          <div class="hex sidebar-hex sidebar-hex-1"></div>
+          <div class="hex sidebar-hex sidebar-hex-2"></div>
+          <div class="hex sidebar-hex sidebar-hex-3"></div>
+
+          <!-- Black title bar -->
+          <div class="content__title-bar">
+            <span contenteditable="true" spellcheck="false">Slide Title</span>
+          </div>
+
+          <!-- Gold divider below title bar -->
+          <div class="gold-divider content__divider"></div>
+
+          <!-- TR hex pair -->
+          <div class="hex hex-tr-1"></div>
+          <div class="hex hex-tr-2"></div>
+
+          <!-- BR hex pair (cream) -->
+          <div class="hex hex-br-light-1"></div>
+          <div class="hex hex-br-light-2"></div>
+
+          <!-- Main content area — add slide body here -->
+          <div class="content__area" contenteditable="true" spellcheck="false">
+            Body content goes here. Replace this placeholder with text, bullets,
+            or any structured content for this slide.
+          </div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 5 — CONTENT SLIDE (3-HEX SIDEBAR) -->
+
+
+      <!-- ============================================================
+           SLIDE 6 — CONTENT SLIDE (5-hex sidebar, 1_Custom Layout5)
+           Type: Content with 5 sidebar hexagons — use for longer
+           content pages or when more visual weight is needed.
+           Structurally identical to Slide 5; sidebar hexes extend
+           further down (~76% + ~93%).
+           EDIT: Slide title, body content area.
+           ============================================================ -->
+      <section class="slide slide--content" data-index="6">
+        <div class="slide-type-label">SLIDE 6 · CONTENT (5-HEX SIDEBAR)</div>
+        <div class="slide-inner">
+
+          <!-- Black left sidebar -->
+          <div class="content__sidebar"></div>
+
+          <!-- Sidebar hex icons (5 hexes, full height) -->
+          <div class="hex sidebar-hex sidebar-hex-1"></div>
+          <div class="hex sidebar-hex sidebar-hex-2"></div>
+          <div class="hex sidebar-hex sidebar-hex-3"></div>
+          <div class="hex sidebar-hex sidebar-hex-4"></div>
+          <div class="hex sidebar-hex sidebar-hex-5"></div>
+
+          <!-- Black title bar -->
+          <div class="content__title-bar">
+            <span contenteditable="true" spellcheck="false">Slide Title</span>
+          </div>
+
+          <!-- Gold divider below title bar -->
+          <div class="gold-divider content__divider"></div>
+
+          <!-- TR hex pair -->
+          <div class="hex hex-tr-1"></div>
+          <div class="hex hex-tr-2"></div>
+
+          <!-- BR hex pair (cream) -->
+          <div class="hex hex-br-light-1"></div>
+          <div class="hex hex-br-light-2"></div>
+
+          <!-- Main content area — add slide body here -->
+          <div class="content__area" contenteditable="true" spellcheck="false">
+            Body content goes here. Replace this placeholder with text, bullets,
+            or any structured content for this slide.
+          </div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 6 — CONTENT SLIDE (5-HEX SIDEBAR) -->
+
+
+      <!-- ============================================================
+           SLIDE 7 — CONTENT SLIDE (No sidebar, 2_Custom Layout)
+           Type: Full-width content — no sidebar, title bar starts
+           at L 5.5%. Use when maximum content width is needed.
+           EDIT: Slide title, body content area.
+           ============================================================ -->
+      <section class="slide slide--content" data-index="7">
+        <div class="slide-type-label">SLIDE 7 · CONTENT (NO SIDEBAR)</div>
+        <div class="slide-inner">
+
+          <!-- No sidebar on this variant -->
+
+          <!-- Title bar — full-width variant (starts at L 5.5%) -->
+          <div class="content__title-bar" style="left:5.5%; width:86.1%;">
+            <span contenteditable="true" spellcheck="false">Slide Title</span>
+          </div>
+
+          <!-- Gold divider -->
+          <div class="gold-divider" style="left:5.5%; top:13.5%;"></div>
+
+          <!-- TR hex pair -->
+          <div class="hex hex-tr-1"></div>
+          <div class="hex hex-tr-2"></div>
+
+          <!-- BR hex pair (cream) -->
+          <div class="hex hex-br-light-1"></div>
+          <div class="hex hex-br-light-2"></div>
+
+          <!-- Main content area -->
+          <div class="content__area" style="left:5.5%; right:5%;" contenteditable="true" spellcheck="false">
+            Body content goes here. This layout has no left sidebar,
+            giving maximum horizontal space for content.
+          </div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 7 — CONTENT SLIDE (NO SIDEBAR) -->
+
+
+      <!-- ============================================================
+           SLIDE 8 — CLOSING — THANK YOU (1 Trainer)
+           Type: "end" / closing slide — dark background,
+           TL hex cascade, THANK YOU gold band, email + LinkedIn
+           contact placeholders, BR gold hex pair, footer bar.
+           EDIT: Thank you headline, email address, trainer name/role,
+                 LinkedIn placeholder.
+           ============================================================ -->
+      <section class="slide slide--thankyou" data-index="8">
+        <div class="slide-type-label">SLIDE 8 · THANK YOU (1 TRAINER)</div>
+        <div class="slide-inner">
+
+          <!-- TL hex cascade -->
+          <div class="hex hex-tl-1"></div>
+          <div class="hex hex-tl-2"></div>
+          <div class="hex hex-tl-3"></div>
+
+          <!-- Full-width photo / logo placeholder (background layer) -->
+          <div class="thankyou__photo">
+            <span>TRAINER PHOTO OR BACKGROUND IMAGE PLACEHOLDER</span>
+          </div>
+
+          <!-- THANK YOU band -->
+          <div class="thankyou__band">
+            <span contenteditable="true" spellcheck="false">THANK YOU!</span>
+          </div>
+
+          <!-- Email icon placeholder -->
+          <div class="thankyou__email-icon">
+            <span>✉</span>
+          </div>
+
+          <!-- Email address -->
+          <div class="thankyou__email-text">
+            <span contenteditable="true" spellcheck="false">trainer@adaptivegroup.com</span>
+          </div>
+
+          <!-- LinkedIn placeholder -->
+          <div class="thankyou__linkedin">
+            <span contenteditable="true" spellcheck="false">LINKEDIN QR / HANDLE</span>
+          </div>
+
+          <!-- BR hex pair (gold, dark slide) -->
+          <div class="hex hex-br-dark-1"></div>
+          <div class="hex hex-br-dark-2"></div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 8 — CLOSING — THANK YOU (1 TRAINER) -->
+
+
+      <!-- ============================================================
+           SLIDE 9 — CLOSING — QUESTIONS SLIDE
+           Type: "Questions?" closing / transition slide.
+           Background: #F9F9F9 (light), oversized chat icon overflows
+           top edge, "Questions?" heading centered, gold divider,
+           BR cream hex pair, footer bar.
+           EDIT: "Questions?" text (font size kept large by default).
+           ============================================================ -->
+      <section class="slide slide--questions" data-index="9">
+        <div class="slide-type-label">SLIDE 9 · QUESTIONS</div>
+        <div class="slide-inner">
+
+          <!-- Chat icon — intentionally overflows top -->
+          <div class="questions__chat-icon">
+            <span>💬</span>
+          </div>
+
+          <!-- "Questions?" text -->
+          <div class="questions__text">
+            <span contenteditable="true" spellcheck="false">Questions?</span>
+          </div>
+
+          <!-- Gold divider -->
+          <div class="gold-divider questions__divider"></div>
+
+          <!-- BR hex pair (cream) -->
+          <div class="hex hex-br-light-1"></div>
+          <div class="hex hex-br-light-2"></div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 9 — CLOSING — QUESTIONS SLIDE -->
+
+
+      <!-- ============================================================
+           SLIDE 10 — CLOSING — SURVEY / QR CODE SLIDE
+           Type: SurveyCode variant — split layout.
+           Left: black panel with 3 TL hex cascade + "SCAN & RATE"
+           gold band + QR placeholder.
+           Right: white panel for additional info / scan instructions.
+           Footer bar.
+           EDIT: "SCAN & RATE" text, right panel content, QR placeholder.
+           ============================================================ -->
+      <section class="slide slide--survey" data-index="10">
+        <div class="slide-type-label">SLIDE 10 · SURVEY / QR CODE</div>
+        <div class="slide-inner">
+
+          <!-- Black left panel -->
+          <div class="survey__left-panel"></div>
+
+          <!-- TL hex cascade (inside/above left panel) -->
+          <div class="hex hex-tl-1"></div>
+          <div class="hex hex-tl-2"></div>
+          <div class="hex hex-tl-3"></div>
+
+          <!-- "SCAN & RATE" band -->
+          <div class="survey__scan-band">
+            <span contenteditable="true" spellcheck="false">SCAN &amp;<br>RATE</span>
+          </div>
+
+          <!-- QR code placeholder -->
+          <div class="survey__qr">
+            <span>QR CODE</span>
+          </div>
+
+          <!-- Right white panel -->
+          <div class="survey__right-panel">
+            <span contenteditable="true" spellcheck="false">Scan the QR code to leave your feedback</span>
+          </div>
+
+          <!-- BR hex pair (gold, dark left edge) -->
+          <div class="hex hex-br-dark-1"></div>
+          <div class="hex hex-br-dark-2"></div>
+
+          <!-- Footer bar -->
+          <div class="footer-bar">
+            <span class="footer-copyright" contenteditable="true" spellcheck="false">© Adaptive Group 2025. All rights reserved.</span>
+            <span class="footer-logo" contenteditable="false">ADAPTIVE</span>
+          </div>
+
+        </div>
+      </section>
+      <!-- END SLIDE 10 — CLOSING — SURVEY / QR CODE SLIDE -->
+
+
+    </div><!-- end #slides-container -->
+  </div><!-- end #presentation-wrapper -->
+
+  <!-- Navigation arrows -->
+  <button class="nav-btn" id="btn-prev" aria-label="Previous slide">&#8592;</button>
+  <button class="nav-btn" id="btn-next" aria-label="Next slide">&#8594;</button>
+
+  <!-- Slide counter -->
+  <div id="slide-counter">1 / 10</div>
+
+  <!-- Save HTML button -->
+  <button id="btn-save">💾 Save HTML</button>
+
+
+  <!-- ============================================================
+       JAVASCRIPT — Navigation, counter, keyboard, save
+       ============================================================ -->
+  <script>
+    'use strict';
+
+    // --- State ---
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+
+    // --- Helpers ---
+    function showSlide(index) {
+      // Clamp index within bounds
+      index = Math.max(0, Math.min(index, totalSlides - 1));
+
+      slides[currentIndex].classList.remove('active');
+      currentIndex = index;
+      slides[currentIndex].classList.add('active');
+
+      document.getElementById('slide-counter').textContent =
+        `${currentIndex + 1} / ${totalSlides}`;
+    }
+
+    function nextSlide() { showSlide(currentIndex + 1); }
+    function prevSlide() { showSlide(currentIndex - 1); }
+
+    // --- Button events ---
+    document.getElementById('btn-next').addEventListener('click', nextSlide);
+    document.getElementById('btn-prev').addEventListener('click', prevSlide);
+
+    // --- Keyboard navigation ---
+    document.addEventListener('keydown', function (e) {
+      // Do not navigate while the user is typing in a contenteditable
+      if (document.activeElement && document.activeElement.isContentEditable) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  { e.preventDefault(); nextSlide(); }
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    { e.preventDefault(); prevSlide(); }
+    });
+
+    // --- Save HTML ---
+    document.getElementById('btn-save').addEventListener('click', function () {
+      const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'adaptive_presentation_edited.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    });
+
+    // --- Initialise counter display ---
+    showSlide(0);
+  </script>
+
+</body>
+</html>

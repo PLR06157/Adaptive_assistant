@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptive Effort Assumptions</title>
+  <style>
+    :root {
+      --gold: #B8975A;
+      --gold-light: #C5A572;
+      --gold-dark: #9A7D42;
+      --charcoal: #2C2C2C;
+      --white: #ffffff;
+      --beige: #F8F6F3;
+      --green: #4CAF50;
+      --green-dark: #2f7d32;
+      --green-soft: #e8f5e9;
+      --red: #F44336;
+      --red-soft: #fdecea;
+      --red-dark: #c62828;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: #111;
+      font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      padding: 20px;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+
+    .slide {
+      width: min(1600px, calc(100vw - 40px));
+      aspect-ratio: 16 / 9;
+      background: var(--beige);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'%3E%3Cpolygon points='30,2 58,17 58,47 30,62 2,47 2,17' fill='none' stroke='%23B8975A' stroke-width='0.6' stroke-opacity='0.10'/%3E%3C/svg%3E");
+      background-size: 60px 52px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .canvas {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #1A1A1A 0%, #000000 100%);
+      padding: 18px 24px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      line-height: 1.15;
+      color: var(--white);
+      font-weight: 700;
+      max-width: 780px;
+    }
+
+    .header-sub {
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.58);
+      max-width: 740px;
+      margin: 0;
+    }
+
+    .kpi-strip {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .kpi {
+      text-align: center;
+      padding: 12px 16px;
+      background: rgba(184,151,90,0.10);
+      border: 1px solid rgba(184,151,90,0.28);
+      border-radius: 10px;
+      min-width: 80px;
+    }
+
+    .kpi-num {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold-light);
+      line-height: 1;
+    }
+
+    .kpi-lbl {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.50);
+      font-weight: 600;
+      margin-top: 4px;
+      line-height: 1.3;
+    }
+
+    /* ── MAIN ── */
+    .main-body {
+      display: flex;
+      flex-direction: column;
+      padding: 14px 18px 10px;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .panel-label {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.20em;
+      color: var(--gold);
+      margin: 0 0 10px;
+    }
+
+    /* ── PROCESS FLOW ── */
+    .flow-track {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: stretch;
+      gap: 10px;
+      position: relative;
+    }
+
+    .flow-track::before {
+      content: "";
+      position: absolute;
+      top: 27px;
+      left: calc(12.5% + 4px);
+      right: calc(12.5% + 4px);
+      height: 2px;
+      background: linear-gradient(90deg, #D4C5A0 0%, #B8975A 50%, #D4C5A0 100%);
+      z-index: 0;
+    }
+
+    .flow-step {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flow-step .step-card { flex: 1; }
+
+    .step-badge {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #D4C5A0 0%, #B8975A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      box-shadow: 0 4px 14px rgba(184,151,90,0.40);
+      border: 3px solid var(--beige);
+      flex-shrink: 0;
+    }
+
+    .step-badge svg { display: block; }
+
+    .step-card {
+      background: white;
+      border: 1px solid rgba(184,151,90,0.15);
+      border-radius: 10px;
+      padding: 11px 11px 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+
+    .step-num {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+
+    .step-title {
+      font-family: Georgia, serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 5px;
+      line-height: 1.15;
+    }
+
+    .step-desc {
+      font-size: 10px;
+      line-height: 1.38;
+      color: #5c5c5c;
+      margin-bottom: 7px;
+    }
+
+    .step-tag {
+      display: inline-block;
+      padding: 3px 7px;
+      background: var(--green-soft);
+      border: 1px solid rgba(76,175,80,0.20);
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--green-dark);
+    }
+
+    /* ── INPUTS ── */
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .input-chip {
+      background: white;
+      border: 1px solid rgba(184,151,90,0.13);
+      border-radius: 8px;
+      padding: 9px 9px 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .ic-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #f3ecdf 0%, #e8dabb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-dark);
+      flex-shrink: 0;
+    }
+
+    .ic-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.2;
+    }
+
+    .ic-sub {
+      font-size: 9.5px;
+      color: #6a6a6a;
+      line-height: 1.3;
+    }
+
+    /* ── SCOPE BAR (horizontal) ── */
+    .scope-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .scope-bar-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      padding-right: 10px;
+      border-right: 2px solid rgba(184,151,90,0.25);
+      margin-right: 2px;
+    }
+
+    .scope-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #D4C5A0 0%, #B8975A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(184,151,90,0.35);
+    }
+
+    .scope-label-text {
+      font-family: Georgia, serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.2;
+      max-width: 80px;
+    }
+
+    .scope-chips {
+      display: flex;
+      gap: 7px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .scope-chip {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 10px;
+      background: white;
+      border: 1px solid rgba(184,151,90,0.14);
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .check-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      border: 1.5px solid rgba(76,175,80,0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .scope-chip-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.2;
+    }
+
+    .scope-chip-sub {
+      font-size: 9px;
+      color: #707070;
+      line-height: 1.3;
+      margin-top: 1px;
+    }
+
+    .excluded-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 12px;
+      background: var(--red-soft);
+      border: 1px solid rgba(244,67,54,0.20);
+      border-radius: 8px;
+      flex-shrink: 0;
+      min-width: 190px;
+    }
+
+    .x-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(244,67,54,0.10);
+      border: 1.5px solid rgba(244,67,54,0.30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--red-dark);
+    }
+
+    .excl-title {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--red-dark);
+      margin-bottom: 2px;
+    }
+
+    .excl-body {
+      font-size: 9px;
+      line-height: 1.35;
+      color: #7a3030;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: var(--charcoal);
+      padding: 9px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .footer-text {
+      font-size: 10.5px;
+      line-height: 1.38;
+      color: rgba(255,255,255,0.58);
+    }
+
+    .footer-text strong { color: var(--gold-light); }
+
+    .footer-pills {
+      display: flex;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .fpill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(184,151,90,0.13);
+      border: 1px solid rgba(184,151,90,0.28);
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--gold-light);
+      white-space: nowrap;
+    }
+
+    svg { display: block; }
+
+    @media (max-width: 1200px) {
+      .slide { aspect-ratio: auto; }
+      .flow-track, .input-row, .scope-bar, .scope-chips { display: block; }
+      .flow-track > *, .input-row > *, .scope-chips > * { margin-bottom: 10px; }
+      .flow-track::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="slide">
+    <div class="canvas">
+
+      <!-- HEADER -->
+      <header class="header">
+        <div>
+          <p class="eyebrow">Adaptive Effort Assumptions</p>
+          <h1>Diagnostic, Design, Governance &amp; Pilot Readiness</h1>
+          <p class="header-sub">Adaptive assumes a hands-on discovery, design and business-readiness role across all transformation activities — except Emagia pilot builds and rollout implementations.</p>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi">
+            <div class="kpi-num">25</div>
+            <div class="kpi-lbl">Countries</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-num">~75</div>
+            <div class="kpi-lbl">ERP<br>Environments</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-num">4</div>
+            <div class="kpi-lbl">Effort<br>Stages</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-num">All</div>
+            <div class="kpi-lbl">Non-Emagia<br>Activities</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN BODY -->
+      <div class="main-body">
+
+        <!-- Process flow -->
+        <div class="flow-wrap">
+          <p class="panel-label">How Effort Is Spent</p>
+          <div class="flow-track">
+
+            <div class="flow-step">
+              <div class="step-badge">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="9" y1="13" x2="15" y2="13"/>
+                  <line x1="9" y1="17" x2="13" y2="17"/>
+                </svg>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 01</div>
+                <div class="step-title">Collect</div>
+                <div class="step-desc">Data, documents, SOPs, KPIs, ERP/bank setup, policies, role definitions and issue logs across all countries.</div>
+                <span class="step-tag">Diagnostic &amp; Assessment</span>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="step-badge">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="6"/>
+                  <path d="M12 3V6M12 18V21M3 12H6M18 12H21"/>
+                </svg>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 02</div>
+                <div class="step-title">Engage</div>
+                <div class="step-desc">Workshops, stakeholder interviews with process owners, SMEs, SSC leads and country teams.</div>
+                <span class="step-tag">Design Authority</span>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="step-badge">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 17L10 12L13 15L19 8"/>
+                  <path d="M16 8H19V11"/>
+                </svg>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 03</div>
+                <div class="step-title">Analyze &amp; Design</div>
+                <div class="step-desc">Current-state gaps, harmonization opportunities, controls, pilot decision support and rollout logic.</div>
+                <span class="step-tag">Governance &amp; Change</span>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="step-badge">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 4L18 7V12C18 15.6 15.8 18.8 12 20C8.2 18.8 6 15.6 6 12V7L12 4Z"/>
+                  <path d="M9.5 12.5L11.3 14.3L14.8 10.8"/>
+                </svg>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 04</div>
+                <div class="step-title">Govern &amp; Prepare</div>
+                <div class="step-desc">Business validation, stakeholder alignment, pilot readiness, testing coordination and scale-up roadmap.</div>
+                <span class="step-tag">Testing &amp; Scale-Up</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Inputs -->
+        <div class="inputs-wrap">
+          <p class="panel-label">Inputs Adaptive Collects</p>
+          <div class="input-row">
+
+            <div class="input-chip">
+              <div class="ic-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <div class="ic-title">Process Documentation</div>
+              <div class="ic-sub">SOPs and local work instructions</div>
+            </div>
+
+            <div class="input-chip">
+              <div class="ic-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </div>
+              <div class="ic-title">KPI &amp; Exception Data</div>
+              <div class="ic-sub">Aging, auto-match, disputes, workload</div>
+            </div>
+
+            <div class="input-chip">
+              <div class="ic-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </div>
+              <div class="ic-title">System &amp; Country Setup</div>
+              <div class="ic-sub">ERP, bank, country and language</div>
+            </div>
+
+            <div class="input-chip">
+              <div class="ic-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div class="ic-title">Governance Materials</div>
+              <div class="ic-sub">Policies, controls, role definitions</div>
+            </div>
+
+            <div class="input-chip">
+              <div class="ic-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+              <div class="ic-title">Open Issues</div>
+              <div class="ic-sub">Pain points, deviations, unresolved</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scope bar — horizontal -->
+        <div class="scope-bar">
+
+          <div class="scope-bar-label">
+            <div class="scope-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 17L9 12L13 15L20 7"/><path d="M16 7H20V11"/>
+              </svg>
+            </div>
+            <div class="scope-label-text">Adaptive Responsibility</div>
+          </div>
+
+          <div class="scope-chips">
+
+            <div class="scope-chip">
+              <div class="check-dot">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="scope-chip-title">Mobilize</div>
+                <div class="scope-chip-sub">Program setup</div>
+              </div>
+            </div>
+
+            <div class="scope-chip">
+              <div class="check-dot">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="scope-chip-title">Govern</div>
+                <div class="scope-chip-sub">Decision-making setup</div>
+              </div>
+            </div>
+
+            <div class="scope-chip">
+              <div class="check-dot">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="scope-chip-title">Diagnose</div>
+                <div class="scope-chip-sub">Current-state &amp; pilot scope</div>
+              </div>
+            </div>
+
+            <div class="scope-chip">
+              <div class="check-dot">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="scope-chip-title">Assess</div>
+                <div class="scope-chip-sub">Operating model assessment</div>
+              </div>
+            </div>
+
+            <div class="scope-chip">
+              <div class="check-dot">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="scope-chip-title">Design</div>
+                <div class="scope-chip-sub">Future-state OTC &amp; BRDs</div>
+              </div>
+            </div>
+
+            <div class="scope-chip">
+              <div class="check-dot">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="scope-chip-title">Prepare</div>
+                <div class="scope-chip-sub">Change impact &amp; readiness</div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="excluded-chip">
+            <div class="x-dot">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </div>
+            <div>
+              <div class="excl-title">Excluded</div>
+              <div class="excl-body">All activities related to system development, testing and implementation of the Cash Application</div>
+              <div class="excl-body">&amp; Collections Pilots, all Emagia rollout waves.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div class="footer-text">
+          <strong>Effort assumption:</strong> Active working model — not light-touch PMO. Structured data collection, workshops and SME interviews to avoid under-scoping a fragmented multi-country OTC transformation.
+        </div>
+        <div class="footer-pills">
+          <div class="fpill">Hands-on working model</div>
+          <div class="fpill">25 countries · ~75 ERPs</div>
+          <div class="fpill">All non-Emagia activities</div>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+</body>
+</html>

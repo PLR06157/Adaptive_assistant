@@ -1,0 +1,1747 @@
+{
+  "version": 2,
+  "exportedAt": "2026-04-20T17:00:33.372Z",
+  "teams": [
+    "Adaptive Program",
+    "Adaptive Diagnostics",
+    "Adaptive Design Authority",
+    "Adaptive Governance & Change",
+    "Adaptive Pilot & Rollout Support",
+    "Adaptive Testing & Validation",
+    "Adaptive Cutover & Stabilization",
+    "Adaptive Enterprise Assessment & Design",
+    "Adaptive Wave BRD",
+    "Emagia Pilot - Cash Application",
+    "Emagia Pilot - Collections",
+    "Emagia Pilot - Shared Gates",
+    "Emagia Rollout - Cash Application",
+    "Emagia Rollout - Collections",
+    "Emagia Rollout - Disputes / Deductions / Reporting",
+    "Emagia Rollout - E-Invoicing",
+    "Emagia Rollout - Credit Management",
+    "Emagia Rollout - Order Management"
+  ],
+  "roles": [
+    {
+      "id": "f021ff3e43dde819daaad178b",
+      "name": "CEO",
+      "rate": 1200
+    },
+    {
+      "id": "9f3a41cf48ae719daaad178b",
+      "name": "Managing Partner & CFO",
+      "rate": 1200
+    },
+    {
+      "id": "9ae2b9a792de1819daaad178b",
+      "name": "Executive Business Director",
+      "rate": 1000
+    },
+    {
+      "id": "57cc30b84682319daaad178b",
+      "name": "Associate Partner",
+      "rate": 1000
+    },
+    {
+      "id": "6c9846a1615bb19daaad178b",
+      "name": "Consulting and Business Development Lead, Europe & Overseas",
+      "rate": 1000
+    },
+    {
+      "id": "ee9fe454562f6819daaad178b",
+      "name": "Senior Manager / Change Management Lead",
+      "rate": 840
+    },
+    {
+      "id": "a64813717e6d9819daaad178b",
+      "name": "Senior Manager / Senior Consultant",
+      "rate": 840
+    },
+    {
+      "id": "1703383e48d9d19daaad178b",
+      "name": "Program Manager / Senior Consultant",
+      "rate": 720
+    },
+    {
+      "id": "ea9374ec700fa819daaad178b",
+      "name": "Senior Project Manager / Senior Consultant",
+      "rate": 600
+    },
+    {
+      "id": "16f44e87480a9819daaad178b",
+      "name": "Project Manager / Consultant",
+      "rate": 520
+    },
+    {
+      "id": "f0a00077817f0819daaad178b",
+      "name": "Project Leader / Consultant",
+      "rate": 460
+    },
+    {
+      "id": "0da01fd79706819daaad178b",
+      "name": "Consultant",
+      "rate": 380
+    },
+    {
+      "id": "5b9ff7793e35b19daaad178b",
+      "name": "Process Expert",
+      "rate": 320
+    },
+    {
+      "id": "80820658fa90419daaad178b",
+      "name": "Process Officer",
+      "rate": 270
+    }
+  ],
+  "tasks": [
+    {
+      "id": "adaptive-01",
+      "name": "Mobilization and program setup",
+      "owner": "Adaptive",
+      "lane": "Adaptive Program",
+      "kind": "activity",
+      "startWeek": 0,
+      "durationWeeks": 1,
+      "endWeek": 1,
+      "color": "#B0BEC5",
+      "start": "2026-04-20",
+      "end": "2026-04-24",
+      "team": "Adaptive Program",
+      "assignments": [
+        {
+          "id": "31131fe7a51ad819daaad7f15",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "0e89954410c9319daaaadeeff",
+          "roleId": "ee9fe454562f6819daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "508372e205df319daaaeb701",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "6b55792f484d519daaaedea6",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-07",
+      "name": "Governance and decision-making setup",
+      "owner": "Adaptive",
+      "lane": "Adaptive Governance & Change",
+      "kind": "activity",
+      "startWeek": 0.5,
+      "durationWeeks": 2,
+      "endWeek": 2.5,
+      "stageGateCoverage": {
+        "startWeek": 0.5,
+        "endWeek": 29,
+        "start": "2026-04-22",
+        "end": "2026-11-09"
+      },
+      "color": "#FFD54F",
+      "note": "Setup is 2 weeks. Governance coverage extends through adaptive-11 (cutover and go-live readiness).",
+      "start": "2026-04-22",
+      "end": "2026-05-06",
+      "team": "Adaptive Governance & Change",
+      "assignments": []
+    },
+    {
+      "id": "adaptive-02",
+      "name": "Current-state diagnostic",
+      "owner": "Adaptive",
+      "lane": "Adaptive Diagnostics",
+      "kind": "activity",
+      "startWeek": 1,
+      "durationWeeks": 4,
+      "endWeek": 5,
+      "color": "#FFF176",
+      "note": "Expanded from 2 to 4 weeks to reflect 25-country, 75-ERP-instance complexity and realistic field access time.",
+      "start": "2026-04-27",
+      "end": "2026-05-22",
+      "team": "Adaptive Diagnostics",
+      "assignments": [
+        {
+          "id": "758dc9d5b7e7e19daab062de",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "3d84a591008519daab062de",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "a015e379d020f819daab062de",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-05",
+      "name": "Pilot scope and country definition",
+      "owner": "Adaptive",
+      "lane": "Adaptive Program",
+      "kind": "activity",
+      "startWeek": 5,
+      "durationWeeks": 1,
+      "endWeek": 6,
+      "color": "#FFCC80",
+      "start": "2026-05-25",
+      "end": "2026-05-29",
+      "team": "Adaptive Program",
+      "assignments": [
+        {
+          "id": "f2a1e45f9dcc9819daab062de",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "85795e7b6341b819daab062de",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "7b2d2f9e40dc19daab062de",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-03",
+      "name": "Process and operating model assessment (pilot)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Diagnostics",
+      "kind": "activity",
+      "startWeek": 6,
+      "durationWeeks": 3,
+      "endWeek": 9,
+      "color": "#64b5f6",
+      "note": "Expanded from 2 to 3 weeks — pilot scope only, covers Cash Application and Collections processes.",
+      "start": "2026-06-01",
+      "end": "2026-06-19",
+      "team": "Adaptive Diagnostics",
+      "assignments": [
+        {
+          "id": "1021bbdafc53e819daab062de",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "09a387add24e519daab062de",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "3c3df2f50ada4819daab062de",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-04",
+      "name": "Future-state OTC design (pilot)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Design Authority",
+      "kind": "activity",
+      "startWeek": 9,
+      "durationWeeks": 3,
+      "endWeek": 12,
+      "color": "#f48fb1",
+      "note": "Pilot scope only — Cash Application and Collections. Enterprise future-state design is a separate later activity.",
+      "start": "2026-06-22",
+      "end": "2026-07-10",
+      "team": "Adaptive Design Authority",
+      "assignments": [
+        {
+          "id": "8a915c1ed8c8919daaf6f4df",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "dec73e708b7bf19daaf6f4df",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "5952a609a56a219daaf6f4df",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-06",
+      "name": "Business requirements and design authority (pilot)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Design Authority",
+      "kind": "activity",
+      "startWeek": 12,
+      "durationWeeks": 4,
+      "endWeek": 16,
+      "color": "#FFD166",
+      "note": "Pilot-only BRD. Expanded from 2 to 4 weeks — covers Cash Application + Collections for 1 pilot country. Enterprise BRD for all countries is a separate later activity.",
+      "start": "2026-07-13",
+      "end": "2026-08-07",
+      "team": "Adaptive Design Authority",
+      "assignments": [
+        {
+          "id": "e62df25f39d08819daab062de",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "780d85fa4bea419daab062de",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "ba9be8d15f38119daab062de",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-08",
+      "name": "Change impact and stakeholder alignment",
+      "owner": "Adaptive",
+      "lane": "Adaptive Governance & Change",
+      "kind": "activity",
+      "startWeek": 7,
+      "durationWeeks": 12,
+      "endWeek": 19,
+      "stageGateCoverage": {
+        "startWeek": 7,
+        "endWeek": 29,
+        "start": "2026-06-08",
+        "end": "2026-11-09"
+      },
+      "color": "#FFB74D",
+      "note": "Starts during process assessment (W7). 12-week active delivery. Coverage extends through adaptive-11.",
+      "start": "2026-06-08",
+      "end": "2026-09-27",
+      "team": "Adaptive Governance & Change",
+      "assignments": [
+        {
+          "id": "8d5d93282509d819daab062de",
+          "roleId": "ee9fe454562f6819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ]
+    },
+    {
+      "id": "adaptive-09",
+      "name": "Pilot readiness planning",
+      "owner": "Adaptive",
+      "lane": "Adaptive Pilot & Rollout Support",
+      "kind": "activity",
+      "startWeek": 16,
+      "durationWeeks": 1,
+      "endWeek": 17,
+      "color": "#AED581",
+      "start": "2026-08-10",
+      "end": "2026-08-14",
+      "team": "Adaptive Pilot & Rollout Support",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-pilot-cash-implementation",
+      "name": "Cash Application Pilot",
+      "owner": "Emagia",
+      "lane": "Emagia Pilot - Cash Application",
+      "kind": "implementation",
+      "startWeek": 16,
+      "durationWeeks": 9,
+      "endWeek": 25,
+      "color": "#4FC3F7",
+      "start": "2026-08-10",
+      "end": "2026-10-09",
+      "team": "Emagia Pilot - Cash Application",
+      "assignments": [
+        {
+          "id": "c376cf00a40b619daab062de",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.2
+        },
+        {
+          "id": "9bae7a46fab819daab062de",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "1e9f7e02a7bdc19daab062de",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-pilot-collections-implementation",
+      "name": "Collections Pilot",
+      "owner": "Emagia",
+      "lane": "Emagia Pilot - Collections",
+      "kind": "implementation",
+      "startWeek": 19,
+      "durationWeeks": 8,
+      "endWeek": 27,
+      "color": "#B39DDB",
+      "startRule": {
+        "type": "start_after_fraction_of_task",
+        "taskId": "emagia-pilot-cash-implementation",
+        "fraction": 0.333333
+      },
+      "start": "2026-08-31",
+      "end": "2026-10-23",
+      "team": "Emagia Pilot - Collections",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-10",
+      "name": "Testing coordination and business validation",
+      "owner": "Adaptive",
+      "lane": "Adaptive Testing & Validation",
+      "kind": "activity",
+      "startWeek": 17,
+      "durationWeeks": 10,
+      "endWeek": 27,
+      "color": "#4FC3F7",
+      "note": "Starts immediately after pilot readiness (W17). Runs throughout pilot implementations, ending when Collections Pilot completes.",
+      "start": "2026-08-17",
+      "end": "2026-10-23",
+      "team": "Adaptive Testing & Validation",
+      "assignments": [
+        {
+          "id": "727e294f17aaf819daab062de",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 0.2
+        },
+        {
+          "id": "48af0f299e2319daab062de",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 0.2
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-pilot-shared-go-live",
+      "name": "Shared pilot go-live",
+      "owner": "Emagia",
+      "lane": "Emagia Pilot - Shared Gates",
+      "kind": "marker",
+      "week": 28.5,
+      "color": "#CFD8DC",
+      "start": "2026-10-24",
+      "end": "2026-10-24",
+      "team": "Emagia Pilot - Shared Gates",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "adaptive-13",
+      "name": "Scale-up preparation and roadmap",
+      "owner": "Adaptive",
+      "lane": "Adaptive Program",
+      "kind": "activity",
+      "startWeek": 31,
+      "durationWeeks": 2,
+      "endWeek": 33,
+      "color": "#BDBDBD",
+      "note": "Placed after pilot stabilization. Completes before enterprise design block starts.",
+      "start": "2026-10-25",
+      "end": "2026-11-05",
+      "team": "Adaptive Program",
+      "assignments": [
+        {
+          "id": "073638b6f531719daab062de",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "29f3c2a9bb88f819daab062de",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "af2d5c3a04af9819daab062de",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "enterprise-assessment",
+      "name": "Enterprise process and operating model assessment",
+      "owner": "Adaptive",
+      "lane": "Adaptive Enterprise Assessment & Design",
+      "kind": "activity",
+      "startWeek": 33,
+      "durationWeeks": 6,
+      "endWeek": 39,
+      "color": "#64B5F6",
+      "note": "Full 25-country scope. Builds on pilot learnings. Feeds enterprise future-state design.",
+      "start": "2026-11-08",
+      "end": "2026-12-17",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "assignments": [
+        {
+          "id": "entassap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "entasspm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "entasssrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "enterprise-future-state",
+      "name": "Enterprise future-state OTC design",
+      "owner": "Adaptive",
+      "lane": "Adaptive Enterprise Assessment & Design",
+      "kind": "activity",
+      "startWeek": 37,
+      "durationWeeks": 4,
+      "endWeek": 41,
+      "color": "#F48FB1",
+      "note": "Starts 2 weeks before enterprise assessment completes (overlap with tail). Full OTC tower scope.",
+      "start": "2026-12-21",
+      "end": "2027-01-15",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "assignments": [
+        {
+          "id": "entfsap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "entfspm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "entfssrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "enterprise-brd-cash",
+      "name": "Enterprise BRD — Cash Application (all countries)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Enterprise Assessment & Design",
+      "kind": "activity",
+      "startWeek": 41,
+      "durationWeeks": 3,
+      "endWeek": 44,
+      "color": "#FFD166",
+      "note": "Starts 1 week before future-state design completes. Must finish before Cash Application Rollout begins.",
+      "start": "2027-01-18",
+      "end": "2027-02-05",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "assignments": [
+        {
+          "id": "entbrdcashap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.5
+        },
+        {
+          "id": "entbrdcashpm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "entbrdcashsrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-rollout-cash-implementation",
+      "name": "Cash Application Rollout",
+      "owner": "Emagia",
+      "lane": "Emagia Rollout - Cash Application",
+      "kind": "implementation",
+      "startWeek": 44,
+      "durationWeeks": 17,
+      "endWeek": 61,
+      "color": "#4FC3F7",
+      "start": "2027-02-08",
+      "end": "2027-06-07",
+      "team": "Emagia Rollout - Cash Application",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "wave-brd-collections",
+      "name": "Enterprise BRD — Collections (all countries)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Wave BRD",
+      "kind": "activity",
+      "startWeek": 45,
+      "durationWeeks": 4,
+      "endWeek": 49,
+      "color": "#B39DDB",
+      "note": "Runs in parallel with Cash Application Rollout (Emagia team). Must complete before Collections Rollout starts. Adaptive core team is free during Emagia-led rollout.",
+      "start": "2027-02-08",
+      "end": "2027-03-11",
+      "team": "Adaptive Wave BRD",
+      "assignments": [
+        {
+          "id": "wbrdcolap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.2
+        },
+        {
+          "id": "wbrdcolpm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "wbrdcolsrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-rollout-collections-implementation",
+      "name": "Collections Rollout",
+      "owner": "Emagia",
+      "lane": "Emagia Rollout - Collections",
+      "kind": "implementation",
+      "startWeek": 49.667,
+      "durationWeeks": 15,
+      "endWeek": 64.667,
+      "color": "#B39DDB",
+      "startRule": {
+        "type": "start_after_fraction_of_task",
+        "taskId": "emagia-rollout-cash-implementation",
+        "fraction": 0.333333
+      },
+      "start": "2027-03-14",
+      "end": "2027-06-27",
+      "team": "Emagia Rollout - Collections",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "wave-brd-disputes",
+      "name": "Enterprise BRD — Disputes / Deductions / Reporting (all countries)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Wave BRD",
+      "kind": "activity",
+      "startWeek": 50,
+      "durationWeeks": 4,
+      "endWeek": 54,
+      "color": "#9FA8DA",
+      "note": "Runs in parallel with Collections Rollout (Emagia team). Must complete before Disputes Rollout starts.",
+      "start": "2027-03-14",
+      "end": "2027-04-13",
+      "team": "Adaptive Wave BRD",
+      "assignments": [
+        {
+          "id": "wbrddispap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.2
+        },
+        {
+          "id": "wbrddisppm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "wbrddispsrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-rollout-disputes-implementation",
+      "name": "Disputes / Deductions / Reporting Rollout",
+      "owner": "Emagia",
+      "lane": "Emagia Rollout - Disputes / Deductions / Reporting",
+      "kind": "implementation",
+      "startWeek": 54.667,
+      "durationWeeks": 15,
+      "endWeek": 69.667,
+      "color": "#9FA8DA",
+      "startRule": {
+        "type": "start_after_fraction_of_task",
+        "taskId": "emagia-rollout-collections-implementation",
+        "fraction": 0.333333
+      },
+      "start": "2027-04-17",
+      "end": "2027-07-31",
+      "team": "Emagia Rollout - Disputes / Deductions / Reporting",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "wave-brd-einvoicing",
+      "name": "Enterprise BRD — E-Invoicing (all countries)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Wave BRD",
+      "kind": "activity",
+      "startWeek": 55,
+      "durationWeeks": 3,
+      "endWeek": 58,
+      "color": "#FFCC80",
+      "note": "Runs in parallel with Disputes Rollout (Emagia team). Must complete before E-Invoicing Rollout starts.",
+      "start": "2027-04-17",
+      "end": "2027-05-12",
+      "team": "Adaptive Wave BRD",
+      "assignments": [
+        {
+          "id": "wbrdinvap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.2
+        },
+        {
+          "id": "wbrdinvpm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "wbrdinvsrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-rollout-einvoicing-implementation",
+      "name": "E-Invoicing Rollout",
+      "owner": "Emagia",
+      "lane": "Emagia Rollout - E-Invoicing",
+      "kind": "implementation",
+      "startWeek": 59.667,
+      "durationWeeks": 8,
+      "endWeek": 67.667,
+      "color": "#FFCC80",
+      "startRule": {
+        "type": "start_after_fraction_of_task",
+        "taskId": "emagia-rollout-disputes-implementation",
+        "fraction": 0.333333
+      },
+      "start": "2027-05-15",
+      "end": "2027-07-10",
+      "team": "Emagia Rollout - E-Invoicing",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "wave-brd-credit",
+      "name": "Enterprise BRD — Credit Management (all countries)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Wave BRD",
+      "kind": "activity",
+      "startWeek": 57,
+      "durationWeeks": 4,
+      "endWeek": 61,
+      "color": "#A5D6A7",
+      "note": "Runs in parallel with Disputes Rollout tail (Emagia team). Must complete before Credit Management Rollout starts.",
+      "start": "2027-05-15",
+      "end": "2027-06-16",
+      "team": "Adaptive Wave BRD",
+      "assignments": [
+        {
+          "id": "wbrdcredap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.2
+        },
+        {
+          "id": "wbrdcredpm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "wbrdcredsrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-rollout-credit-implementation",
+      "name": "Credit Management Rollout",
+      "owner": "Emagia",
+      "lane": "Emagia Rollout - Credit Management",
+      "kind": "implementation",
+      "startWeek": 62.333,
+      "durationWeeks": 15,
+      "endWeek": 77.333,
+      "color": "#a5d6a7",
+      "startRule": {
+        "type": "start_after_fraction_of_task",
+        "taskId": "emagia-rollout-einvoicing-implementation",
+        "fraction": 0.333333
+      },
+      "start": "2027-06-19",
+      "end": "2027-10-02",
+      "team": "Emagia Rollout - Credit Management",
+      "assignments": [],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "wave-brd-order",
+      "name": "Enterprise BRD — Order Management (all countries)",
+      "owner": "Adaptive",
+      "lane": "Adaptive Wave BRD",
+      "kind": "activity",
+      "startWeek": 63,
+      "durationWeeks": 4,
+      "endWeek": 67,
+      "color": "#BCAAA4",
+      "note": "Runs in parallel with Credit Management Rollout (Emagia team). Must complete before Order Management Rollout starts.",
+      "start": "2027-06-19",
+      "end": "2027-07-20",
+      "team": "Adaptive Wave BRD",
+      "assignments": [
+        {
+          "id": "wbrdordap001",
+          "roleId": "57cc30b84682319daaad178b",
+          "personName": "",
+          "fte": 0.2
+        },
+        {
+          "id": "wbrdordpm001",
+          "roleId": "1703383e48d9d19daaad178b",
+          "personName": "",
+          "fte": 1
+        },
+        {
+          "id": "wbrdordsrpm001",
+          "roleId": "ea9374ec700fa819daaad178b",
+          "personName": "",
+          "fte": 1
+        }
+      ],
+      "stageGateCoverage": null
+    },
+    {
+      "id": "emagia-rollout-order-implementation",
+      "name": "Order Management Rollout",
+      "owner": "Emagia",
+      "lane": "Emagia Rollout - Order Management",
+      "kind": "implementation",
+      "startWeek": 67.333,
+      "durationWeeks": 15,
+      "endWeek": 82.333,
+      "color": "#BCAAA4",
+      "startRule": {
+        "type": "start_after_fraction_of_task",
+        "taskId": "emagia-rollout-credit-implementation",
+        "fraction": 0.333333
+      },
+      "start": "2027-07-22",
+      "end": "2027-11-04",
+      "team": "Emagia Rollout - Order Management",
+      "assignments": [],
+      "stageGateCoverage": null
+    }
+  ],
+  "staffAllocations": [
+    {
+      "id": "31131fe7a51ad819daaad7f15",
+      "taskId": "adaptive-01",
+      "taskName": "Mobilization and program setup",
+      "team": "Adaptive Program",
+      "start": "2026-04-20",
+      "end": "2026-04-24",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 2.5,
+      "cost": 2500
+    },
+    {
+      "id": "0e89954410c9319daaaadeeff",
+      "taskId": "adaptive-01",
+      "taskName": "Mobilization and program setup",
+      "team": "Adaptive Program",
+      "start": "2026-04-20",
+      "end": "2026-04-24",
+      "roleId": "ee9fe454562f6819daaad178b",
+      "roleName": "Senior Manager / Change Management Lead",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 840,
+      "workingDays": 5,
+      "cost": 4200
+    },
+    {
+      "id": "508372e205df319daaaeb701",
+      "taskId": "adaptive-01",
+      "taskName": "Mobilization and program setup",
+      "team": "Adaptive Program",
+      "start": "2026-04-20",
+      "end": "2026-04-24",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 5,
+      "cost": 3600
+    },
+    {
+      "id": "6b55792f484d519daaaedea6",
+      "taskId": "adaptive-01",
+      "taskName": "Mobilization and program setup",
+      "team": "Adaptive Program",
+      "start": "2026-04-20",
+      "end": "2026-04-24",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 5,
+      "cost": 3000
+    },
+    {
+      "id": "758dc9d5b7e7e19daab062de",
+      "taskId": "adaptive-02",
+      "taskName": "Current-state diagnostic",
+      "team": "Adaptive Diagnostics",
+      "start": "2026-04-27",
+      "end": "2026-05-22",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 10,
+      "cost": 10000
+    },
+    {
+      "id": "3d84a591008519daab062de",
+      "taskId": "adaptive-02",
+      "taskName": "Current-state diagnostic",
+      "team": "Adaptive Diagnostics",
+      "start": "2026-04-27",
+      "end": "2026-05-22",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 20,
+      "cost": 14400
+    },
+    {
+      "id": "a015e379d020f819daab062de",
+      "taskId": "adaptive-02",
+      "taskName": "Current-state diagnostic",
+      "team": "Adaptive Diagnostics",
+      "start": "2026-04-27",
+      "end": "2026-05-22",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 20,
+      "cost": 12000
+    },
+    {
+      "id": "f2a1e45f9dcc9819daab062de",
+      "taskId": "adaptive-05",
+      "taskName": "Pilot scope and country definition",
+      "team": "Adaptive Program",
+      "start": "2026-05-25",
+      "end": "2026-05-29",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 2.5,
+      "cost": 2500
+    },
+    {
+      "id": "85795e7b6341b819daab062de",
+      "taskId": "adaptive-05",
+      "taskName": "Pilot scope and country definition",
+      "team": "Adaptive Program",
+      "start": "2026-05-25",
+      "end": "2026-05-29",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 5,
+      "cost": 3600
+    },
+    {
+      "id": "7b2d2f9e40dc19daab062de",
+      "taskId": "adaptive-05",
+      "taskName": "Pilot scope and country definition",
+      "team": "Adaptive Program",
+      "start": "2026-05-25",
+      "end": "2026-05-29",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 5,
+      "cost": 3000
+    },
+    {
+      "id": "1021bbdafc53e819daab062de",
+      "taskId": "adaptive-03",
+      "taskName": "Process and operating model assessment (pilot)",
+      "team": "Adaptive Diagnostics",
+      "start": "2026-06-01",
+      "end": "2026-06-19",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 7.5,
+      "cost": 7500
+    },
+    {
+      "id": "09a387add24e519daab062de",
+      "taskId": "adaptive-03",
+      "taskName": "Process and operating model assessment (pilot)",
+      "team": "Adaptive Diagnostics",
+      "start": "2026-06-01",
+      "end": "2026-06-19",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 15,
+      "cost": 10800
+    },
+    {
+      "id": "3c3df2f50ada4819daab062de",
+      "taskId": "adaptive-03",
+      "taskName": "Process and operating model assessment (pilot)",
+      "team": "Adaptive Diagnostics",
+      "start": "2026-06-01",
+      "end": "2026-06-19",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 15,
+      "cost": 9000
+    },
+    {
+      "id": "8a915c1ed8c8919daaf6f4df",
+      "taskId": "adaptive-04",
+      "taskName": "Future-state OTC design (pilot)",
+      "team": "Adaptive Design Authority",
+      "start": "2026-06-22",
+      "end": "2026-07-10",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 7.5,
+      "cost": 7500
+    },
+    {
+      "id": "dec73e708b7bf19daaf6f4df",
+      "taskId": "adaptive-04",
+      "taskName": "Future-state OTC design (pilot)",
+      "team": "Adaptive Design Authority",
+      "start": "2026-06-22",
+      "end": "2026-07-10",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 15,
+      "cost": 10800
+    },
+    {
+      "id": "5952a609a56a219daaf6f4df",
+      "taskId": "adaptive-04",
+      "taskName": "Future-state OTC design (pilot)",
+      "team": "Adaptive Design Authority",
+      "start": "2026-06-22",
+      "end": "2026-07-10",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 15,
+      "cost": 9000
+    },
+    {
+      "id": "e62df25f39d08819daab062de",
+      "taskId": "adaptive-06",
+      "taskName": "Business requirements and design authority (pilot)",
+      "team": "Adaptive Design Authority",
+      "start": "2026-07-13",
+      "end": "2026-08-07",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 10,
+      "cost": 10000
+    },
+    {
+      "id": "780d85fa4bea419daab062de",
+      "taskId": "adaptive-06",
+      "taskName": "Business requirements and design authority (pilot)",
+      "team": "Adaptive Design Authority",
+      "start": "2026-07-13",
+      "end": "2026-08-07",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 20,
+      "cost": 14400
+    },
+    {
+      "id": "ba9be8d15f38119daab062de",
+      "taskId": "adaptive-06",
+      "taskName": "Business requirements and design authority (pilot)",
+      "team": "Adaptive Design Authority",
+      "start": "2026-07-13",
+      "end": "2026-08-07",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 20,
+      "cost": 12000
+    },
+    {
+      "id": "8d5d93282509d819daab062de",
+      "taskId": "adaptive-08",
+      "taskName": "Change impact and stakeholder alignment",
+      "team": "Adaptive Governance & Change",
+      "start": "2026-06-08",
+      "end": "2026-09-27",
+      "roleId": "ee9fe454562f6819daaad178b",
+      "roleName": "Senior Manager / Change Management Lead",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 840,
+      "workingDays": 80,
+      "cost": 67200
+    },
+    {
+      "id": "c376cf00a40b619daab062de",
+      "taskId": "emagia-pilot-cash-implementation",
+      "taskName": "Cash Application Pilot",
+      "team": "Emagia Pilot - Cash Application",
+      "start": "2026-08-10",
+      "end": "2026-10-09",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 1000,
+      "workingDays": 9,
+      "cost": 9000
+    },
+    {
+      "id": "9bae7a46fab819daab062de",
+      "taskId": "emagia-pilot-cash-implementation",
+      "taskName": "Cash Application Pilot",
+      "team": "Emagia Pilot - Cash Application",
+      "start": "2026-08-10",
+      "end": "2026-10-09",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 45,
+      "cost": 32400
+    },
+    {
+      "id": "1e9f7e02a7bdc19daab062de",
+      "taskId": "emagia-pilot-cash-implementation",
+      "taskName": "Cash Application Pilot",
+      "team": "Emagia Pilot - Cash Application",
+      "start": "2026-08-10",
+      "end": "2026-10-09",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 45,
+      "cost": 27000
+    },
+    {
+      "id": "727e294f17aaf819daab062de",
+      "taskId": "adaptive-10",
+      "taskName": "Testing coordination and business validation",
+      "team": "Adaptive Testing & Validation",
+      "start": "2026-08-17",
+      "end": "2026-10-23",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 720,
+      "workingDays": 10,
+      "cost": 7200
+    },
+    {
+      "id": "48af0f299e2319daab062de",
+      "taskId": "adaptive-10",
+      "taskName": "Testing coordination and business validation",
+      "team": "Adaptive Testing & Validation",
+      "start": "2026-08-17",
+      "end": "2026-10-23",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 600,
+      "workingDays": 10,
+      "cost": 6000
+    },
+    {
+      "id": "073638b6f531719daab062de",
+      "taskId": "adaptive-13",
+      "taskName": "Scale-up preparation and roadmap",
+      "team": "Adaptive Program",
+      "start": "2026-10-25",
+      "end": "2026-11-05",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 4.5,
+      "cost": 4500
+    },
+    {
+      "id": "29f3c2a9bb88f819daab062de",
+      "taskId": "adaptive-13",
+      "taskName": "Scale-up preparation and roadmap",
+      "team": "Adaptive Program",
+      "start": "2026-10-25",
+      "end": "2026-11-05",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 9,
+      "cost": 6480
+    },
+    {
+      "id": "af2d5c3a04af9819daab062de",
+      "taskId": "adaptive-13",
+      "taskName": "Scale-up preparation and roadmap",
+      "team": "Adaptive Program",
+      "start": "2026-10-25",
+      "end": "2026-11-05",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 9,
+      "cost": 5400
+    },
+    {
+      "id": "entassap001",
+      "taskId": "enterprise-assessment",
+      "taskName": "Enterprise process and operating model assessment",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2026-11-08",
+      "end": "2026-12-17",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 14.5,
+      "cost": 14500
+    },
+    {
+      "id": "entasspm001",
+      "taskId": "enterprise-assessment",
+      "taskName": "Enterprise process and operating model assessment",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2026-11-08",
+      "end": "2026-12-17",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 29,
+      "cost": 20880
+    },
+    {
+      "id": "entasssrpm001",
+      "taskId": "enterprise-assessment",
+      "taskName": "Enterprise process and operating model assessment",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2026-11-08",
+      "end": "2026-12-17",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 29,
+      "cost": 17400
+    },
+    {
+      "id": "entfsap001",
+      "taskId": "enterprise-future-state",
+      "taskName": "Enterprise future-state OTC design",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2026-12-21",
+      "end": "2027-01-15",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 10,
+      "cost": 10000
+    },
+    {
+      "id": "entfspm001",
+      "taskId": "enterprise-future-state",
+      "taskName": "Enterprise future-state OTC design",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2026-12-21",
+      "end": "2027-01-15",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 20,
+      "cost": 14400
+    },
+    {
+      "id": "entfssrpm001",
+      "taskId": "enterprise-future-state",
+      "taskName": "Enterprise future-state OTC design",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2026-12-21",
+      "end": "2027-01-15",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 20,
+      "cost": 12000
+    },
+    {
+      "id": "entbrdcashap001",
+      "taskId": "enterprise-brd-cash",
+      "taskName": "Enterprise BRD — Cash Application (all countries)",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2027-01-18",
+      "end": "2027-02-05",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.5,
+      "dailyRate": 1000,
+      "workingDays": 7.5,
+      "cost": 7500
+    },
+    {
+      "id": "entbrdcashpm001",
+      "taskId": "enterprise-brd-cash",
+      "taskName": "Enterprise BRD — Cash Application (all countries)",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2027-01-18",
+      "end": "2027-02-05",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 15,
+      "cost": 10800
+    },
+    {
+      "id": "entbrdcashsrpm001",
+      "taskId": "enterprise-brd-cash",
+      "taskName": "Enterprise BRD — Cash Application (all countries)",
+      "team": "Adaptive Enterprise Assessment & Design",
+      "start": "2027-01-18",
+      "end": "2027-02-05",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 15,
+      "cost": 9000
+    },
+    {
+      "id": "wbrdcolap001",
+      "taskId": "wave-brd-collections",
+      "taskName": "Enterprise BRD — Collections (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-02-08",
+      "end": "2027-03-11",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 1000,
+      "workingDays": 4.800000000000001,
+      "cost": 4800.000000000001
+    },
+    {
+      "id": "wbrdcolpm001",
+      "taskId": "wave-brd-collections",
+      "taskName": "Enterprise BRD — Collections (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-02-08",
+      "end": "2027-03-11",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 24,
+      "cost": 17280
+    },
+    {
+      "id": "wbrdcolsrpm001",
+      "taskId": "wave-brd-collections",
+      "taskName": "Enterprise BRD — Collections (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-02-08",
+      "end": "2027-03-11",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 24,
+      "cost": 14400
+    },
+    {
+      "id": "wbrddispap001",
+      "taskId": "wave-brd-disputes",
+      "taskName": "Enterprise BRD — Disputes / Deductions / Reporting (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-03-14",
+      "end": "2027-04-13",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 1000,
+      "workingDays": 4.4,
+      "cost": 4400
+    },
+    {
+      "id": "wbrddisppm001",
+      "taskId": "wave-brd-disputes",
+      "taskName": "Enterprise BRD — Disputes / Deductions / Reporting (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-03-14",
+      "end": "2027-04-13",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 22,
+      "cost": 15840
+    },
+    {
+      "id": "wbrddispsrpm001",
+      "taskId": "wave-brd-disputes",
+      "taskName": "Enterprise BRD — Disputes / Deductions / Reporting (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-03-14",
+      "end": "2027-04-13",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 22,
+      "cost": 13200
+    },
+    {
+      "id": "wbrdinvap001",
+      "taskId": "wave-brd-einvoicing",
+      "taskName": "Enterprise BRD — E-Invoicing (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-04-17",
+      "end": "2027-05-12",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 1000,
+      "workingDays": 3.6,
+      "cost": 3600
+    },
+    {
+      "id": "wbrdinvpm001",
+      "taskId": "wave-brd-einvoicing",
+      "taskName": "Enterprise BRD — E-Invoicing (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-04-17",
+      "end": "2027-05-12",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 18,
+      "cost": 12960
+    },
+    {
+      "id": "wbrdinvsrpm001",
+      "taskId": "wave-brd-einvoicing",
+      "taskName": "Enterprise BRD — E-Invoicing (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-04-17",
+      "end": "2027-05-12",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 18,
+      "cost": 10800
+    },
+    {
+      "id": "wbrdcredap001",
+      "taskId": "wave-brd-credit",
+      "taskName": "Enterprise BRD — Credit Management (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-05-15",
+      "end": "2027-06-16",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 1000,
+      "workingDays": 4.6000000000000005,
+      "cost": 4600.000000000001
+    },
+    {
+      "id": "wbrdcredpm001",
+      "taskId": "wave-brd-credit",
+      "taskName": "Enterprise BRD — Credit Management (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-05-15",
+      "end": "2027-06-16",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 23,
+      "cost": 16560
+    },
+    {
+      "id": "wbrdcredsrpm001",
+      "taskId": "wave-brd-credit",
+      "taskName": "Enterprise BRD — Credit Management (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-05-15",
+      "end": "2027-06-16",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 23,
+      "cost": 13800
+    },
+    {
+      "id": "wbrdordap001",
+      "taskId": "wave-brd-order",
+      "taskName": "Enterprise BRD — Order Management (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-06-19",
+      "end": "2027-07-20",
+      "roleId": "57cc30b84682319daaad178b",
+      "roleName": "Associate Partner",
+      "personName": "",
+      "fte": 0.2,
+      "dailyRate": 1000,
+      "workingDays": 4.4,
+      "cost": 4400
+    },
+    {
+      "id": "wbrdordpm001",
+      "taskId": "wave-brd-order",
+      "taskName": "Enterprise BRD — Order Management (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-06-19",
+      "end": "2027-07-20",
+      "roleId": "1703383e48d9d19daaad178b",
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 720,
+      "workingDays": 22,
+      "cost": 15840
+    },
+    {
+      "id": "wbrdordsrpm001",
+      "taskId": "wave-brd-order",
+      "taskName": "Enterprise BRD — Order Management (all countries)",
+      "team": "Adaptive Wave BRD",
+      "start": "2027-06-19",
+      "end": "2027-07-20",
+      "roleId": "ea9374ec700fa819daaad178b",
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "",
+      "fte": 1,
+      "dailyRate": 600,
+      "workingDays": 22,
+      "cost": 13200
+    }
+  ],
+  "staffingSummary": [
+    {
+      "roleName": "Associate Partner",
+      "personName": "Role total",
+      "workingDays": 107.3,
+      "rate": 1000,
+      "cost": 107300
+    },
+    {
+      "roleName": "Program Manager / Senior Consultant",
+      "personName": "Role total",
+      "workingDays": 317,
+      "rate": 720,
+      "cost": 228240
+    },
+    {
+      "roleName": "Senior Manager / Change Management Lead",
+      "personName": "Role total",
+      "workingDays": 85,
+      "rate": 840,
+      "cost": 71400
+    },
+    {
+      "roleName": "Senior Project Manager / Senior Consultant",
+      "personName": "Role total",
+      "workingDays": 317,
+      "rate": 600,
+      "cost": 190200
+    }
+  ],
+  "view": {
+    "dayWidth": 4,
+    "rangeSteps": 0,
+    "filterTeam": "ALL"
+  }
+}

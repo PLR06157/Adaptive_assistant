@@ -1,0 +1,43 @@
+CORE BRAND COLORS:
+- Primary Gold: #B8975A (elegant, sophisticated gold/beige)
+- Light Gold: #C5A572 (for highlights and accents)
+- Dark Gold: #9A7D42 (for depth and shadows)
+- Professional Black: #000000 (secondary brand color)
+- Charcoal: #2C2C2C (for text and subtle elements)
+- Pure White: #FFFFFF (backgrounds, contrast)
+- Light Beige: #F8F6F3 (soft backgrounds, alternating sections)
+
+ACCENT & STATUS COLORS:
+- Success Green: #4CAF50
+- Error Red: #F44336
+- Warning Orange: #FF9800
+- Info Blue: #2196F3
+- Neutral Gray: #9E9E9E
+
+GRADIENTS (for premium feel):
+- Gold Horizontal: linear-gradient(90deg, #D4C5A0 0%, #B8975A 50%, #D4C5A0 100%)
+- Gold Vertical: linear-gradient(180deg, #D4C5A0 0%, #B8975A 100%)
+- Dark Gradient: linear-gradient(135deg, #1A1A1A 0%, #000000 100%)
+
+TYPOGRAPHY STYLE:
+- Headings: Copperplate, Georgia, or elegant serif fonts
+- Body text: Open Sans, Roboto, clean sans-serif
+- Characteristics: Professional, authoritative, sophisticated
+- Text hierarchy: Bold headings (700 weight), medium body (400-600 weight)
+
+VISUAL STYLE:
+- Modern, clean, professional B2B aesthetic
+- Elegant minimalism with strategic gold accents
+- Corporate sophistication meets approachable consulting style
+- Subtle shadows: 0px 2px 6px rgba(0, 0, 0, 0.10)
+- Border radius: 8px for cards, 4px for buttons
+- High contrast for readability on mobile devices
+
+DESIGN PRINCIPLES:
+- Hexagonal patterns (subtle background elements, from logo)
+- Salamandra motif (adaptability concept, can be abstract)
+- Clean geometric shapes
+- Generous white space
+- Gold used sparingly as premium accent, not overwhelming
+- Professional photography style when using people
+- Isometric or flat illustration style for diagrams

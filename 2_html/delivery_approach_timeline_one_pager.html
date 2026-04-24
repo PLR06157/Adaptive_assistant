@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery Approach and Timeline - OTC Transformation</title>
+  <style>
+    :root {
+      --gold: #b8975a;
+      --light-gold: #c5a572;
+      --dark-gold: #9a7d42;
+      --black: #000000;
+      --charcoal: #2c2c2c;
+      --white: #ffffff;
+      --beige: #f8f6f3;
+      --soft-gold: #efe6d4;
+      --soft-green: #eaf6ec;
+      --green: #4caf50;
+      --green-dark: #2e7d32;
+      --soft-blue: #eef4fb;
+      --blue: #4e789d;
+      --soft-orange: #fff4e5;
+      --orange: #ff9800;
+      --line: rgba(184, 151, 90, 0.22);
+      --shadow: 0px 4px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--white);
+      color: var(--charcoal);
+      font-family: "Open Sans", Roboto, Arial, sans-serif;
+      overflow-y: auto;
+    }
+
+    body { padding: 24px; }
+
+    .editor-tools {
+      position: sticky;
+      top: 8px;
+      z-index: 20;
+      display: flex;
+      justify-content: flex-end;
+      margin: 0 auto 10px;
+      width: min(1600px, 100%);
+      gap: 8px;
+    }
+
+    .tool-btn {
+      background: var(--white);
+      color: var(--charcoal);
+      border: 1px solid rgba(184, 151, 90, 0.35);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .page {
+      width: min(1600px, 100%);
+      min-height: calc((min(1600px, 100%)) * 9 / 16);
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+      overflow: visible;
+      position: relative;
+    }
+
+    .content {
+      padding: 28px 30px 34px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--dark-gold);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: Georgia, "Times New Roman", serif;
+      margin: 0;
+      color: var(--black);
+    }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.08;
+      max-width: 1080px;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--charcoal);
+      max-width: 1180px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+      padding-bottom: 14px;
+      border-bottom: 2px solid rgba(184, 151, 90, 0.2);
+    }
+
+    .hero-card {
+      grid-column: 1 / -1;
+      background: linear-gradient(90deg, #d4c5a0 0%, #b8975a 50%, #d4c5a0 100%);
+      color: var(--black);
+      border-radius: 14px;
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .hero-big {
+      font-size: 48px;
+      line-height: 0.95;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .hero-copy {
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .mini-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .mini-kpi {
+      background: var(--white);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      padding: 11px 12px;
+    }
+
+    .mini-kpi .t {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--dark-gold);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .mini-kpi .v {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 5px;
+    }
+
+    .mini-kpi .s {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      background: linear-gradient(90deg, rgba(212, 197, 160, 0.32) 0%, rgba(184, 151, 90, 0.12) 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 16px;
+    }
+
+    .panel-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-header h2 { font-size: 20px; }
+    .panel-body { padding: 16px; }
+
+    .badge {
+      color: var(--green-dark);
+      background: var(--soft-green);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .logic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .logic-card {
+      background: linear-gradient(180deg, #ffffff 0%, #fbfaf7 100%);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .logic-card .n {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--dark-gold);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .logic-card .big {
+      font-size: 22px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+
+    .logic-card .small {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: 1.22fr 0.78fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .timeline-stage {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .timeline-stage:last-child { margin-bottom: 0; }
+
+    .timeline-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .track {
+      height: 34px;
+      background: rgba(0, 0, 0, 0.06);
+      border-radius: 999px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--black);
+      white-space: nowrap;
+    }
+
+    .bar.gold { background: linear-gradient(90deg, #d8c59a 0%, #b8975a 100%); }
+    .bar.green { background: linear-gradient(90deg, #a5d6a7 0%, #4caf50 100%); }
+    .bar.blue { background: linear-gradient(90deg, #c9dced 0%, #7aa4c7 100%); }
+    .bar.orange { background: linear-gradient(90deg, #ffe0b2 0%, #ffb74d 100%); }
+
+    .stage-note {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--beige);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .sequence-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sequence-card {
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--green);
+      border-radius: 12px;
+      padding: 13px 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfaf7 100%);
+    }
+
+    .sequence-card h3 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .sequence-card p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .rollout-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+
+    .rollout-step {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 10px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfaf7 100%);
+      text-align: center;
+      position: relative;
+    }
+
+    .rollout-step::after {
+      content: "→";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--dark-gold);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .rollout-step:last-child::after { display: none; }
+
+    .rollout-no {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+      background: linear-gradient(180deg, #d4c5a0 0%, #b8975a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--black);
+    }
+
+    .rollout-name {
+      font-size: 13px;
+      line-height: 1.28;
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .quant-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 9px;
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    .takeaway-card {
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--soft-orange);
+      margin-bottom: 10px;
+    }
+
+    .takeaway-card:last-child { margin-bottom: 0; }
+
+    .takeaway-card h3 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .takeaway-card p {
+      margin: 0;
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    .small-note {
+      font-size: 11.5px;
+      color: #666;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+
+    [contenteditable="true"] {
+      outline: none;
+      transition: background 0.2s ease;
+    }
+
+    [contenteditable="true"]:hover { background: rgba(197, 165, 114, 0.08); }
+
+    [contenteditable="true"]:focus {
+      background: rgba(197, 165, 114, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(184, 151, 90, 0.55);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1200px) {
+      .hero,
+      .focus-grid,
+      .summary-grid,
+      .logic-grid,
+      .rollout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rollout-step::after { display: none; }
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+      .content { padding: 18px; }
+      .hero-card { grid-template-columns: 1fr; }
+      .mini-strip { grid-template-columns: 1fr; }
+      .timeline-stage { grid-template-columns: 1fr; }
+      .panel-header-row { flex-direction: column; align-items: start; }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-tools">
+    <button class="tool-btn" onclick="toggleEdit()">Toggle edit mode</button>
+    <button class="tool-btn" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
+  <div class="page" id="slide">
+    <div class="content">
+      <section>
+        <div class="eyebrow" contenteditable="true">OTC Transformation | Delivery Approach and Timeline</div>
+        <h1 contenteditable="true">A pilot-first delivery model that proves value early and scales only after validated outcomes</h1>
+        <div class="subtitle" contenteditable="true">The program is designed as a phased transformation rather than a big-bang rollout across the full OTC landscape. The delivery model is intended to balance speed, control, and scalability in a highly fragmented multi-country environment.</div>
+      </section>
+
+      <section class="hero">
+        <div class="hero-card">
+          <div class="hero-big" contenteditable="true">Pilot<br />First</div>
+          <div>
+            <div class="hero-copy" contenteditable="true">Adaptive-led mobilization, diagnostic, pilot design, governance, and readiness activities establish the business foundation before Emagia implementation begins. This anchors deployment in agreed priorities, confirmed design choices, and clear stakeholder ownership.</div>
+            <div class="mini-strip">
+              <div class="mini-kpi">
+                <div class="t" contenteditable="true">Delivery logic</div>
+                <div class="v" contenteditable="true">Stage gates</div>
+                <div class="s" contenteditable="true">Move from proof of value to scale only after validated outcomes</div>
+              </div>
+              <div class="mini-kpi">
+                <div class="t" contenteditable="true">Pilot structure</div>
+                <div class="v" contenteditable="true">2 streams</div>
+                <div class="s" contenteditable="true">Cash Application starts first, then Collections overlaps and converges into shared go-live</div>
+              </div>
+              <div class="mini-kpi">
+                <div class="t" contenteditable="true">Rollout path</div>
+                <div class="v" contenteditable="true">6 waves</div>
+                <div class="s" contenteditable="true">Sequenced expansion from pilot learning into broader OTC capabilities</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-header-row">
+              <h2 contenteditable="true">How the program will be delivered</h2>
+              <div class="badge" contenteditable="true">Balance speed, control, and scale</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="logic-grid">
+              <div class="logic-card">
+                <div class="n" contenteditable="true">Foundation first</div>
+                <div class="big" contenteditable="true">Adaptive-led mobilization and design up front</div>
+                <div class="small" contenteditable="true">Build the business foundation before implementation begins so pilot delivery is anchored in agreed priorities.</div>
+              </div>
+              <div class="logic-card">
+                <div class="n" contenteditable="true">Controlled delivery</div>
+                <div class="big" contenteditable="true">Pilot before enterprise rollout</div>
+                <div class="small" contenteditable="true">Limit execution risk by proving the model in a smaller, governed deployment before wider expansion.</div>
+              </div>
+              <div class="logic-card">
+                <div class="n" contenteditable="true">Scalable model</div>
+                <div class="big" contenteditable="true">Roll out in sequenced functional waves</div>
+                <div class="small" contenteditable="true">Use learning from each stage to improve decision quality and scale with stronger control.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="focus-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-header-row">
+              <h2 contenteditable="true">Pilot-first sequence</h2>
+              <div class="badge" contenteditable="true">Shared pilot go-live before scale-up</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="timeline-stage">
+              <div class="timeline-label" contenteditable="true">Business foundation</div>
+              <div class="track">
+                <div class="bar gold" style="left:0%; width:34%;" contenteditable="true">Mobilization, diagnostic, design, governance, readiness</div>
+              </div>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="timeline-label" contenteditable="true">Cash Application pilot</div>
+              <div class="track">
+                <div class="bar green" style="left:18%; width:46%;" contenteditable="true">Starts first</div>
+              </div>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="timeline-label" contenteditable="true">Collections pilot</div>
+              <div class="track">
+                <div class="bar blue" style="left:33%; width:31%;" contenteditable="true">Starts after roughly one-third of Cash Application duration</div>
+              </div>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="timeline-label" contenteditable="true">Shared pilot go-live</div>
+              <div class="track">
+                <div class="bar orange" style="left:64%; width:12%;" contenteditable="true">Converged go-live</div>
+              </div>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="timeline-label" contenteditable="true">Scale-up preparation</div>
+              <div class="track">
+                <div class="bar gold" style="left:77%; width:13%;" contenteditable="true">Prepare for rollout</div>
+              </div>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="timeline-label" contenteditable="true">Enterprise rollout</div>
+              <div class="track">
+                <div class="bar green" style="left:90%; width:10%;" contenteditable="true">Broader rollout begins</div>
+              </div>
+            </div>
+
+            <div class="stage-note" contenteditable="true">This sequence creates a controlled transition from design into delivery. Both pilot streams overlap for part of the timeline, then converge into a shared go-live before broader rollout begins.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-header-row">
+              <h2 contenteditable="true">Why this timeline reduces risk</h2>
+              <div class="badge" contenteditable="true">Decision quality improves stage by stage</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="sequence-list">
+              <div class="sequence-card">
+                <h3 contenteditable="true">Avoid a big-bang deployment</h3>
+                <p contenteditable="true">The program does not commit the full OTC landscape before pilot outcomes are known.</p>
+              </div>
+              <div class="sequence-card">
+                <h3 contenteditable="true">Create a real proof point</h3>
+                <p contenteditable="true">Pilot delivery is intended to validate process priorities, design choices, readiness, and stakeholder ownership in practice.</p>
+              </div>
+              <div class="sequence-card">
+                <h3 contenteditable="true">Use scale-up preparation as a gate</h3>
+                <p contenteditable="true">Broader rollout begins only after pilot completion and a dedicated scale-up preparation step.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-header-row">
+            <h2 contenteditable="true">Broader rollout structure</h2>
+            <div class="badge" contenteditable="true">Sequenced functional rollout model</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="rollout-grid">
+            <div class="rollout-step">
+              <div class="rollout-no">1</div>
+              <div class="rollout-name" contenteditable="true">Cash Application</div>
+            </div>
+            <div class="rollout-step">
+              <div class="rollout-no">2</div>
+              <div class="rollout-name" contenteditable="true">Collections</div>
+            </div>
+            <div class="rollout-step">
+              <div class="rollout-no">3</div>
+              <div class="rollout-name" contenteditable="true">Disputes / Deductions / Reporting</div>
+            </div>
+            <div class="rollout-step">
+              <div class="rollout-no">4</div>
+              <div class="rollout-name" contenteditable="true">E-Invoicing</div>
+            </div>
+            <div class="rollout-step">
+              <div class="rollout-no">5</div>
+              <div class="rollout-name" contenteditable="true">Credit Management</div>
+            </div>
+            <div class="rollout-step">
+              <div class="rollout-no">6</div>
+              <div class="rollout-name" contenteditable="true">Order Management</div>
+            </div>
+          </div>
+          <div class="small-note" contenteditable="true">Each wave is intended to build on the governance, design, and implementation learning from the previous stages, allowing the organization to scale in a more structured and lower-risk way.</div>
+        </div>
+      </section>
+
+      <section class="summary-grid">
+        <div class="panel">
+          <div class="panel-header"><h2 contenteditable="true">What this model creates</h2></div>
+          <div class="panel-body">
+            <ul class="quant-list">
+              <li contenteditable="true"><strong>Clear separation between business foundation work and implementation</strong> so the pilot starts from a stronger operating baseline.</li>
+              <li contenteditable="true"><strong>Controlled overlap between Cash Application and Collections pilots</strong> to balance early value with manageable complexity.</li>
+              <li contenteditable="true"><strong>Explicit stage gates</strong> between pilot success, scale-up preparation, and broader enterprise rollout.</li>
+              <li contenteditable="true"><strong>A functional rollout order</strong> that allows each wave to benefit from prior learning instead of restarting design assumptions.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h2 contenteditable="true">Slide takeaway</h2></div>
+          <div class="panel-body">
+            <div class="takeaway-card">
+              <h3 contenteditable="true">Reduce risk without slowing momentum</h3>
+              <p contenteditable="true">This delivery model is intended to reduce risk, improve decision quality, and avoid overcommitting too early in a complex multi-country OTC environment.</p>
+            </div>
+            <div class="takeaway-card">
+              <h3 contenteditable="true">Move from proof of value to scale with discipline</h3>
+              <p contenteditable="true">The pilot-first sequence creates clear gates between validated outcomes and wider rollout, helping the client scale with greater control and confidence.</p>
+            </div>
+            <div class="small-note" contenteditable="true">All text is editable inline in the browser. The slide is designed as a printable one-page HTML summary.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    let editEnabled = true;
+    function toggleEdit() {
+      editEnabled = !editEnabled;
+      document.querySelectorAll("[contenteditable]").forEach((el) => {
+        el.setAttribute("contenteditable", editEnabled ? "true" : "false");
+      });
+    }
+  </script>
+</body>
+</html>

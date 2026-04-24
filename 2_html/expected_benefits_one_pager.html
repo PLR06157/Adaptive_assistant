@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expected Benefits — OTC Transformation One-Pager</title>
+  <style>
+    :root {
+      --gold: #B8975A;
+      --light-gold: #C5A572;
+      --dark-gold: #9A7D42;
+      --black: #000000;
+      --charcoal: #2C2C2C;
+      --white: #FFFFFF;
+      --beige: #F8F6F3;
+      --soft-gold: #EFE6D4;
+      --success: #4CAF50;
+      --success-dark: #2E7D32;
+      --success-soft: #EAF6EC;
+      --warning: #FF9800;
+      --error: #F44336;
+      --gray: #9E9E9E;
+      --line: rgba(184,151,90,0.22);
+      --shadow: 0px 4px 14px rgba(0, 0, 0, 0.10);
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--white);
+      color: var(--charcoal);
+      font-family: "Open Sans", Roboto, Arial, sans-serif;
+      overflow-y: auto;
+    }
+
+    body { padding: 24px; }
+
+    .page {
+      width: min(1600px, 100%);
+      min-height: calc((min(1600px, 100%)) * 9 / 16);
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+      overflow: visible;
+      position: relative;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 28px 30px 34px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .editor-tools {
+      position: sticky;
+      top: 8px;
+      z-index: 20;
+      display: flex;
+      justify-content: flex-end;
+      margin: 0 auto 10px;
+      width: min(1600px, 100%);
+      gap: 8px;
+    }
+
+    .tool-btn {
+      background: var(--white);
+      color: var(--charcoal);
+      border: 1px solid rgba(184,151,90,0.35);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--dark-gold);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: Georgia, "Times New Roman", serif;
+      margin: 0;
+      color: var(--black);
+    }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.08;
+      max-width: 980px;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--charcoal);
+      max-width: 980px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+      padding-bottom: 14px;
+      border-bottom: 2px solid rgba(184,151,90,0.20);
+    }
+
+    .hero-card {
+      background: linear-gradient(90deg, #D4C5A0 0%, #B8975A 50%, #D4C5A0 100%);
+      color: var(--black);
+      border-radius: 14px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 18px;
+      align-items: center;
+      grid-column: 1 / -1;
+    }
+
+    .hero-panel-left {
+      grid-column: 1;
+    }
+
+    .hero-panel-right {
+      grid-column: 2;
+    }
+
+    .hero-big {
+      font-size: 54px;
+      line-height: 0.95;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .hero-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero-copy {
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .mini-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .mini-kpi {
+      background: var(--white);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .mini-kpi .t {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--dark-gold);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .mini-kpi .v {
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+
+    .mini-kpi .s {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      background: linear-gradient(90deg, rgba(212,197,160,0.32) 0%, rgba(184,151,90,0.12) 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 16px;
+    }
+
+    .panel-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-header h2 { font-size: 20px; }
+    .panel-body { padding: 16px; }
+
+    .story-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .story-card {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FBFAF7 100%);
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--success);
+      border-radius: 12px;
+      padding: 14px 14px 12px;
+    }
+
+    .story-top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .story-title {
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .pill {
+      background: var(--success-soft);
+      color: var(--success-dark);
+      border: 1px solid rgba(76,175,80,0.22);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .arrow-row {
+      display: grid;
+      grid-template-columns: 1fr 56px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0 12px;
+    }
+
+    .state-box {
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 98px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .state-box.current {
+      background: #FFF5F5;
+      border: 1px solid rgba(244,67,54,0.15);
+    }
+
+    .state-box.target {
+      background: var(--success-soft);
+      border: 1px solid rgba(76,175,80,0.18);
+    }
+
+    .state-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      color: #666;
+    }
+
+    .state-value {
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--black);
+    }
+
+    .state-sub {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--success-dark);
+      font-size: 34px;
+      font-weight: 800;
+    }
+
+    .impact-line {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .impact-chip {
+      background: #F8F6F3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+    }
+
+    .impact-chip .big {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--success-dark);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .impact-chip .small {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .metrics-board {
+      display: grid;
+      gap: 12px;
+    }
+
+    .spark-card {
+      background: var(--beige);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .spark-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .spark-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .spark-delta {
+      color: var(--success-dark);
+      background: var(--success-soft);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .line-svg {
+      width: 100%;
+      height: 82px;
+      display: block;
+    }
+
+    .legend-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .bar-compare {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar-item {
+      display: grid;
+      grid-template-columns: 105px minmax(0, 1fr) 170px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .bar-item > :last-child {
+      white-space: nowrap;
+    }
+
+    .track {
+      height: 18px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill-red { height: 100%; background: linear-gradient(90deg, #FFD5D1 0%, #F44336 100%); }
+    .fill-green { height: 100%; background: linear-gradient(90deg, #A5D6A7 0%, #4CAF50 100%); }
+    .fill-gold { height: 100%; background: linear-gradient(90deg, #D4C5A0 0%, #B8975A 100%); }
+
+    .benefit-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .summary-card {
+      background: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .summary-card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .summary-card ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+      font-size: 13.5px;
+      line-height: 1.42;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .quant-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 9px;
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    .small-note {
+      font-size: 11.5px;
+      color: #666;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+
+    [contenteditable="true"] {
+      outline: none;
+      transition: background 0.2s ease;
+    }
+    [contenteditable="true"]:hover { background: rgba(197,165,114,0.08); }
+    [contenteditable="true"]:focus {
+      background: rgba(197,165,114,0.14);
+      box-shadow: inset 0 0 0 1px rgba(184,151,90,0.55);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1200px) {
+      .hero, .focus-grid, .footer-grid { grid-template-columns: 1fr; }
+      .benefit-summary { grid-template-columns: 1fr; }
+      .hero-card, .hero-panel-left, .hero-panel-right { grid-column: auto; }
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+      .content { padding: 18px; }
+      .mini-strip, .impact-line { grid-template-columns: 1fr; }
+      .hero-card { grid-template-columns: 1fr; }
+      .arrow-row { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-tools">
+    <button class="tool-btn" onclick="toggleEdit()">Toggle edit mode</button>
+    <button class="tool-btn" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
+  <div class="page" id="slide">
+    <div class="content">
+
+      <section class="hero">
+        <div class="hero-card">
+          <div class="hero-big" contenteditable="true">10.5k</div>
+          <div>
+            <div class="hero-copy" contenteditable="true">Manual payment exceptions removed per month if cash application auto-match improves from 76% to 90% across ~75,000 incoming payments.</div>
+            <div class="mini-strip">
+              <div class="mini-kpi">
+                <div class="t" contenteditable="true">Current unmatched</div>
+                <div class="v" contenteditable="true">18.0k</div>
+                <div class="s" contenteditable="true">At 76% auto-match</div>
+              </div>
+              <div class="mini-kpi">
+                <div class="t" contenteditable="true">Target unmatched</div>
+                <div class="v" contenteditable="true">7.5k</div>
+                <div class="s" contenteditable="true">At 90% auto-match</div>
+              </div>
+              <div class="mini-kpi">
+                <div class="t" contenteditable="true">Stretch case</div>
+                <div class="v" contenteditable="true">3.8k</div>
+                <div class="s" contenteditable="true">At 95% auto-match</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel hero-panel-left">
+          <div class="panel-header"><h2 contenteditable="true">Visual headline metrics</h2></div>
+          <div class="panel-body">
+            <div class="bar-compare">
+              <div class="bar-item">
+                <div contenteditable="true">Current</div>
+                <div class="track"><div class="fill-red" style="width:100%"></div></div>
+                <div contenteditable="true">18.0k @ 76% auto-match</div>
+              </div>
+              <div class="bar-item">
+                <div contenteditable="true">Target</div>
+                <div class="track"><div class="fill-green" style="width:41.7%"></div></div>
+                <div contenteditable="true">7.5k @ 90% auto-match</div>
+              </div>
+              <div class="bar-item">
+                <div contenteditable="true">Stretch</div>
+                <div class="track"><div class="fill-gold" style="width:20.8%"></div></div>
+                <div contenteditable="true">3.75k @ 95% auto-match</div>
+              </div>
+            </div>
+            <div class="small-note" contenteditable="true">Lower bars are better here because they represent fewer unmatched payment items requiring manual handling.</div>
+          </div>
+        </div>
+
+        <div class="panel hero-panel-right">
+          <div class="panel-header">
+            <div class="panel-header-row">
+              <h2 contenteditable="true">Productivity release potential</h2>
+              <div class="spark-delta" contenteditable="true">14–19 FTE</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="bar-compare">
+              <div class="bar-item">
+                <div contenteditable="true">Base</div>
+                <div class="track"><div class="fill-gold" style="width:100%"></div></div>
+                <div contenteditable="true">97</div>
+              </div>
+              <div class="bar-item">
+                <div contenteditable="true">15%</div>
+                <div class="track"><div class="fill-green" style="width:14.4%"></div></div>
+                <div contenteditable="true">14</div>
+              </div>
+              <div class="bar-item">
+                <div contenteditable="true">20%</div>
+                <div class="track"><div class="fill-green" style="width:19.6%"></div></div>
+                <div contenteditable="true">19</div>
+              </div>
+            </div>
+            <div class="small-note" contenteditable="true">Shown as directional capacity release, not committed headcount elimination.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="focus-grid">
+        <div class="panel">
+          <div class="panel-header"><h2 contenteditable="true">Benefit areas and value logic</h2></div>
+          <div class="panel-body">
+            <div class="story-grid">
+              <div class="story-card">
+                <div class="story-top">
+                  <div>
+                    <div class="story-title" contenteditable="true">Working capital</div>
+                  </div>
+                  <div class="pill" contenteditable="true">Cash released faster</div>
+                </div>
+                <div class="arrow-row">
+                  <div class="state-box current">
+                    <div class="state-label" contenteditable="true">Current state</div>
+                    <div class="state-value" contenteditable="true">~18.0k</div>
+                    <div class="state-sub" contenteditable="true">unmatched payments / month at 76% auto-match</div>
+                  </div>
+                  <div class="arrow">➜</div>
+                  <div class="state-box target">
+                    <div class="state-label" contenteditable="true">Target state</div>
+                    <div class="state-value" contenteditable="true">~7.5k</div>
+                    <div class="state-sub" contenteditable="true">unmatched payments / month at 90% auto-match</div>
+                  </div>
+                </div>
+                <div class="impact-line">
+                  <div class="impact-chip">
+                    <div class="big" contenteditable="true">5,246</div>
+                    <div class="small" contenteditable="true">current unapplied cash items create a visible working-capital clearing opportunity</div>
+                  </div>
+                  <div class="impact-chip">
+                    <div class="big" contenteditable="true">~300</div>
+                    <div class="small" contenteditable="true">disputes / deductions per month can be routed and resolved faster</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="story-card">
+                <div class="story-top">
+                  <div>
+                    <div class="story-title" contenteditable="true">Productivity & efficiency</div>
+                  </div>
+                  <div class="pill" contenteditable="true">Manual effort reduced</div>
+                </div>
+                <div class="arrow-row">
+                  <div class="state-box current">
+                    <div class="state-label" contenteditable="true">Today</div>
+                    <div class="state-value" contenteditable="true">750</div>
+                    <div class="state-sub" contenteditable="true">payment items removed from manual work for every 1-point gain in auto-match</div>
+                  </div>
+                  <div class="arrow">➚</div>
+                  <div class="state-box target">
+                    <div class="state-label" contenteditable="true">Directional productivity case</div>
+                    <div class="state-value" contenteditable="true">14–19</div>
+                    <div class="state-sub" contenteditable="true">FTE of released or redeployed capacity from a 15%–20% opportunity across 97 FTE</div>
+                  </div>
+                </div>
+                <div class="impact-line">
+                  <div class="impact-chip">
+                    <div class="big" contenteditable="true">10.5k</div>
+                    <div class="small" contenteditable="true">manual exceptions removed / month at 90% auto-match</div>
+                  </div>
+                  <div class="impact-chip">
+                    <div class="big" contenteditable="true">14.25k</div>
+                    <div class="small" contenteditable="true">manual exceptions removed / month at 95% auto-match</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="story-card">
+                <div class="story-top">
+                  <div>
+                    <div class="story-title" contenteditable="true">Control & management</div>
+                  </div>
+                  <div class="pill" contenteditable="true">Scalable operating control</div>
+                </div>
+                <div class="impact-line" style="grid-template-columns: repeat(3, 1fr);">
+                  <div class="impact-chip">
+                    <div class="big" contenteditable="true">25</div>
+                    <div class="small" contenteditable="true">countries</div>
+                  </div>
+                  <div class="impact-chip">
+                    <div class="big" contenteditable="true">~75</div>
+                    <div class="small" contenteditable="true">ERP instances</div>
+                  </div>
+                  <div class="impact-chip">
+                    <div class="big" contenteditable="true">~160–170</div>
+                    <div class="small" contenteditable="true">bank accounts across ~25 banks</div>
+                  </div>
+                </div>
+                <div class="small-note" contenteditable="true">The control benefit comes from standardizing work allocation, workflows, dashboards, and reason-code discipline across a highly fragmented landscape.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="benefit-summary">
+        <div class="summary-card">
+          <h3 contenteditable="true">Working capital</h3>
+          <ul>
+            <li contenteditable="true"><strong>Reduce unmatched payments</strong> from ~18,000/month to ~7,500/month at 90% auto-match.</li>
+            <li contenteditable="true"><strong>Reduce unapplied cash backlog</strong> from the current 5,246-item starting point.</li>
+            <li contenteditable="true"><strong>Resolve ~300 disputes/month faster</strong> to reduce blocked cash.</li>
+            <li contenteditable="true"><strong>Support DSO improvement</strong> through predictive and automated collections logic.</li>
+          </ul>
+        </div>
+        <div class="summary-card">
+          <h3 contenteditable="true">Productivity & efficiency</h3>
+          <ul>
+            <li contenteditable="true"><strong>Every 1-point match-rate gain removes ~750 items/month</strong> from manual handling.</li>
+            <li contenteditable="true"><strong>90% auto-match removes ~10.5k exceptions/month</strong> versus today.</li>
+            <li contenteditable="true"><strong>95% auto-match removes ~14.25k exceptions/month</strong> versus today.</li>
+            <li contenteditable="true"><strong>15%–20% productivity opportunity across 97 FTE</strong> implies ~14–19 FTE capacity release.</li>
+          </ul>
+        </div>
+        <div class="summary-card">
+          <h3 contenteditable="true">Control & management</h3>
+          <ul>
+            <li contenteditable="true"><strong>Standardize work allocation</strong> across 25 countries, 8 languages, and 30 currencies.</li>
+            <li contenteditable="true"><strong>Strengthen governance</strong> across ~75 ERP instances and ~25 banks.</li>
+            <li contenteditable="true"><strong>Improve KPI visibility</strong> through dashboards, exception tracking, and harmonized workflows.</li>
+            <li contenteditable="true"><strong>Reduce local process variation</strong> through common taxonomies and reason codes.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="footer-grid">
+        <div class="panel">
+          <div class="panel-header"><h2 contenteditable="true">What can be quantified now</h2></div>
+          <div class="panel-body">
+            <ul class="quant-list">
+              <li contenteditable="true"><strong>Auto-match uplift:</strong> 76% current baseline versus 90%+ target potential.</li>
+              <li contenteditable="true"><strong>Manual exception reduction:</strong> ~10.5k fewer items/month at 90%; ~14.25k fewer at 95%.</li>
+              <li contenteditable="true"><strong>FTE productivity:</strong> 15%–20% directional opportunity across 97 FTE.</li>
+              <li contenteditable="true"><strong>Operational volumes:</strong> ~75,000 incoming payments/month, ~250,000 invoices/month, ~300 disputes/month.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h2 contenteditable="true">What remains directional</h2></div>
+          <div class="panel-body">
+            <ul class="quant-list">
+              <li contenteditable="true"><strong>DSO cash-value impact</strong> until receivables value and DSO baseline are confirmed.</li>
+              <li contenteditable="true"><strong>Credit value</strong> until active customer count and credit volumes are validated.</li>
+              <li contenteditable="true"><strong>Order-management value</strong> until order volumes are confirmed.</li>
+              <li contenteditable="true"><strong>Final realized savings</strong> until pilot validation confirms process, data, and policy assumptions.</li>
+            </ul>
+            <div class="small-note" contenteditable="true">All text is editable inline in the browser. The page remains scrollable when zoomed.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    let editEnabled = true;
+    function toggleEdit() {
+      editEnabled = !editEnabled;
+      document.querySelectorAll('[contenteditable]').forEach(el => {
+        el.setAttribute('contenteditable', editEnabled ? 'true' : 'false');
+      });
+    }
+  </script>
+</body>
+</html>

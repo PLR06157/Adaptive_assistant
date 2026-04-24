@@ -1,0 +1,60 @@
+{
+  "roles": [
+    {
+      "name": "CEO",
+      "rate": 1200
+    },
+    {
+      "name": "Managing Partner & CFO",
+      "rate": 1200
+    },
+    {
+      "name": "Executive Business Director",
+      "rate": 1000
+    },
+    {
+      "name": "Associate Partner",
+      "rate": 1000
+    },
+    {
+      "name": "Consulting and Business Development Lead, Europe & Overseas",
+      "rate": 1000
+    },
+    {
+      "name": "Senior Manager / Change Management Lead",
+      "rate": 840
+    },
+    {
+      "name": "Senior Manager / Senior Consultant",
+      "rate": 840
+    },
+    {
+      "name": "Program Manager / Senior Consultant",
+      "rate": 720
+    },
+    {
+      "name": "Senior Project Manager / Senior Consultant",
+      "rate": 600
+    },
+    {
+      "name": "Project Manager / Consultant",
+      "rate": 520
+    },
+    {
+      "name": "Project Leader / Consultant",
+      "rate": 460
+    },
+    {
+      "name": "Consultant",
+      "rate": 380
+    },
+    {
+      "name": "Process Expert",
+      "rate": 320
+    },
+    {
+      "name": "Process Officer",
+      "rate": 270
+    }
+  ]
+}
