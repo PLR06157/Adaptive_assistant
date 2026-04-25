@@ -1,0 +1,11 @@
+cc_id,category,value_eur,period,status
+FIN-EM-01,Personnel,125000,2026-03,posted
+FIN-EM-01,Travel,8500,2026-03,posted
+FIN-EM-01,IT_Connectivity,12000,2026-03,posted
+FIN-AP-01,Personnel,87500,2026-03,posted
+FIN-AP-01,Travel,4200,2026-03,posted
+IT-OPS-01,Software_Licenses,145000,2026-03,posted
+IT-OPS-01,Facilities,22000,2026-03,posted
+HR-SV-01,Personnel,195000,2026-03,posted
+PROC-01,Personnel,62000,2026-03,posted
+PROC-01,Travel,3500,2026-03,posted

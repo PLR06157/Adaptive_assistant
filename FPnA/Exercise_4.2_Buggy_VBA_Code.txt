@@ -1,0 +1,72 @@
+Sub GenerateCostCenterReports()
+    ' PURPOSE: Generate individual P&L sheets per cost center from Master_PL
+    ' NOTE: This code contains 3 intentional bugs for the training exercise
+    
+    Dim wsMaster As Worksheet
+    Dim wsNew As Worksheet
+    Dim lastRow As Long
+    Dim costCenters As Collection
+    Dim cc As Variant
+    Dim i As Long
+    Dim destRow As Long
+    
+    ' Set reference to master sheet
+    Set wsMaster = ThisWorkbook.Sheets("Master_PL")
+    lastRow = wsMaster.Cells(wsMaster.Rows.Count, "A").End(xlUp).Row
+    
+    ' Get unique cost centers
+    Set costCenters = New Collection
+    On Error Resume Next
+    For i = 2 To lastRow
+        costCenters.Add wsMaster.Cells(i, 1).Value, CStr(wsMaster.Cells(i, 1).Value)
+    Next i
+    On Error GoTo 0
+    
+    For i = 0 To costCenters.Count
+        cc = costCenters(i)
+        
+        ' Check if sheet exists, delete if so
+        On Error Resume Next
+        Set wsNew = ThisWorkbook.Sheets(Left(cc, 31))
+        If Not wsNew Is Nothing Then
+            Application.DisplayAlerts = False
+            wsNew.Delete
+            Application.DisplayAlerts = True
+        End If
+        On Error GoTo 0
+        
+        ' Create new sheet
+        Set wsNew = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
+        wsNew.Name = Left(cc, 31)
+        
+        ' Copy header row
+        wsMaster.Rows(1).Copy Destination:=wsNew.Rows(1)
+        
+        ' Copy matching rows
+        destRow = 2
+        For j = 2 To lastRow
+            If wsMaster.Cells(j, 2).Value = cc Then
+                wsMaster.Rows(j).Copy Destination:=wsNew.Rows(destRow)
+                destRow = destRow + 1
+            End If
+        Next j
+        
+        ' Add total row
+        wsNew.Cells(destRow, 1).Value = "TOTAL"
+        wsNew.Cells(destRow, 1).Font.Bold = True
+        wsNew.Cells(destRow, 4).Formula = "=SUM(A2:A" & destRow - 1 & ")"
+        wsNew.Cells(destRow, 5).Formula = "=SUM(B2:B" & destRow - 1 & ")"
+        wsNew.Cells(destRow, 6).Formula = "=SUM(C2:C" & destRow - 1 & ")"
+        wsNew.Cells(destRow, 7).Formula = "=SUM(G2:G" & destRow - 1 & ")"
+        
+        ' Format
+        wsNew.Rows(1).Font.Bold = True
+        wsNew.Columns("D:G").NumberFormat = "#,##0.00"
+        wsNew.Columns.AutoFit
+        
+        Set wsNew = Nothing
+    Next i
+    
+    MsgBox "Generated " & costCenters.Count & " cost center reports!", vbInformation
+    
+End Sub
