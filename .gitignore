@@ -188,10 +188,6 @@ cython_debug/
 !.elasticbeanstalk/*.global.yml
 
 # OTHER
-*.xls
-*.xlsx
-*.doc
-*.docx
 App/
 proxy_extensions/
 screens/
