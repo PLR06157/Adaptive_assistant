@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXEL WORLD — DRAWING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #fff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ─── HEADER ──────────────────────────────────────────── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 4px solid #111;
+            flex-shrink: 0;
+        }
+        .header-center { text-align: center; }
+        .header-title  { font-size: 1rem; letter-spacing: 4px; text-shadow: 3px 3px 0 #ddd; }
+        .header-sub    { margin-top: 6px; font-size: 0.45rem; color: #999; letter-spacing: 3px; }
+
+        .back-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.5rem;
+            border: 3px solid #111;
+            background: #fff;
+            cursor: pointer;
+            padding: 8px 12px;
+            box-shadow: 4px 4px 0 #111;
+            text-decoration: none;
+            color: #111;
+            transition: transform 0.07s, box-shadow 0.07s;
+            white-space: nowrap;
+        }
+        .back-btn:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #111; }
+        .back-btn:active { transform: translate(2px,2px);   box-shadow: 2px 2px 0 #111; }
+
+        /* ─── MAIN LAYOUT ─────────────────────────────────────── */
+        .draw-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ─── TOOLS PANEL ─────────────────────────────────────── */
+        .tools-panel {
+            width: 200px;
+            flex-shrink: 0;
+            border-right: 4px solid #111;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+        .group-label {
+            font-size: 0.38rem;
+            color: #999;
+            letter-spacing: 2px;
+            margin-bottom: 7px;
+        }
+
+        /* Tool buttons */
+        .tool-btns { display: flex; flex-direction: column; gap: 6px; }
+        .tool-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.42rem;
+            border: 3px solid #111;
+            background: #fff;
+            cursor: pointer;
+            padding: 8px 8px;
+            box-shadow: 3px 3px 0 #111;
+            text-align: left;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.07s, box-shadow 0.07s;
+        }
+        .tool-btn:hover  { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #111; }
+        .tool-btn:active { transform: translate(2px,2px);   box-shadow: 1px 1px 0 #111; }
+        .tool-btn.active { background: #111; color: #fff; box-shadow: 3px 3px 0 #555; }
+        .tool-btn canvas { image-rendering: pixelated; flex-shrink: 0; }
+
+        /* Size buttons */
+        .size-btns { display: flex; gap: 5px; }
+        .size-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.42rem;
+            border: 3px solid #111;
+            background: #fff;
+            cursor: pointer;
+            width: 34px; height: 34px;
+            box-shadow: 2px 2px 0 #111;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.07s, box-shadow 0.07s;
+        }
+        .size-btn:hover  { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #111; }
+        .size-btn:active { transform: translate(2px,2px);   box-shadow: none; }
+        .size-btn.active { background: #111; color: #fff; box-shadow: 2px 2px 0 #555; }
+
+        /* Color */
+        .color-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        #color-swatch {
+            width: 42px; height: 42px;
+            border: 3px solid #111;
+            box-shadow: 3px 3px 0 #111;
+            flex-shrink: 0;
+        }
+        #color-hex { font-size: 0.38rem; color: #555; }
+        #custom-color {
+            width: 100%; height: 32px;
+            border: 3px solid #111;
+            padding: 2px; cursor: pointer;
+            background: #fff;
+        }
+
+        /* Palette */
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+        }
+        .pal-sw {
+            aspect-ratio: 1;
+            border: 2px solid #111;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 #111;
+            transition: transform 0.07s;
+        }
+        .pal-sw:hover  { transform: translate(-1px,-1px); }
+        .pal-sw:active { transform: translate(1px,1px); }
+        .pal-sw.sel    { outline: 3px solid #fff; outline-offset: -5px; }
+
+        /* Action buttons */
+        .act-btns { display: flex; flex-direction: column; gap: 7px; }
+        .act-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.38rem;
+            border: 3px solid;
+            background: #fff;
+            cursor: pointer;
+            padding: 8px 6px;
+            letter-spacing: 1px;
+            box-shadow: 3px 3px 0;
+            transition: transform 0.07s, box-shadow 0.07s;
+        }
+        .act-btn:hover  { transform: translate(-1px,-1px); }
+        .act-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 !important; }
+        .act-btn.red   { border-color: #cc2200; color: #cc2200; box-shadow-color: #cc2200; box-shadow: 3px 3px 0 #cc2200; }
+        .act-btn.red:hover   { background: #cc2200; color: #fff; box-shadow: 4px 4px 0 #cc2200; }
+        .act-btn.green { border-color: #2a8a2a; color: #2a8a2a; box-shadow: 3px 3px 0 #2a8a2a; }
+        .act-btn.green:hover { background: #2a8a2a; color: #fff; box-shadow: 4px 4px 0 #2a8a2a; }
+        .act-btn.blue  { border-color: #1144bb; color: #1144bb; box-shadow: 3px 3px 0 #1144bb; }
+        .act-btn.blue:hover  { background: #1144bb; color: #fff; box-shadow: 4px 4px 0 #1144bb; }
+
+        /* ─── CANVAS AREA ─────────────────────────────────────── */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+        .canvas-wrap { position: relative; display: inline-block; line-height: 0; }
+        #draw-canvas {
+            display: block;
+            border: 4px solid #111;
+            box-shadow: 8px 8px 0 #111;
+            image-rendering: pixelated;
+            cursor: crosshair;
+        }
+        #grid-canvas {
+            position: absolute; top: 0; left: 0;
+            pointer-events: none;
+            image-rendering: pixelated;
+        }
+
+        /* ─── FOOTER ──────────────────────────────────────────── */
+        footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.4rem;
+            color: #bbb;
+            border-top: 4px solid #111;
+            flex-shrink: 0;
+            letter-spacing: 2px;
+        }
+        /* ─── AD COLUMNS ─────────────────────────────────────── */
+        .ad-col {
+            width: 185px;
+            flex-shrink: 0;
+            padding: 16px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            border-left: 4px solid #111;
+        }
+        .ad-col.left-col { border-left: none; border-right: 4px solid #111; }
+
+        .ad-s {
+            border: 3px solid #111;
+            padding: 10px 8px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            box-shadow: 4px 4px 0 #111;
+            background: #fff;
+            cursor: pointer;
+            transition: transform 0.07s, box-shadow 0.07s;
+        }
+        .ad-s:hover  { transform: translate(-2px,-2px); }
+        .ad-s:active { transform: translate(3px,3px); }
+        .ad-s canvas { display: block; image-rendering: pixelated; }
+        .ad-s .sname  { margin-top: 8px; font-size: 0.45rem; letter-spacing: 1px; text-align: center; }
+        .ad-s .stag   { margin-top: 5px; font-size: 0.45rem; color: #888; text-align: center; }
+        .ad-s .sprice { margin-top: 5px; font-size: 0.6rem; }
+        .ad-s .sbtn {
+            margin-top: 8px; width: 100%; padding: 7px 4px;
+            font-family: 'Press Start 2P', monospace; font-size: 0.45rem;
+            border: 2px solid; cursor: pointer; color: #fff;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+        }
+        .ad-s .sbadge {
+            position: absolute; top: 5px; right: 5px;
+            font-size: 0.4rem; padding: 2px 4px; border: 2px solid #111;
+        }
+        .ad-s .smark {
+            position: absolute; top: 5px; left: 5px;
+            font-size: 0.4rem; background: #111; color: #fff; padding: 2px 4px;
+        }
+        .ts-red    { border-color: #cc2200; box-shadow: 4px 4px 0 #cc2200; }
+        .ts-red    .sbtn   { background: #cc2200; border-color: #cc2200; }
+        .ts-red    .sbadge { background: #ffccbb; }
+        .ts-red:hover  { box-shadow: 6px 6px 0 #cc2200; }
+        .ts-red:active { box-shadow: 2px 2px 0 #cc2200; }
+        .ts-blue   { border-color: #1144bb; box-shadow: 4px 4px 0 #1144bb; }
+        .ts-blue   .sbtn   { background: #1144bb; border-color: #1144bb; }
+        .ts-blue   .sbadge { background: #aaccff; }
+        .ts-blue:hover  { box-shadow: 6px 6px 0 #1144bb; }
+        .ts-blue:active { box-shadow: 2px 2px 0 #1144bb; }
+        .ts-green  { border-color: #2a8a2a; box-shadow: 4px 4px 0 #2a8a2a; }
+        .ts-green  .sbtn   { background: #2a8a2a; border-color: #2a8a2a; }
+        .ts-green  .sbadge { background: #bbeecc; }
+        .ts-green:hover  { box-shadow: 6px 6px 0 #2a8a2a; }
+        .ts-green:active { box-shadow: 2px 2px 0 #2a8a2a; }
+        .ts-brown  { border-color: #7b4a1a; box-shadow: 4px 4px 0 #7b4a1a; }
+        .ts-brown  .sbtn   { background: #7b4a1a; border-color: #7b4a1a; }
+        .ts-brown  .sbadge { background: #e8d5b5; }
+        .ts-brown:hover  { box-shadow: 6px 6px 0 #7b4a1a; }
+        .ts-brown:active { box-shadow: 2px 2px 0 #7b4a1a; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a class="back-btn" href="index.html">◄ BACK</a>
+    <div class="header-center">
+        <div class="header-title">★ DRAWING STUDIO ★</div>
+        <div class="header-sub">pixel art — grid 64×64</div>
+    </div>
+    <div style="width:110px"></div>
+</header>
+
+<div class="draw-layout">
+
+    <!-- ── TOOLS PANEL ── -->
+    <div class="tools-panel">
+
+        <div>
+            <div class="group-label">TOOLS</div>
+            <div class="tool-btns">
+                <button class="tool-btn active" data-tool="pencil">
+                    <canvas id="ic-pencil" width="16" height="16"></canvas>PENCIL
+                </button>
+                <button class="tool-btn" data-tool="fill">
+                    <canvas id="ic-fill" width="16" height="16"></canvas>FILL
+                </button>
+                <button class="tool-btn" data-tool="eyedrop">
+                    <canvas id="ic-eye" width="16" height="16"></canvas>EYEDROP
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <div class="group-label">PENCIL SIZE</div>
+            <div class="size-btns">
+                <button class="size-btn active" data-size="1">1</button>
+                <button class="size-btn" data-size="2">2</button>
+                <button class="size-btn" data-size="4">4</button>
+                <button class="size-btn" data-size="8">8</button>
+            </div>
+        </div>
+
+        <div>
+            <div class="group-label">ACTIVE COLOR</div>
+            <div class="color-row">
+                <div id="color-swatch"></div>
+                <div id="color-hex">#000000</div>
+            </div>
+            <input type="color" id="custom-color" value="#000000">
+        </div>
+
+        <div>
+            <div class="group-label">PALETTE</div>
+            <div class="palette-grid" id="palette"></div>
+        </div>
+
+        <div>
+            <div class="group-label">ACTIONS</div>
+            <div class="act-btns">
+                <button class="act-btn blue" id="btn-grid">▦ GRID: ON</button>
+                <button class="act-btn green" id="btn-save">↓ SAVE PNG</button>
+                <button class="act-btn red" id="btn-clear">✕ CLEAR</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── LEFT AD COLUMN ── -->
+    <div class="ad-col left-col">
+        <div class="ad-s ts-red" data-page="burger.html">
+            <span class="smark">AD</span>
+            <span class="sbadge">HOT!</span>
+            <canvas id="r-burger" width="80" height="70"></canvas>
+            <div class="sname">PIXEL BURGER</div>
+            <div class="stag">best in town!</div>
+            <div class="sprice">9,99 zl</div>
+            <button class="sbtn">▶ ORDER</button>
+        </div>
+        <div class="ad-s ts-blue" data-page="cola.html">
+            <span class="smark">AD</span>
+            <span class="sbadge" style="background:#ffcc00;color:#111">-50%</span>
+            <canvas id="r-cola" width="80" height="70"></canvas>
+            <div class="sname">PIXEL COLA</div>
+            <div class="stag">refresh yourself!</div>
+            <div class="sprice">3,99 zl</div>
+            <button class="sbtn">▶ BUY</button>
+        </div>
+    </div>
+
+    <!-- ── CANVAS ── -->
+    <div class="canvas-area">
+        <div class="canvas-wrap">
+            <canvas id="draw-canvas"></canvas>
+            <canvas id="grid-canvas"></canvas>
+        </div>
+    </div>
+
+    <!-- ── RIGHT AD COLUMN ── -->
+    <div class="ad-col">
+        <div class="ad-s ts-green" data-page="pizza.html">
+            <span class="smark">AD</span>
+            <span class="sbadge">NEW</span>
+            <canvas id="r-pizza" width="80" height="70"></canvas>
+            <div class="sname">PIXEL PIZZA</div>
+            <div class="stag">hot!</div>
+            <div class="sprice">24,99 zl</div>
+            <button class="sbtn">▶ TRY</button>
+        </div>
+        <div class="ad-s ts-brown" data-page="coffee.html">
+            <span class="smark">AD</span>
+            <span class="sbadge">HOT!</span>
+            <canvas id="r-coffee" width="80" height="70"></canvas>
+            <div class="sname">PIXEL COFFEE</div>
+            <div class="stag">morning ritual!</div>
+            <div class="sprice">8,99 zl</div>
+            <button class="sbtn">▶ ORDER</button>
+        </div>
+    </div>
+
+</div>
+
+<footer>© 2026 PIXEL WORLD CORP. · DRAWING STUDIO · PIXEL ART SINCE 1985</footer>
+
+<script>
+// ═══ CONFIG ═══════════════════════════════════════════════════
+const COLS = 64, ROWS = 64;
+
+// hidden pixel canvas (64×64)
+const pixCv  = document.createElement('canvas');
+pixCv.width  = COLS; pixCv.height = ROWS;
+const pixCtx = pixCv.getContext('2d');
+
+// visible canvas
+const drawCv  = document.getElementById('draw-canvas');
+const drawCtx = drawCv.getContext('2d');
+drawCtx.imageSmoothingEnabled = false;
+
+// grid canvas
+const gridCv  = document.getElementById('grid-canvas');
+const gridCtx = gridCv.getContext('2d');
+
+// fit canvas to available space
+function resizeCanvas() {
+    const area    = document.querySelector('.canvas-area');
+    const maxW    = area.clientWidth  - 40;
+    const maxH    = area.clientHeight - 40;
+    const size    = Math.floor(Math.min(maxW, maxH) / COLS) * COLS;
+    drawCv.width  = drawCv.height  = size;
+    gridCv.width  = gridCv.height  = size;
+    drawCtx.imageSmoothingEnabled = false;
+    render();
+    drawGrid();
+}
+window.addEventListener('resize', resizeCanvas);
+
+// pixel array (hex)
+const pixels = Array.from({length: ROWS}, () => Array(COLS).fill('#ffffff'));
+
+// ═══ STATE ════════════════════════════════════════════════════
+let tool        = 'pencil';
+let color       = '#000000';
+let penSize     = 1;
+let isDrawing   = false;
+let lastGX = -1, lastGY = -1;
+let showGrid    = true;
+
+// ═══ RENDER ═══════════════════════════════════════════════════
+function render() {
+    pixels.forEach((row, y) => row.forEach((c, x) => {
+        pixCtx.fillStyle = c;
+        pixCtx.fillRect(x, y, 1, 1);
+    }));
+    const s = drawCv.width;
+    drawCtx.drawImage(pixCv, 0, 0, s, s);
+}
+
+function drawGrid() {
+    const s    = gridCv.width;
+    const cell = s / COLS;
+    gridCtx.clearRect(0, 0, s, s);
+    if (!showGrid) return;
+    gridCtx.strokeStyle = 'rgba(0,0,0,0.10)';
+    gridCtx.lineWidth   = 0.5;
+    for (let i = 0; i <= COLS; i++) {
+        gridCtx.beginPath();
+        gridCtx.moveTo(i * cell, 0); gridCtx.lineTo(i * cell, s); gridCtx.stroke();
+        gridCtx.beginPath();
+        gridCtx.moveTo(0, i * cell); gridCtx.lineTo(s, i * cell); gridCtx.stroke();
+    }
+}
+
+// ═══ PALETTE ══════════════════════════════════════════════════
+const PALETTE = [
+    '#000000','#333333','#666666','#999999','#cccccc','#ffffff',
+    '#cc0000','#ff4400','#ff8800','#ffcc00','#aacc00','#558800',
+    '#226600','#228822','#44cc88','#00aaaa','#006699','#003388',
+    '#1144bb','#5588ff','#aabbff','#882299','#cc3399','#ff99cc',
+];
+
+const palEl = document.getElementById('palette');
+PALETTE.forEach(hex => {
+    const sw = document.createElement('div');
+    sw.className = 'pal-sw';
+    sw.style.background = hex;
+    sw.title = hex;
+    if (hex === color) sw.classList.add('sel');
+    sw.addEventListener('click', () => setColor(hex, sw));
+    palEl.appendChild(sw);
+});
+
+function setColor(hex, swEl) {
+    color = hex;
+    document.getElementById('color-swatch').style.background = hex;
+    document.getElementById('color-hex').textContent = hex;
+    document.getElementById('custom-color').value = hex.length === 7 ? hex : color;
+    document.querySelectorAll('.pal-sw').forEach(s => s.classList.remove('sel'));
+    if (swEl) swEl.classList.add('sel');
+    if (tool === 'eyedrop') setTool('pencil');
+}
+setColor('#000000', palEl.firstChild);
+
+document.getElementById('custom-color').addEventListener('input', e => {
+    setColor(e.target.value, null);
+});
+
+// ═══ TOOLS ════════════════════════════════════════════════════
+function setTool(t) {
+    tool = t;
+    document.querySelectorAll('.tool-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tool === t);
+    });
+    drawCv.style.cursor = t === 'eyedrop' ? 'cell' : 'crosshair';
+}
+document.querySelectorAll('.tool-btn').forEach(b => {
+    b.addEventListener('click', () => setTool(b.dataset.tool));
+});
+
+document.querySelectorAll('.size-btn').forEach(b => {
+    b.addEventListener('click', () => {
+        penSize = +b.dataset.size;
+        document.querySelectorAll('.size-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+    });
+});
+
+// ═══ DRAWING ══════════════════════════════════════════════════
+function getGrid(e) {
+    const r  = drawCv.getBoundingClientRect();
+    const sx = COLS / r.width, sy = ROWS / r.height;
+    return {
+        x: Math.max(0, Math.min(COLS-1, Math.floor((e.clientX - r.left) * sx))),
+        y: Math.max(0, Math.min(ROWS-1, Math.floor((e.clientY - r.top)  * sy))),
+    };
+}
+
+// draws pixel block without rendering
+function setPixel(gx, gy) {
+    const h = Math.floor(penSize / 2);
+    for (let dy = -h; dy < penSize - h; dy++)
+        for (let dx = -h; dx < penSize - h; dx++) {
+            const nx = gx+dx, ny = gy+dy;
+            if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS)
+                pixels[ny][nx] = color;
+        }
+}
+
+// Bresenham — connects two points without gaps
+function drawLine(x0, y0, x1, y1) {
+    const dx = Math.abs(x1-x0), dy = Math.abs(y1-y0);
+    const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+    let err = dx - dy;
+    while (true) {
+        setPixel(x0, y0);
+        if (x0 === x1 && y0 === y1) break;
+        const e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; x0 += sx; }
+        if (e2 <  dx) { err += dx; y0 += sy; }
+    }
+    render();
+}
+
+function floodFill(gx, gy) {
+    const target = pixels[gy][gx];
+    if (target === color) return;
+    const stack   = [[gx, gy]];
+    const visited = new Uint8Array(COLS * ROWS);
+    while (stack.length) {
+        const [x, y] = stack.pop();
+        if (x < 0 || x >= COLS || y < 0 || y >= ROWS) continue;
+        const idx = y * COLS + x;
+        if (visited[idx] || pixels[y][x] !== target) continue;
+        visited[idx] = 1;
+        pixels[y][x] = color;
+        stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
+    }
+    render();
+}
+
+function eyedrop(gx, gy) {
+    setColor(pixels[gy][gx], null);
+    setTool('pencil');
+}
+
+drawCv.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    const {x, y} = getGrid(e);
+    if (tool === 'fill')    { floodFill(x, y); return; }
+    if (tool === 'eyedrop') { eyedrop(x, y);   return; }
+    isDrawing = true;
+    lastGX = x; lastGY = y;
+    setPixel(x, y);
+    render();
+});
+drawCv.addEventListener('mousemove', e => {
+    if (!isDrawing || tool !== 'pencil') return;
+    const {x, y} = getGrid(e);
+    if (x === lastGX && y === lastGY) return;
+    drawLine(lastGX, lastGY, x, y);
+    lastGX = x; lastGY = y;
+});
+drawCv.addEventListener('mouseup',    () => { isDrawing = false; lastGX = lastGY = -1; });
+drawCv.addEventListener('mouseleave', () => { isDrawing = false; lastGX = lastGY = -1; });
+drawCv.addEventListener('contextmenu', e => e.preventDefault());
+
+// ═══ ACTIONS ══════════════════════════════════════════════════
+const gridBtn = document.getElementById('btn-grid');
+gridBtn.addEventListener('click', () => {
+    showGrid = !showGrid;
+    gridBtn.textContent = '▦ GRID: ' + (showGrid ? 'ON' : 'OFF');
+    drawGrid();
+});
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+    pixels.forEach(row => row.fill('#ffffff'));
+    render();
+});
+
+document.getElementById('btn-save').addEventListener('click', () => {
+    // export at 8× scale → 512×512
+    const SCALE  = 8;
+    const expCv  = document.createElement('canvas');
+    expCv.width  = COLS * SCALE;
+    expCv.height = ROWS * SCALE;
+    const expCtx = expCv.getContext('2d');
+    expCtx.imageSmoothingEnabled = false;
+    expCtx.drawImage(pixCv, 0, 0, expCv.width, expCv.height);
+    const a  = document.createElement('a');
+    a.download = 'pixel-art.png';
+    a.href     = expCv.toDataURL();
+    a.click();
+});
+
+// ═══ TOOL ICONS ═══════════════════════════════════════════════
+function drawIcon(id, g, p) {
+    const cv = document.getElementById(id);
+    const cx = cv.getContext('2d');
+    g.forEach((row, r) => row.forEach((k, c) => {
+        if (!k) return;
+        cx.fillStyle = p[k];
+        cx.fillRect(c*2, r*2, 2, 2);
+    }));
+}
+
+// pencil
+drawIcon('ic-pencil',
+    [[0,0,0,0,0,0,1,2],[0,0,0,0,0,1,3,1],[0,0,0,0,1,3,1,0],[0,0,0,1,3,1,0,0],
+     [0,0,1,3,1,0,0,0],[0,1,3,1,0,0,0,0],[1,3,2,0,0,0,0,0],[2,1,0,0,0,0,0,0]],
+    ['','#888888','#555555','#ffd700']
+);
+// bucket
+drawIcon('ic-fill',
+    [[0,0,0,1,1,0,0,0],[0,0,1,2,1,0,0,0],[0,1,2,2,1,0,0,0],[1,2,2,2,1,0,0,0],
+     [1,2,2,1,0,0,0,0],[1,2,1,0,0,0,1,0],[0,1,0,0,0,0,1,0],[0,0,0,0,0,0,0,0]],
+    ['','#666666','#1144bb']
+);
+// eyedropper
+drawIcon('ic-eye',
+    [[0,0,0,0,0,1,2,0],[0,0,0,0,1,2,1,0],[0,0,0,1,2,1,0,0],[0,0,1,2,1,0,0,0],
+     [0,1,3,1,0,0,0,0],[1,3,1,0,0,0,0,0],[2,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]],
+    ['','#666666','#cccccc','#cc2200']
+);
+
+// ═══ AD SPRITES ═══════════════════════════════════════════════
+const bC=['','#8B5E00','#D4860A','#F0A830','#F5F5DC','#3E8C20','#C62828','#5D4037','#4E342E','#FDD835'];
+const bG=[
+    [0,0,0,1,2,2,3,3,3,3,2,2,1,0,0,0],[0,0,1,2,3,3,3,3,3,3,3,3,2,1,0,0],
+    [0,1,2,3,3,4,3,3,3,3,4,3,3,2,1,0],[1,2,3,3,3,3,3,3,3,3,3,3,3,3,2,1],
+    [2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2],[5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],
+    [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],[7,8,7,7,8,7,7,7,7,8,7,7,8,7,7,7],
+    [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],[9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9],
+    [2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2],[1,2,3,3,3,3,3,3,3,3,3,3,3,3,2,1],
+    [0,1,2,2,3,3,3,3,3,3,3,3,2,2,1,0],[0,0,0,1,1,2,2,2,2,2,2,1,1,0,0,0],
+];
+const dC=['','#B71C1C','#D32F2F','#EF5350','#FF8A80','#757575','#9E9E9E','#E0E0E0','#E53935','#FFCDD2'];
+const dG=[
+    [0,0,0,0,0,7,6,5,5,6,7,0,0,0,0,0],[0,0,0,0,5,6,7,7,7,6,6,5,0,0,0,0],
+    [0,0,0,5,6,7,7,7,7,7,6,6,5,0,0,0],[0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [0,0,1,4,3,2,2,2,2,2,2,2,1,1,0,0],[0,0,1,4,3,2,8,8,8,8,2,2,1,1,0,0],
+    [0,0,1,4,9,2,8,8,8,8,2,2,1,1,0,0],[0,0,1,4,3,2,8,8,8,8,2,2,1,1,0,0],
+    [0,0,1,3,2,2,2,2,2,2,2,2,1,1,0,0],[0,0,1,2,2,2,2,2,2,2,2,2,2,1,0,0],
+    [0,0,1,3,2,2,2,2,2,2,2,2,1,1,0,0],[0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [0,0,0,5,6,6,6,6,6,6,6,6,5,0,0,0],[0,0,0,0,5,5,6,6,6,6,5,5,0,0,0,0],
+];
+const pC=['','#C47A1E','#E8A830','#FDD835','#E53935','#8D4E3A','#4CAF50'];
+const pG=[
+    [0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0],
+    [0,0,0,0,0,3,4,3,4,3,0,0,0,0,0,0],[0,0,0,0,3,3,3,5,3,3,3,0,0,0,0,0],
+    [0,0,0,3,3,4,3,3,3,4,3,3,0,0,0,0],[0,0,3,3,3,3,3,3,3,3,3,3,3,0,0,0],
+    [0,3,3,5,3,3,4,3,4,3,3,5,3,3,0,0],[3,3,3,3,3,3,3,6,3,3,3,3,3,3,3,0],
+    [3,3,4,3,3,5,3,3,3,5,3,3,4,3,3,0],[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0],
+    [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+];
+const cfC=['','#5D3A1A','#8B5A2B','#C4843E','#2C1000','#CCCCCC','#A07850','#FFFFFF'];
+const cfG=[
+    [0,0,0,0,5,0,5,0,5,0,0,0,0,0,0,0],[0,0,0,0,0,5,0,5,0,0,0,0,0,0,0,0],
+    [0,0,0,0,5,0,5,0,5,0,0,0,0,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,1,4,4,4,4,4,4,1,1,0,0,0,0],[0,0,0,1,4,4,4,4,4,4,0,1,0,0,0,0],
+    [0,0,0,1,2,3,2,2,3,2,1,1,0,0,0,0],[0,0,0,1,2,7,2,2,2,2,0,1,0,0,0,0],
+    [0,0,0,1,2,2,2,2,2,2,1,0,0,0,0,0],[0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0],
+    [0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0],[0,0,0,6,6,6,6,6,6,6,6,0,0,0,0,0],
+    [0,0,0,0,6,6,6,6,6,6,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+];
+
+function drawAd(id, grid, pal) {
+    const cv = document.getElementById(id);
+    if (!cv) return;
+    const cx = cv.getContext('2d');
+    grid.forEach((row, r) => row.forEach((k, c) => {
+        if (!k) return;
+        cx.fillStyle = pal[k];
+        cx.fillRect(c * 5, r * 5, 5, 5);
+    }));
+}
+drawAd('r-burger', bG, bC);
+drawAd('r-cola',   dG, dC);
+drawAd('r-pizza',  pG, pC);
+drawAd('r-coffee', cfG, cfC);
+
+document.querySelectorAll('.ad-s[data-page]').forEach(card => {
+    card.addEventListener('click', () => { window.location.href = card.dataset.page; });
+});
+
+// ═══ INIT ══════════════════════════════════════════════════════
+resizeCanvas();
+</script>
+</body>
+</html>
