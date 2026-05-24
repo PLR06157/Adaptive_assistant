@@ -98,6 +98,8 @@ from openpyxl import load_workbook
 from premailer import transform
 from dotenv import load_dotenv
 from msal import ConfidentialClientApplication
+import cssutils
+cssutils.log.setLevel(logging.CRITICAL)
 
 GRAPH_SCOPE = ["https://graph.microsoft.com/.default"]
 GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0"
