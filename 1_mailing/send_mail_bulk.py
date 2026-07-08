@@ -1,8 +1,16 @@
 """
-Utility for sending personalized HTML emails with attachments via Microsoft 365.
+Bulk variant of send_mail.py: groups recipients by company and sends one email
+per company with all its contacts in the To field.
 
-The script reads recipient data from an XLSX spreadsheet, renders an HTML template using
-row values, and delivers the messages through the Microsoft Graph API.
+The script reads recipient data from an XLSX spreadsheet that must include a
+'Company' column in addition to the standard 'Mail', 'Name', and 'Subject'
+columns. Rows that share the same Company value are merged into a single
+outgoing message. Rows with a blank Company cell are each treated as their own
+group (i.e. sent individually).
+
+Greeting personalisation:
+    $first_name is replaced with the joined first names of all recipients in the
+    group – e.g. "Piotr", "Piotr and Anna", or "Piotr, Anna and Marcin".
 
 Template Variables:
     HTML templates use $variable syntax for placeholders (e.g., $first_name, $email).
@@ -47,11 +55,11 @@ Pre-processing (required when template contains local gallery images):
     them correctly. Safe to re-run; skips images that already have fixed dimensions.
 
 Basic execution (uses .env defaults):
-    python3 mailing/send_mail.py
-    caffeinate -i python3 mailing/send_mail.py
+    python3 mailing/send_mail_bulk.py
+    caffeinate -i python3 mailing/send_mail_bulk.py
 
 With parameters (overrides .env):
-    python3 mailing/send_mail.py \
+    python3 mailing/send_mail_bulk.py \
         --xlsx mailing/recipients.xlsx \
         --template mailing/email_template.html \
         --attachment mailing/document.pdf \
@@ -60,17 +68,16 @@ With parameters (overrides .env):
         --max-wait 10
 
 Test without sending (dry-run):
-    python3 mailing/send_mail.py --dry-run
+    python3 mailing/send_mail_bulk.py --dry-run
 
 Without saving to Sent Items:
-    python3 mailing/send_mail.py --no-save-to-sent-items
+    python3 mailing/send_mail_bulk.py --no-save-to-sent-items
 
 Working example:
 
-python3 mailing/send_mail.py \
-    --xlsx mailing/recipients.xlsx \
-    --template mailing/gbs_lions_event_email.html \
-    --mail-subject "[LAST CALL] GBS Lions' Talks in Warsaw: AI - Is It Already a Mainstream Tool? 26.11.25" \
+python3 mailing/send_mail_bulk.py \
+    --xlsx mailing/2026_06_BSO/BSO_save.xlsx \
+    --template mailing/2026_06_BSO/BSO_save.html \
     --min-wait 0.5 \
     --max-wait 1 \
     --dry-run
@@ -216,7 +223,7 @@ def _prepare_inline_images(html: str, asset_root: Path) -> Tuple[str, List[Dict[
 
 @dataclass
 class Recipient:
-    email: str
+    emails: List[str]
     first_name: str
     subject: str
     context: Dict[str, str]
@@ -313,13 +320,13 @@ class GraphMailer:
                     timeout=30,
                 )
             except requests.exceptions.ConnectionError as e:
-                logging.warning("Network error for %s: %s. Retrying in 10 seconds...", recipient.email, e)
+                logging.warning("Network error for %s: %s. Retrying in 10 seconds...", ", ".join(recipient.emails), e)
                 time.sleep(10)
                 continue
 
             # Success
             if response.status_code < 300:
-                logging.info("Sent mail to %s", recipient.email)
+                logging.info("Sent mail to %s", ", ".join(recipient.emails))
                 return
 
             # Check if this is a transient error worth retrying
@@ -338,7 +345,7 @@ class GraphMailer:
                 logging.warning(
                     "Transient error (%d) for %s: %s. Waiting %d seconds before retry %d/%d",
                     response.status_code,
-                    recipient.email,
+                    ", ".join(recipient.emails),
                     error_detail,
                     wait_time,
                     attempt + 1,
@@ -365,17 +372,17 @@ class GraphMailer:
             # Provide specific message for invalid recipient errors
             if self._is_invalid_recipient_error(response.text):
                 raise RuntimeError(
-                    f"Invalid recipient email '{recipient.email}': {error_detail}"
+                    f"Invalid recipient email '{', '.join(recipient.emails)}': {error_detail}"
                 )
 
             # Generic permanent error
             raise RuntimeError(
-                f"Permanent error sending to {recipient.email} ({response.status_code}): {error_detail}"
+                f"Permanent error sending to {', '.join(recipient.emails)} ({response.status_code}): {error_detail}"
             )
 
         # Max retries exceeded for transient error
         raise RuntimeError(
-            f"Failed to send mail to {recipient.email} after {max_retries} retries. "
+            f"Failed to send mail to {', '.join(recipient.emails)} after {max_retries} retries. "
             f"Last error: {last_error_msg}"
         )
 
@@ -409,9 +416,9 @@ class GraphMailer:
             rendered_html = template.safe_substitute(recipient.context)
             if dry_run:
                 logging.info(
-                    "[DRY-RUN] Would send: \n Subject: '%s' - Email: %s - Name: [%s]",
+                    "[DRY-RUN] Would send: \n Subject: '%s' - Emails: %s - Names: [%s]",
                     recipient.subject,
-                    recipient.email,
+                    ", ".join(recipient.emails),
                     recipient.first_name,
                 )
                 success_count += 1
@@ -425,7 +432,7 @@ class GraphMailer:
                 "message": {
                     "subject": recipient.subject,
                     "body": {"contentType": "HTML", "content": rendered_html},
-                    "toRecipients": [{"emailAddress": {"address": recipient.email}}],
+                    "toRecipients": [{"emailAddress": {"address": e}} for e in recipient.emails],
                 },
                 "saveToSentItems": save_to_sent_items,
             }
@@ -449,8 +456,8 @@ class GraphMailer:
                 success_count += 1
             except RuntimeError as exc:
                 error_msg = str(exc)
-                failed_recipients.append((recipient.email, error_msg))
-                logging.error("Failed to send to %s: %s", recipient.email, error_msg)
+                failed_recipients.append((", ".join(recipient.emails), error_msg))
+                logging.error("Failed to send to %s: %s", ", ".join(recipient.emails), error_msg)
 
                 if not continue_on_error:
                     # Stop processing and re-raise the error
@@ -483,6 +490,18 @@ class GraphMailer:
             for failed_email, error in failed_recipients:
                 logging.warning("  - %s: %s", failed_email, error[:100])  # Truncate long errors
             logging.warning("=" * 60)
+
+
+def _join_names(names: List[str]) -> str:
+    """Join a list of first names naturally: "A", "A and B", "A, B and C"."""
+    names = [n for n in names if n]
+    if not names:
+        return ""
+    if len(names) == 1:
+        return names[0]
+    if len(names) == 2:
+        return f"{names[0]} and {names[1]}"
+    return ", ".join(names[:-1]) + f" and {names[-1]}"
 
 
 def _parse_recipients(
@@ -533,6 +552,7 @@ def _parse_recipients(
     login_id_col = col_map.get("login id")
     access_code_col = col_map.get("access code")
     subject_col = col_map.get("subject")
+    company_col = col_map.get("company")
 
     if email_col is None:
         raise ConfigurationError(
@@ -540,7 +560,10 @@ def _parse_recipients(
             f"Found columns: {', '.join(_normalize(c) for c in header_row if c is not None)}"
         )
 
-    recipients: List[Recipient] = []
+    # Parse every row into a plain dict, then group by company.
+    from collections import OrderedDict
+    groups: OrderedDict = OrderedDict()
+
     for idx, row in enumerate(rows[1:], start=2):
         def _get(col_idx: Optional[int]) -> str:
             if col_idx is None or col_idx >= len(row):
@@ -552,40 +575,49 @@ def _parse_recipients(
             logging.warning("Row %d missing email; skipping.", idx)
             continue
 
-        first_name = _get(name_col)
-        login_id = _get(login_id_col)
-        access_code = _get(access_code_col)
-
-        if not login_id:
-            pass
-        if not access_code:
-            pass
-
         subject = _get(subject_col) or _normalize(mail_subject)
         if not subject:
             raise ConfigurationError(
                 f"Row {idx} has no subject. Add a 'Subject' column in the spreadsheet "
                 "or provide --mail-subject / MAIL_SUBJECT as a fallback."
             )
-        context = {
+
+        company = _get(company_col) or recipient_email  # blank company → solo send
+        if company not in groups:
+            groups[company] = []
+        groups[company].append({
             "email": recipient_email,
-            "first_name": first_name,
-            "login_id": login_id,
-            "access_code": access_code,
+            "first_name": _get(name_col),
+            "login_id": _get(login_id_col),
+            "access_code": _get(access_code_col),
             "subject": subject,
+        })
+
+    if not groups:
+        raise ConfigurationError("No valid recipients found in spreadsheet.")
+
+    recipients: List[Recipient] = []
+    for company, members in groups.items():
+        emails = [m["email"] for m in members]
+        joined_name = _join_names([m["first_name"] for m in members])
+        first = members[0]
+        context = {
+            "email": first["email"],
+            "first_name": joined_name,
+            "login_id": first["login_id"],
+            "access_code": first["access_code"],
+            "subject": first["subject"],
             "sender_email": sender_email,
         }
         recipients.append(
             Recipient(
-                email=recipient_email,
-                first_name=first_name,
-                subject=subject,
+                emails=emails,
+                first_name=joined_name,
+                subject=first["subject"],
                 context=context,
             )
         )
 
-    if not recipients:
-        raise ConfigurationError("No valid recipients found in spreadsheet.")
     return recipients
 
 
