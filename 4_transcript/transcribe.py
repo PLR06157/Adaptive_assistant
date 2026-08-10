@@ -1,15 +1,15 @@
 """
-MP4 → transcript using openai/whisper-large-v3-turbo (HuggingFace, local).
+Audio/video file → transcript using openai/whisper-large-v3-turbo (HuggingFace, local).
 Supports Polish / English / mixed audio. Optimised for Apple M2 via MPS.
+Input formats supported by ffmpeg, including OGG/Opus, MP4, WAV, MP3 and M4A.
 
 Usage:
-    python transcribe.py recording.mp4
-    python transcribe.py recording.mp4 --format text
-    python transcribe.py recording.mp4 --output my_notes.md
+    python transcribe.py recording.ogg
+    python transcribe.py recording.ogg --format text
+    python transcribe.py recording.ogg --output my_notes.md
 """
 
 import argparse
-import os
 import subprocess
 import sys
 import tempfile
@@ -31,26 +31,26 @@ def pick_device() -> tuple[str, torch.dtype]:
     return "cpu", torch.float32
 
 
-def check_audio_stream(mp4_path: Path) -> bool:
+def check_audio_stream(input_path: Path) -> bool:
     """Return True if the file contains at least one audio stream."""
     result = subprocess.run(
         ["ffprobe", "-v", "error", "-select_streams", "a",
-         "-show_entries", "stream=codec_type", "-of", "csv=p=0", str(mp4_path)],
+         "-show_entries", "stream=codec_type", "-of", "csv=p=0", str(input_path)],
         capture_output=True, text=True,
     )
     return bool(result.stdout.strip())
 
 
-def extract_audio(mp4_path: Path, wav_path: Path) -> None:
-    """Convert MP4 to 16 kHz mono WAV with ffmpeg."""
-    if not check_audio_stream(mp4_path):
+def extract_audio(input_path: Path, wav_path: Path) -> None:
+    """Convert any ffmpeg-supported input to 16 kHz mono WAV."""
+    if not check_audio_stream(input_path):
         raise RuntimeError(
-            f"No audio stream found in '{mp4_path.name}'.\n"
-            "The file may be a video-only recording. Check the source file."
+            f"No audio stream found in '{input_path.name}'.\n"
+            "Check that the input file contains an audio stream."
         )
     cmd = [
         "ffmpeg", "-y",
-        "-i", str(mp4_path),
+        "-i", str(input_path),
         "-ar", str(SAMPLE_RATE),
         "-ac", "1",
         "-vn",
@@ -107,12 +107,18 @@ def save(content: str, output_path: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Transcribe an MP4 file to text using Whisper large-v3-turbo."
+        description=(
+            "Transcribe an audio/video file (including OGG) to text "
+            "using Whisper large-v3-turbo."
+        )
     )
-    parser.add_argument("mp4_file", help="Path to the input MP4 file")
+    parser.add_argument(
+        "input_file",
+        help="Path to the input audio/video file, e.g. .ogg, .mp4, .wav or .mp3",
+    )
     parser.add_argument(
         "--output", "-o",
-        help="Output file path (default: same name as MP4 with .md or .txt extension)",
+        help="Output file path (default: same name as input with .md or .txt extension)",
     )
     parser.add_argument(
         "--format", "-f",
@@ -122,12 +128,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    mp4_path = Path(args.mp4_file).expanduser().resolve()
-    if not mp4_path.exists():
-        sys.exit(f"File not found: {mp4_path}")
+    input_path = Path(args.input_file).expanduser().resolve()
+    if not input_path.exists():
+        sys.exit(f"File not found: {input_path}")
 
     ext = ".md" if args.format == "markdown" else ".txt"
-    output_path = Path(args.output) if args.output else mp4_path.with_suffix(ext)
+    output_path = Path(args.output) if args.output else input_path.with_suffix(ext)
 
     device, dtype = pick_device()
     pipe = load_pipeline(device, dtype)
@@ -136,11 +142,11 @@ def main() -> None:
         wav_path = Path(tmp.name)
 
     try:
-        print(f"Extracting audio from {mp4_path.name} …")
-        extract_audio(mp4_path, wav_path)
+        print(f"Extracting audio from {input_path.name} …")
+        extract_audio(input_path, wav_path)
 
         transcript = transcribe_file(wav_path, pipe)
-        content = format_transcript(transcript, str(mp4_path), args.format)
+        content = format_transcript(transcript, str(input_path), args.format)
         save(content, output_path)
 
     finally:
