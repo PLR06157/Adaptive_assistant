@@ -35,7 +35,6 @@ VISUAL STYLE:
 
 DESIGN PRINCIPLES:
 - Hexagonal patterns (subtle background elements, from logo)
-- Salamandra motif (adaptability concept, can be abstract)
 - Clean geometric shapes
 - Generous white space
 - Gold used sparingly as premium accent, not overwhelming
