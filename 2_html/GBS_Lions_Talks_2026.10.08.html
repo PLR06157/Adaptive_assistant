@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Future of IT According to Business – GBS Lions Talks</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --paper:      #f7f5f0;
+    --panel:      rgba(255,255,255,.78);
+    --ink:        #141824;
+    --ink-soft:   #5a6070;
+    --gold:       #b78a3f;
+    --gold-2:     #d9bd78;
+    --gold-pale:  #f0dfb6;
+    --gold-dark:  #8b6324;
+    --blue:       #315f9f;
+    --red:        #a9473f;
+    --line:       rgba(183,138,63,0.24);
+    --dark:       #111827;
+    --dark2:      #020617;
+    --badge-text: #fff8e8;
+    --tr:         280ms ease;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width:100%; height:100%; background:var(--paper); font-family:'Inter','Segoe UI',Arial,sans-serif; overflow:hidden; color:var(--ink); }
+
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none;
+    background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.25) 42%, rgba(183,138,63,.08)),
+                radial-gradient(circle at 12% 14%, rgba(183,138,63,.10), transparent 24%),
+                radial-gradient(circle at 88% 78%, rgba(49,95,159,.08), transparent 26%);
+    z-index:0;
+  }
+  body::after { content:''; position:fixed; inset:0; pointer-events:none; opacity:.44; background-image:linear-gradient(rgba(20,24,36,.035) 1px, transparent 1px),linear-gradient(90deg, rgba(20,24,36,.035) 1px, transparent 1px); background-size:44px 44px; mask-image:linear-gradient(90deg, transparent, #000 28%, #000 84%, transparent); z-index:0; }
+
+  .ascii-bg { position:fixed; top:0; right:0; bottom:0; left:58%; z-index:0; pointer-events:none; overflow:hidden; opacity:.08; mix-blend-mode:multiply; }
+  .ascii-bg pre { margin:0; width:100%; height:100%; padding:10px 14px; color:rgba(49,95,159,.38); font-family:Consolas,'SFMono-Regular',Menlo,Monaco,monospace; font-size:11px; line-height:1.02; letter-spacing:.06em; white-space:pre; user-select:none; }
+  .watermark { position:fixed; right:4vw; bottom:3vh; color:rgba(20,24,36,.06); font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(64px,10vw,136px); line-height:.9; letter-spacing:-.06em; font-weight:800; pointer-events:none; z-index:0; user-select:none; }
+
+  /* DECK */
+  .deck { position:relative; width:100vw; height:100vh; z-index:1; }
+  .slide { position:absolute; inset:0; display:grid; grid-template-rows:auto 1fr auto; padding:clamp(22px,3vw,44px) clamp(34px,5vw,72px); opacity:0; transform:translateX(26px); transition:opacity .38s ease, transform .38s ease; pointer-events:none; }
+  .slide.active { opacity:1; transform:translateX(0); z-index:2; pointer-events:all; }
+  .slide.prev   { opacity:0; transform:translateX(-26px); }
+
+  /* TOPBAR */
+  .topbar { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:10px; }
+  .brand-wrap { display:flex; align-items:center; gap:12px; }
+  .brand-mark { width:38px; height:38px; border:1px solid rgba(183,138,63,.52); border-radius:10px; position:relative; flex-shrink:0; background:linear-gradient(145deg,#fff,rgba(255,255,255,.48)); box-shadow:0 10px 24px rgba(20,24,36,.08); }
+  .brand-mark::before { content:''; position:absolute; inset:8px; border-radius:50%; border:2px solid var(--gold); box-shadow:10px -4px 0 -6px var(--blue); }
+  .eyebrow { display:flex; align-items:center; gap:10px; color:var(--gold-dark); font-size:clamp(9px,.8vw,11px); font-weight:700; letter-spacing:.16em; text-transform:uppercase; margin-bottom:3px; }
+  .eyebrow::after { content:''; width:min(120px,12vw); height:1px; background:var(--line); }
+  .brand-name { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(18px,1.8vw,26px); font-weight:700; letter-spacing:-.02em; line-height:1; color:var(--ink); }
+
+  /* MAIN */
+  .main { min-height:0; display:flex; flex-direction:column; justify-content:center; padding:2px 0 10px; }
+
+  /* FOOTER */
+  .footer { display:grid; grid-template-columns:1fr auto; gap:12px 18px; align-items:end; margin-top:auto; }
+  .footer-left { display:flex; align-items:center; gap:14px; }
+  .footer-tags { display:flex; flex-wrap:wrap; gap:6px 10px; color:var(--ink-soft); font-size:12px; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap; }
+  .footer-tags span+span::before { content:'•'; color:var(--gold); margin-right:10px; }
+  .progress-wrap { flex:1 1 auto; min-width:80px; height:2px; background:rgba(182,138,70,.20); overflow:hidden; }
+  .prog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-2)); transition:width var(--tr); }
+
+  /* GOLD LINE */
+  .gl { width:68px; height:3px; background:linear-gradient(90deg,var(--gold),var(--gold-2)); margin:13px 0; border-radius:2px; }
+  .gl-c { margin:10px auto; }
+
+  /* SECTION LABEL */
+  .sec-lbl { font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+
+  /* HEADINGS */
+  .h-title { font-family:'Inter Tight','Inter',sans-serif; font-weight:800; letter-spacing:-.05em; line-height:.9; font-size:clamp(42px,5.7vw,86px); color:var(--ink); margin-top:4px; max-width:1120px; }
+
+  /* CALLOUT */
+  .callout { padding:16px 24px; border-left:4px solid var(--gold); background:rgba(182,138,70,.07); border-radius:0 8px 8px 0; margin-top:18px; max-width:1080px; }
+  .callout p { font-size:clamp(14px,1.25vw,18px); color:var(--ink-soft); font-style:italic; line-height:1.45; }
+  .callout strong { color:var(--gold-dark); font-style:normal; }
+
+  /* HERO NUMBER */
+  .hero-num { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(132px,18vw,250px); font-weight:800; color:var(--gold); line-height:.78; letter-spacing:-.075em; }
+  .hero-lbl { font-size:clamp(22px,2vw,32px); color:var(--ink-soft); margin-top:10px; max-width:42ch; line-height:1.22; }
+
+  /* STAT TILES */
+  .stat-bar { display:flex; gap:18px; margin-top:32px; max-width:1120px; }
+  .stat-tile { flex:1; background:var(--panel); border:1px solid rgba(183,138,63,.20); border-radius:8px; padding:24px 18px; text-align:center; box-shadow:0 18px 42px rgba(20,24,36,.07); transition:border-color .25s,transform .25s; }
+  .stat-tile:hover { border-color:var(--gold); transform:translateY(-2px); }
+  .stat-tile .num { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(36px,4vw,58px); font-weight:800; color:var(--gold-dark); line-height:1; letter-spacing:-.04em; }
+  .stat-tile .lbl { font-size:clamp(12px,1vw,15px); color:var(--ink-soft); margin-top:7px; line-height:1.35; }
+  .src { font-size:10px; letter-spacing:.06em; color:rgba(79,74,68,.5); text-transform:uppercase; margin-top:5px; }
+
+  /* CAUSE GRID */
+  .cause-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; width:100%; max-width:1220px; margin-top:20px; }
+  .cause-block { background:var(--panel); border:1px solid rgba(183,138,63,.20); border-radius:8px; padding:28px 18px; text-align:center; box-shadow:0 18px 42px rgba(20,24,36,.07); transition:border-color .25s,transform .25s; }
+  .cause-block:hover { border-color:var(--gold); transform:translateY(-2px); }
+  .icon-tile { width:54px; height:54px; margin:0 auto 14px; border-radius:14px; display:grid; place-items:center; color:var(--gold-dark); background:linear-gradient(145deg,#fff,rgba(240,223,182,.55)); border:1px solid rgba(183,138,63,.26); box-shadow:0 10px 24px rgba(20,24,36,.08); }
+  .icon-tile svg { width:27px; height:27px; stroke-width:1.9; }
+  .c-pct { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(34px,3.6vw,56px); font-weight:800; color:var(--gold-dark); line-height:1; letter-spacing:-.05em; }
+  .c-name { font-size:13px; font-weight:700; color:var(--ink); margin-top:7px; }
+  .c-src { font-size:10px; color:var(--ink-soft); margin-top:4px; opacity:.7; }
+
+  /* FLOW DIAGRAM */
+  .flow-wrap { display:flex; align-items:stretch; gap:10px; width:100%; max-width:1180px; margin-top:18px; }
+  .flow-col { flex:1; display:flex; flex-direction:column; align-items:center; }
+  .fn { width:100%; padding:11px 15px; border-radius:8px; text-align:center; font-size:clamp(13px,1.12vw,17px); line-height:1.28; }
+  .fn-biz  { background:rgba(33,150,243,.08); border:1px solid rgba(33,150,243,.28); color:#1565c0; }
+  .fn-mid  { background:rgba(182,138,70,.09); border:1px solid rgba(182,138,70,.28); color:var(--gold-dark); font-style:italic; }
+  .fn-bad  { background:rgba(198,40,40,.08); border:1px solid rgba(198,40,40,.28); color:#b71c1c; }
+  .fn-note { background:rgba(198,40,40,.05); border:1px solid rgba(198,40,40,.16); color:rgba(183,28,28,.65); font-size:clamp(9px,.78vw,11px); }
+  .fa { color:var(--gold); opacity:.58; margin:3px 0; line-height:1; display:grid; place-items:center; }
+  .fa svg { width:16px; height:16px; stroke-width:2; }
+  .fn-title { display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+  .fn-title svg { width:15px; height:15px; stroke-width:2; flex:0 0 auto; }
+  .flow-div { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:0 0 44px; gap:3px; }
+  .flow-div-line { flex:1; width:1px; background:rgba(182,138,70,.18); }
+  .flow-div-lbl { font-size:8px; color:var(--ink-soft); letter-spacing:.06em; writing-mode:vertical-rl; transform:rotate(180deg); opacity:.55; }
+
+  /* SPLIT */
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:2px; width:100%; max-width:1220px; margin-top:18px; border-radius:8px; overflow:hidden; }
+  .sp { padding:24px 24px; display:flex; flex-direction:column; gap:10px; }
+  .sp.before { background:rgba(255,255,255,.38); border:1px solid rgba(0,0,0,.07); border-radius:8px 0 0 8px; }
+  .sp.after  { background:rgba(255,255,255,.62); border:1px solid rgba(182,138,70,.28); border-radius:0 8px 8px 0; }
+  .sp-hdr { display:flex; align-items:center; gap:7px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; margin-bottom:5px; }
+  .sp-hdr svg { width:13px; height:13px; stroke-width:2; flex:0 0 auto; }
+  .sp.before .sp-hdr { color:var(--ink-soft); }
+  .sp.after  .sp-hdr { color:var(--gold); }
+  .sp-item { display:flex; align-items:flex-start; gap:9px; font-size:clamp(13px,1.08vw,16px); line-height:1.36; }
+  .sp.before .sp-item { color:rgba(79,74,68,.6); }
+  .sp.after  .sp-item { color:var(--ink); }
+  .si { font-size:12px; flex-shrink:0; margin-top:1px; }
+
+  /* CARD ROW */
+  .card-row { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; width:100%; max-width:1220px; margin-top:22px; }
+  .card { background:var(--panel); border:1px solid rgba(183,138,63,.20); border-radius:8px; padding:32px 24px; text-align:center; box-shadow:0 18px 42px rgba(20,24,36,.08); transition:border-color .25s,transform .25s; }
+  .card:hover { border-color:var(--gold); transform:translateY(-3px); box-shadow:0 8px 18px rgba(182,138,70,.1); }
+  .card-icon { width:60px; height:60px; margin:0 auto 16px; border-radius:16px; display:grid; place-items:center; color:var(--gold-dark); background:linear-gradient(145deg,#fff,rgba(240,223,182,.58)); border:1px solid rgba(183,138,63,.26); box-shadow:0 12px 28px rgba(20,24,36,.09); }
+  .card-icon svg { width:30px; height:30px; stroke-width:1.9; }
+  .card-title { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(23px,2.1vw,32px); font-weight:800; color:var(--ink); margin-bottom:10px; letter-spacing:-.03em; }
+  .card-body { font-size:clamp(13px,1.1vw,17px); color:var(--ink-soft); line-height:1.48; }
+
+  /* ROLE TABLE */
+  .role-table { width:100%; max-width:1120px; margin-top:18px; border-radius:8px; overflow:hidden; border:1px solid rgba(182,138,70,.2); box-shadow:0 2px 8px rgba(0,0,0,.05); }
+  .rh { display:grid; grid-template-columns:1fr 1fr; }
+  .rh-cell { display:flex; align-items:center; gap:7px; padding:13px 20px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; }
+  .rh-cell svg { width:13px; height:13px; stroke-width:2; flex:0 0 auto; }
+  .rh-cell.risk   { background:rgba(198,40,40,.08); color:#c62828; }
+  .rh-cell.demand { background:rgba(182,138,70,.11); color:var(--gold-dark); }
+  .rrow { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid rgba(182,138,70,.1); transition:background .2s; }
+  .rrow:hover { background:rgba(182,138,70,.04); }
+  .rcell { padding:15px 20px; font-size:clamp(13px,1.06vw,16px); line-height:1.28; }
+  .rcell.risk   { color:var(--ink-soft); border-right:1px solid rgba(182,138,70,.1); background:rgba(255,255,255,.28); }
+  .rcell.demand { color:var(--ink); background:rgba(255,255,255,.48); }
+  .rcell .rn { font-weight:600; margin-bottom:2px; color:var(--ink); }
+  .rcell.demand .rn { color:var(--gold-dark); }
+  .rcell .rnote { font-size:11px; color:var(--ink-soft); opacity:.72; }
+
+  /* ARCH */
+  .arch-wrap { display:flex; gap:44px; align-items:center; width:100%; max-width:1180px; margin-top:18px; }
+  .arch-diag { flex:1; display:flex; flex-direction:column; }
+  .arch-layer { border-radius:8px; padding:24px 28px; text-align:center; }
+  .arch-layer.biz { background:rgba(33,150,243,.07); border:1px solid rgba(33,150,243,.25); }
+  .arch-layer.it  { background:rgba(182,138,70,.08); border:1px solid rgba(182,138,70,.32); margin-top:2px; }
+  .arch-conn { display:flex; flex-direction:column; align-items:center; padding:4px 0; gap:2px; }
+  .arch-conn .arr { color:var(--gold); opacity:.55; display:grid; place-items:center; }
+  .arch-conn .arr svg { width:18px; height:18px; stroke-width:2; }
+  .arch-conn .lbl { font-size:9px; color:var(--ink-soft); letter-spacing:.06em; opacity:.65; }
+  .arch-lt { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(20px,1.9vw,28px); font-weight:800; margin-bottom:7px; letter-spacing:-.03em; }
+  .arch-layer.biz .arch-lt { color:#1565c0; }
+  .arch-layer.it  .arch-lt { color:var(--gold-dark); }
+  .arch-li { font-size:clamp(13px,1.08vw,17px); color:var(--ink-soft); line-height:1.45; }
+  .arch-resp { flex:0 0 360px; display:flex; flex-direction:column; gap:14px; }
+  .arch-ri { display:flex; gap:14px; align-items:flex-start; padding:17px 18px; background:rgba(255,255,255,.55); border:1px solid rgba(182,138,70,.2); border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.05); transition:border-color .25s; }
+  .arch-ri:hover { border-color:var(--gold); }
+  .arch-rnum { font-family:'Inter Tight','Inter',sans-serif; font-size:24px; font-weight:800; color:var(--gold); flex-shrink:0; line-height:1; letter-spacing:-.03em; }
+  .arch-rtxt { font-size:clamp(13px,1.08vw,16px); color:var(--ink-soft); line-height:1.38; }
+  .arch-rtxt strong { color:var(--gold-dark); }
+
+  /* ROADMAP */
+  .rq { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(34px,4.2vw,64px); font-weight:800; color:var(--ink); text-align:center; max-width:980px; line-height:1.02; margin-bottom:34px; letter-spacing:-.055em; }
+  .rq em { color:var(--gold); font-style:normal; font-weight:700; }
+  .rphases { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; width:100%; max-width:1160px; position:relative; }
+  .rphases::before { content:none; }
+  .phase { background:rgba(255,255,255,.6); border:1px solid rgba(182,138,70,.2); border-radius:8px; padding:22px 20px; display:flex; flex-direction:column; gap:9px; box-shadow:0 2px 8px rgba(0,0,0,.05); transition:border-color .25s; }
+  .phase:hover { border-color:var(--gold); }
+  .ph-lbl { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+  .ph-hdr { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(18px,1.75vw,25px); font-weight:800; color:var(--ink); line-height:1.12; letter-spacing:-.03em; }
+  .ph-items { list-style:none; display:flex; flex-direction:column; gap:4px; }
+  .ph-items li { font-size:clamp(12px,1vw,15px); color:var(--ink-soft); padding-left:13px; position:relative; line-height:1.34; }
+  .ph-items li::before { content:'–'; position:absolute; left:0; color:var(--gold); opacity:.65; }
+
+  /* CLOSING */
+  .cw { display:flex; flex-direction:column; align-items:center; gap:20px; max-width:980px; width:100%; }
+  .cq { width:100%; padding:22px 28px; border:1px solid rgba(182,138,70,.24); border-radius:8px; background:rgba(255,255,255,.55); text-align:left; box-shadow:0 2px 6px rgba(0,0,0,.05); transition:border-color .25s; }
+  .cq:hover { border-color:var(--gold); }
+  .ct { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:7px; font-weight:700; }
+  .cqtext { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(21px,2.2vw,34px); font-weight:700; color:var(--ink); line-height:1.16; letter-spacing:-.035em; }
+  .cfinal { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(19px,1.9vw,28px); font-weight:700; color:var(--gold-dark); border-top:1px solid rgba(182,138,70,.22); padding-top:18px; width:100%; text-align:center; letter-spacing:-.03em; }
+
+  /* TITLE SLIDE */
+  .t-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 15px; border-radius:999px; border:1px solid rgba(182,138,70,.4); background:rgba(255,255,255,.45); color:var(--gold); font-size:10px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:18px; }
+  .t-badge svg { width:13px; height:13px; stroke-width:2; }
+  .main-title { font-family:'Inter Tight','Inter',sans-serif; font-size:clamp(62px,8.2vw,128px); font-weight:800; line-height:.82; letter-spacing:-.075em; color:var(--ink); margin-bottom:22px; max-width:1120px; }
+  .main-title em { color:var(--gold); font-style:normal; }
+  .main-sub { font-size:clamp(22px,2vw,32px); line-height:1.22; letter-spacing:-.02em; color:var(--ink-soft); margin-bottom:30px; max-width:52ch; }
+  .lq { padding:20px 28px; border-left:4px solid var(--gold); background:rgba(182,138,70,.07); border-radius:0 8px 8px 0; max-width:840px; }
+  .lq p { font-size:clamp(18px,1.65vw,26px); font-weight:600; color:var(--ink-soft); line-height:1.38; }
+  .spk { margin-top:22px; font-size:10px; letter-spacing:.1em; color:var(--ink-soft); text-transform:uppercase; }
+  .spk strong { color:var(--gold-dark); }
+
+  /* PRESENTERS SLIDE */
+  .presenters-main { justify-content: flex-start; padding-top: clamp(60px, 8vh, 120px); padding-bottom: 22px; }
+  .presenters-layout { display: grid; grid-template-columns: minmax(260px, 360px) minmax(0, 1fr); gap: clamp(28px, 3.5vw, 56px); align-items: start; min-height: 0; }
+  .presenters-intro { padding-top: 8px; }
+  .presenters-title { font-family: 'Inter Tight','Inter',sans-serif; font-size: clamp(50px, 5.8vw, 88px); line-height: .92; letter-spacing: -.05em; margin: 0 0 42px; max-width: 8ch; font-weight: 800; color: var(--ink); }
+  .presenters-sub { font-size: clamp(18px, 1.3vw, 22px); line-height: 1.35; color: var(--ink-soft); max-width: 28ch; }
+  .presenters-grid { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: clamp(22px, 2.4vw, 36px); align-items: start; padding-top: clamp(120px, 14vh, 200px); }
+  .presenter-card { display: grid; grid-template-rows: auto auto; justify-items: center; align-content: start; gap: 18px; min-height: 0; }
+  .hex-frame { width: min(20vw, 280px); aspect-ratio: 1.06 / 1; position: relative; clip-path: polygon(25% 4%, 75% 4%, 98% 50%, 75% 96%, 25% 96%, 2% 50%); background: linear-gradient(145deg, #d4b87a, #a07830); padding: 5px; display: grid; place-items: center; }
+  .hex-inner { width: 100%; height: 100%; clip-path: polygon(25% 4%, 75% 4%, 98% 50%, 75% 96%, 25% 96%, 2% 50%); background: linear-gradient(145deg, #1a1d22, #0f1217); overflow: hidden; position: relative; display: grid; place-items: center; }
+  .presenter-copy { display: grid; gap: 8px; justify-items: center; align-content: start; max-width: min(20vw, 280px); }
+  .presenter-name { font-family: 'Inter Tight','Inter',sans-serif; font-size: clamp(22px, 1.8vw, 32px); line-height: 1.02; letter-spacing: -.03em; color: var(--gold-dark); text-align: center; font-weight: 800; }
+  .presenter-role { font-size: clamp(13px, 1vw, 17px); line-height: 1.2; color: var(--ink-soft); text-align: center; }
+  @media (max-width: 1180px) { .presenters-layout { grid-template-columns: 1fr; } .presenters-title { max-width: none; } .presenters-sub { max-width: 60ch; } .presenters-grid { padding-top: 8px; } }
+  @media (max-width: 900px) { .presenters-grid { grid-template-columns: 1fr; justify-items: center; } .hex-frame { width: min(66vw, 280px); } .presenter-copy { max-width: min(70vw, 340px); } }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .slide.active .a1 { animation:fadeUp .42s ease .07s both; }
+  .slide.active .a2 { animation:fadeUp .42s ease .18s both; }
+  .slide.active .a3 { animation:fadeUp .42s ease .29s both; }
+  .slide.active .a4 { animation:fadeUp .42s ease .40s both; }
+  .slide.active .a5 { animation:fadeUp .42s ease .51s both; }
+</style>
+</head>
+<body>
+
+<div class="ascii-bg" aria-hidden="true"><pre id="asciiBg"></pre></div>
+<div class="watermark">Adaptive</div>
+
+<main class="deck" id="deck">
+
+<!-- ═══ SLIDE 0 · TITLE ═══ -->
+<section class="slide active">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <div class="t-badge a1"><i data-lucide="sparkles"></i> GBS Lions Talks</div>
+    <h1 class="main-title a2">The shift from IT-built to<br><em>Business-built solutions.</em></h1>
+    <div class="lq a4"><p>"For years, technology barriers slowed GBS down.<br>AI is about to remove them – if you prepare now."</p></div>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:9%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 2 · OPENING HOOK ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <p class="sec-lbl a1">Part 1 of 3 &nbsp;·&nbsp; Diagnosis</p>
+    <div class="hero-num a2">70%</div>
+    <p class="hero-lbl a3">of all IT implementations fail to deliver what was promised</p>
+    <div class="stat-bar a4">
+      <div class="stat-tile"><div class="num">88%</div><div class="lbl">of business transformations fail to achieve original ambitions</div><div class="src">Bain, 2024</div></div>
+      <div class="stat-tile"><div class="num">75%</div><div class="lbl">of ERP implementations get derailed along the way</div><div class="src">Gartner</div></div>
+      <div class="stat-tile"><div class="num">64%</div><div class="lbl">of software features built are rarely or never used</div><div class="src">Standish Group / Pendo 2019</div></div>
+    </div>
+    <p class="a5" style="margin-top:12px;font-size:18px;color:var(--ink-soft);font-style:italic;">We've been spending billions – and getting it wrong.</p>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:27%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 2 · ROOT CAUSES ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <p class="sec-lbl a1">Part 1 of 3 &nbsp;·&nbsp; Diagnosis</p>
+    <h2 class="h-title a2">The Real Reasons<br>Behind the Failure</h2>
+    <div class="gl a2"></div>
+    <div class="cause-grid a3">
+      <div class="cause-block"><div class="icon-tile"><i data-lucide="users"></i></div><div class="c-pct">70–75%</div><div class="c-name">Poor User Adoption</div><div class="c-src">Gartner</div></div>
+      <div class="cause-block"><div class="icon-tile"><i data-lucide="shuffle"></i></div><div class="c-pct">50–63%</div><div class="c-name">Business–IT Misalignment</div><div class="c-src">CRM research</div></div>
+      <div class="cause-block"><div class="icon-tile"><i data-lucide="circle-x"></i></div><div class="c-pct">45–64%</div><div class="c-name">Wrong Requirements</div><div class="c-src">Standish / Pendo</div></div>
+      <div class="cause-block"><div class="icon-tile"><i data-lucide="chart-no-axes-column-decreasing"></i></div><div class="c-pct">87%</div><div class="c-name">Skills Gap</div><div class="c-src">McKinsey</div></div>
+    </div>
+    <div class="callout a4"><p><strong>Only 20–30%</strong> of implementation success depends on technology. The rest is people and process. <span style="font-size:15px;opacity:.7">– Prosci / Vantagepoint</span></p></div>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:36%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3 · TRANSLATION PROBLEM ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <p class="sec-lbl a1">Part 1 of 3 &nbsp;·&nbsp; Diagnosis</p>
+    <h2 class="h-title a2">The Gap That<br>Kills Good Ideas</h2>
+    <div class="gl a2"></div>
+    <div class="flow-wrap a3">
+      <div class="flow-col">
+        <div class="fn fn-biz" style="font-weight:600;"><span class="fn-title"><i data-lucide="building-2"></i>Business</span><br><span style="font-size:.85em;font-weight:300;">"I need a tool that does X"</span></div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-biz" style="opacity:.65;font-size:clamp(9px,.8vw,11px);">Submits ticket to IT backlog</div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-bad" style="font-size:clamp(9px,.8vw,11px);">Waits 6–18 months</div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-bad" style="font-weight:600;"><span class="fn-title"><i data-lucide="frown"></i>"This isn't what I needed"</span></div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-note">Uses 20% of features · Workarounds from Day 1 · Low adoption</div>
+      </div>
+      <div class="flow-div"><div class="flow-div-line"></div><div class="flow-div-lbl">Translation chain</div><div class="flow-div-line"></div></div>
+      <div class="flow-col">
+        <div class="fn fn-mid" style="font-weight:600;"><span class="fn-title"><i data-lucide="briefcase-business"></i>Business Analyst</span><br><span style="font-size:.85em;font-weight:300;">"So they need Y"</span></div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-mid" style="font-size:clamp(9px,.8vw,11px);">Technical Analyst: "We'll build Z"</div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-mid" style="font-size:clamp(9px,.8vw,11px);">Development cycle begins</div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-mid" style="font-weight:600;"><span class="fn-title"><i data-lucide="rocket"></i>"Here's your system"</span></div>
+        <div class="fa"><i data-lucide="arrow-down"></i></div>
+        <div class="fn fn-mid" style="font-size:clamp(9px,.8vw,11px);opacity:.7;">Technically correct · Functionally useless · ROI never realized</div>
+      </div>
+    </div>
+    <div class="callout a4"><p>7 out of 10 implementations fail because <strong>the tool simply doesn't match business needs.</strong> Every handoff introduces noise, delay, and drift.</p></div>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:45%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4 · THE SHIFT ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <p class="sec-lbl a1">Part 2 of 3 &nbsp;·&nbsp; Opportunities</p>
+    <h2 class="h-title a2">AI Changes<br>Who Builds the Solution</h2>
+    <div class="gl a2"></div>
+    <div class="split a3">
+      <div class="sp before">
+        <div class="sp-hdr"><i data-lucide="square"></i> Before AI</div>
+        <div class="sp-item"><span class="si">1.</span><span>Business identifies a need</span></div>
+        <div class="sp-item"><span class="si">2.</span><span>Submits ticket to IT backlog</span></div>
+        <div class="sp-item"><span class="si">3.</span><span>Business Analyst gathers requirements</span></div>
+        <div class="sp-item"><span class="si">4.</span><span>Technical Analyst writes specs</span></div>
+        <div class="sp-item"><span class="si">5.</span><span>Development takes 6–18 months</span></div>
+        <div class="sp-item"><span class="si">6.</span><span>Partial solution delivered late</span></div>
+        <div class="sp-item"><span class="si">7.</span><span>Low adoption · workarounds · rework</span></div>
+      </div>
+      <div class="sp after">
+        <div class="sp-hdr"><i data-lucide="sparkles"></i> No Technology Barriers</div>
+        <div class="sp-item"><span class="si" style="color:var(--gold);">1.</span><span>Business identifies a need</span></div>
+        <div class="sp-item"><span class="si" style="color:var(--gold);">2.</span><span><strong>GBS Ops builds the solution</strong> – AI-assisted, no-code / low-code</span></div>
+        <div class="sp-item"><span class="si" style="color:var(--gold);">3.</span><span>Solution matches exact requirements from Day 1</span></div>
+        <div class="sp-item"><span class="si" style="color:var(--gold);">4.</span><span>Deployed in days or weeks – not months</span></div>
+        <div class="sp-item"><span class="si" style="color:var(--gold);">5.</span><span>Adoption is natural – built by the people who use it</span></div>
+        <div class="sp-item"><span class="si" style="color:var(--gold);">6.</span><span><strong>IT governs, secures, scales</strong> – as a strategic platform partner</span></div>
+        <div class="sp-item"><span class="si" style="color:var(--gold);">7.</span><span><strong>3–5× faster · full adoption · GBS + IT aligned</strong></span></div>
+      </div>
+    </div>
+    <p class="a4" style="margin-top:8px;font-size:15px;letter-spacing:.04em;color:var(--ink-soft);font-style:italic;">Copilot · Claude · Power Apps · ChatGPT · no-code / low-code – already in use today</p>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:55%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 5 · BUSINESS GAINS ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <p class="sec-lbl a1">Part 2 of 3 &nbsp;·&nbsp; Opportunities</p>
+    <h2 class="h-title a2">3 Real Gains for<br>Business-Led Development</h2>
+    <div class="gl a2"></div>
+    <div class="card-row a3">
+      <div class="card"><div class="card-icon"><i data-lucide="crosshair"></i></div><div class="card-title">Precision</div><div class="card-body">Tools built by people who know the process work the first time. No requirements lost in translation. No features nobody asked for.</div></div>
+      <div class="card"><div class="card-icon"><i data-lucide="rocket"></i></div><div class="card-title">Speed</div><div class="card-body">3–5× faster than traditional IT pipelines. From idea to working solution in days, not a 12-month backlog queue.</div></div>
+      <div class="card"><div class="card-icon"><i data-lucide="badge-check"></i></div><div class="card-title">Adoption</div><div class="card-body">When you build it yourself, you use it. No training adoption problem. No shadow spreadsheets on Day 1.</div></div>
+    </div>
+    <div class="callout a4"><p><strong>SSC/GBS example:</strong> A finance team uses Copilot + Power Apps to build an AP reconciliation tool in 2 days. Same request sat in IT queue for 6 months. Business-built version: 100% adoption from Day 1.</p></div>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:64%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 6 · IT ROLES ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <p class="sec-lbl a1">Part 3 of 3 &nbsp;·&nbsp; IT Implications</p>
+    <h2 class="h-title a2">What This Means for IT –<br>The Honest Picture</h2>
+    <div class="gl a2"></div>
+    <div class="role-table a3">
+      <div class="rh"><div class="rh-cell risk"><i data-lucide="trending-up"></i> Roles Evolving Away</div><div class="rh-cell demand"><i data-lucide="sparkles"></i> Roles Growing in Demand</div></div>
+      <div class="rrow"><div class="rcell risk"><div class="rn">Traditional Developer</div><div class="rnote">building business-facing apps on request</div></div><div class="rcell demand"><div class="rn">DevOps Engineer</div><div class="rnote">deploying and validating what business builds</div></div></div>
+      <div class="rrow"><div class="rcell risk"><div class="rn">Business Analyst</div><div class="rnote">translating business needs into IT requirements</div></div><div class="rcell demand"><div class="rn">Cloud &amp; Infrastructure Architect</div><div class="rnote">providing the platform business builds on</div></div></div>
+      <div class="rrow"><div class="rcell risk"><div class="rn">Technical Analyst</div><div class="rnote">writing specs between business and dev teams</div></div><div class="rcell demand"><div class="rn">Cybersecurity Specialist</div><div class="rnote">governing and securing what business deploys</div></div></div>
+      <div class="rrow"><div class="rcell risk"><div class="rn">App Maintainer</div><div class="rnote">managing legacy backlog of internally built apps</div></div><div class="rcell demand"><div class="rn">AI / Automation Governance Lead</div><div class="rnote">new role – emerging fast across all sectors</div></div></div>
+    </div>
+    <div class="callout a4"><p>This is not "IT disappears." This is <strong>roles will evolve.</strong> GBS Ops and IT teams that start preparing now – upskilling, reorienting, collaborating – will define the new operating model. Those who wait will be redefined by it.</p></div>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:73%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 7 · IT NEW ROLE ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main">
+    <p class="sec-lbl a1">Part 3 of 3 &nbsp;·&nbsp; IT Implications</p>
+    <h2 class="h-title a2">From Builder to Platform –<br>IT's New Value Proposition</h2>
+    <div class="gl a2"></div>
+    <div class="arch-wrap a3">
+      <div class="arch-diag">
+        <div class="arch-layer biz"><div class="arch-lt">Business Layer</div><div class="arch-li">Builds · Deploys · Iterates<br>Process apps · Automations · AI workflows · Dashboards</div></div>
+        <div class="arch-conn"><div class="arr"><i data-lucide="arrow-up-down"></i></div><div class="lbl">enabled &amp; governed by</div></div>
+        <div class="arch-layer it"><div class="arch-lt">IT Layer</div><div class="arch-li">Security · Compliance · DevOps<br>Infrastructure · Data platforms · Identity &amp; Governance</div></div>
+      </div>
+      <div class="arch-resp">
+        <div class="arch-ri"><div class="arch-rnum">01</div><div class="arch-rtxt"><strong>Build the guardrails</strong><br>Security standards and review protocols for business-built apps</div></div>
+        <div class="arch-ri"><div class="arch-rnum">02</div><div class="arch-rtxt"><strong>Own the platform</strong><br>Cloud, data, identity, integration – the foundation everything runs on</div></div>
+        <div class="arch-ri"><div class="arch-rnum">03</div><div class="arch-rtxt"><strong>Validate &amp; deploy</strong><br>Code review + production governance for business-created solutions</div></div>
+      </div>
+    </div>
+    <p class="a4" style="margin-top:12px;font-size:18px;font-style:italic;color:var(--ink-soft);">For strong IT professionals – this is not a demotion. It is a promotion to strategic architecture.</p>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:82%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 8 · CHANGE MANAGEMENT ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main" style="align-items:center;">
+    <div class="rq a2">"The technology is ready.<br><em>The organisations are not.</em>"</div>
+    <div class="rphases a3">
+      <div class="phase"><div class="ph-lbl">Today</div><div class="ph-hdr">Acknowledge the Shift</div><ul class="ph-items"><li>Recognise AI-assisted development as a real, present trend</li><li>Start controlled pilots – small, low-risk, measurable</li><li>Map which IT roles are already under pressure</li><li>Begin internal dialogue between IT and business</li></ul></div>
+      <div class="phase"><div class="ph-lbl">6–12 Months</div><div class="ph-hdr">Build the Governance</div><ul class="ph-items"><li>Establish governance for AI-built apps</li><li>Upskill IT towards DevOps and CyberSec</li><li>Train business users on responsible AI usage</li><li>Define what business can build, what IT validates</li></ul></div>
+      <div class="phase"><div class="ph-lbl">1–3 Years</div><div class="ph-hdr">New Normal</div><ul class="ph-items"><li>Business-led development is the standard model</li><li>IT operates as a platform team, not a dev shop</li><li>Governance and security are IT's primary value</li><li>OCM competencies become the differentiator</li></ul></div>
+    </div>
+    <div class="callout a4" style="max-width:880px;border-left:none;border-top:2px solid var(--gold);border-radius:6px;text-align:center;margin-top:14px;"><p style="text-align:center;">Preparing means <strong>acting before the pressure forces you to.</strong> GBS Ops and IT teams that align now – on governance, skills, and platform – will lead the next decade. Those who treat this as someone else's problem will follow.</p></div>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:91%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 9 · CLOSING ═══ -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brand-wrap"><div class="brand-mark"></div><div><div class="eyebrow">Adaptive Group</div><div class="brand-name">GBS Lions Talks</div></div></div>
+  </div>
+  <div class="main" style="align-items:center;">
+    <p class="sec-lbl a1" style="text-align:center;">The Question Isn't IF</p>
+    <h2 class="main-title a2" style="text-align:center;font-size:clamp(28px,4.2vw,56px);">It's Whether You Lead<br><em>or Follow</em></h2>
+    <div class="gl gl-c a2"></div>
+    <div class="cw a3">
+      <div class="cq"><div class="ct">For Business</div><div class="cqtext">"Are you building solutions that actually match your needs – or waiting 18 months for something that doesn't?"</div></div>
+      <div class="cq"><div class="ct">For IT</div><div class="cqtext">"Are you building a platform and governing the future – or maintaining a backlog of the past?"</div></div>
+      <div class="cfinal a4">"AI doesn't replace IT. It relocates where value is created."</div>
+    </div>
+    <p class="spk a5" style="margin-top:18px;font-size:10px;"><strong>Robert Godziszewski</strong> &nbsp;·&nbsp; robert.godziszewski@adaptivesag.com &nbsp;·&nbsp; adaptivesag.com</p>
+  </div>
+  <div class="footer">
+    <div class="footer-left"><div class="footer-tags"><span>Develop</span><span>Design</span><span>Deliver</span><span>Deploy</span></div><div class="progress-wrap"><div class="prog" style="width:100%"></div></div></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  if (window.lucide) {
+    lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
+  }
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const N = slides.length;
+  let cur = 0;
+
+  function go(d) {
+    const nxt = (cur + d + N) % N;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('prev');
+    setTimeout(() => slides[cur].classList.remove('prev'), 420);
+    cur = nxt;
+    slides[cur].classList.add('active');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '||e.key==='PageDown') { e.preventDefault(); go(1);  }
+    if (e.key==='ArrowLeft' ||e.key==='ArrowUp'  ||e.key==='PageUp')                { e.preventDefault(); go(-1); }
+  });
+
+  let tx = null;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend',   e => { if(tx===null)return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>48) dx<0?go(1):go(-1); tx=null; });
+
+  /* ASCII BACKGROUND – identical engine to AI_Adoption.html */
+  const asciiBg = document.getElementById('asciiBg');
+  const AC = ' .,:;i1tfLCG08@';
+  const RC = '01アイウエオカキクケコサシスセソ';
+  const ST = { cols:0, rows:0, grid:[], rain:[], kw:[], t:0, id:null };
+  const TERMS = ['AI','GBS','ML','NLP','RPA','LLM','OPS','E2E','ERP','SLA','KPI','ROI','API','SOP','BPM','ETL','BI','SaaS','PaaS','DevOps'];
+
+  function n2d(x,y){ return Math.sin(x*127.1+y*311.7)*0.5+0.5; }
+  function sn(x,y){ const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy,a=n2d(ix,iy),b=n2d(ix+1,iy),c=n2d(ix,iy+1),d=n2d(ix+1,iy+1),ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy); return a+(b-a)*ux+(c-a)*uy+(a-b-c+d)*ux*uy; }
+  function fbm(x,y,o){ let v=0,a=0.5,f=1; for(let i=0;i<o;i++){v+=a*sn(x*f,y*f);a*=0.5;f*=2;} return v; }
+  function initRain(c){ return Array.from({length:c},()=>Math.random()<0.12?{y:Math.random()*-20,sp:0.15+Math.random()*0.35,len:3+Math.floor(Math.random()*8),br:Math.random()}:null); }
+  function initKW(){ return Array.from({length:6},()=>({txt:TERMS[Math.floor(Math.random()*TERMS.length)],x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*8e-4,vy:(Math.random()-.5)*4e-4,life:0,max:300+Math.random()*400})); }
+
+  function buildFrame(cols,rows,t){
+    const g=ST.grid, r=ST.rain;
+    for(let y=0;y<rows;y++) for(let x=0;x<cols;x++){
+      const w=Math.sin(x*.065+t*.35)*Math.cos(y*.09-t*.28), n=fbm(x*.04+t*.04,y*.05+t*.025,3), v=(w*.3+n*.7+1)*.5;
+      g[y*cols+x]=AC[Math.max(0,Math.min(AC.length-1,Math.floor(v*(AC.length-1))))];
+    }
+    for(let x=0;x<cols;x++){
+      const d=r[x];
+      if(!d){if(Math.random()<.003)r[x]={y:Math.random()*-15,sp:.12+Math.random()*.3,len:3+Math.floor(Math.random()*7),br:Math.random()};continue;}
+      d.y+=d.sp;
+      if(d.y-d.len>rows){r[x]=Math.random()<.2?{y:Math.random()*-10,sp:.12+Math.random()*.3,len:3+Math.floor(Math.random()*7),br:Math.random()}:null;continue;}
+      for(let dy=0;dy<d.len;dy++){const ry=Math.floor(d.y)-dy;if(ry<0||ry>=rows)continue;const fade=1-(dy/d.len);g[ry*cols+x]=dy===0?'█':fade>.6?RC[Math.floor(Math.random()*RC.length)]:(fade>.3&&Math.random()<.5?RC[Math.floor(Math.random()*5)]:g[ry*cols+x]);}
+    }
+    for(const k of ST.kw){
+      k.x+=k.vx;k.y+=k.vy;k.life++;
+      if(k.life>k.max||k.x<-.1||k.x>1.1||k.y<-.1||k.y>1.1){k.txt=TERMS[Math.floor(Math.random()*TERMS.length)];k.x=Math.random();k.y=Math.random();k.vx=(Math.random()-.5)*8e-4;k.vy=(Math.random()-.5)*4e-4;k.life=0;k.max=300+Math.random()*400;continue;}
+      const al=Math.min(1,k.life/60)*Math.min(1,(k.max-k.life)/60);
+      if(al<.15)continue;
+      const sx=Math.floor(k.x*cols),sy=Math.floor(k.y*rows);
+      for(let c=0;c<k.txt.length;c++){const px=sx+c;if(px>=0&&px<cols&&sy>=0&&sy<rows)g[sy*cols+px]=k.txt[c];}
+    }
+    const lines=[];for(let y=0;y<rows;y++){let l='';for(let x=0;x<cols;x++)l+=g[y*cols+x];lines.push(l);}return lines.join('\n');
+  }
+
+  function startAscii(){
+    const cols=Math.max(64,Math.floor(window.innerWidth/12));
+    const rows=Math.max(24,Math.floor(window.innerHeight/12));
+    ST.cols=cols;ST.rows=rows;ST.grid=new Array(cols*rows).fill(' ');ST.rain=initRain(cols);ST.kw=initKW();ST.t=0;
+    let last=0;
+    function anim(now){ST.id=requestAnimationFrame(anim);if(now-last<50)return;last=now;ST.t+=.06;asciiBg.textContent=buildFrame(ST.cols,ST.rows,ST.t);}
+    ST.id=requestAnimationFrame(anim);
+  }
+  startAscii();
+  window.addEventListener('resize',()=>{if(ST.id)cancelAnimationFrame(ST.id);asciiBg.textContent='';startAscii();});
+</script>
+</body>
+</html>
